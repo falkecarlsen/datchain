@@ -52,12 +52,18 @@ public class Blockchain extends ArrayList<Block> {
 
     public boolean validateChain() {
 
+        String currHash, nextPrevHash;
+        long currTime, nextTime;
+
         //stop loop short one of this.size() as last block will not have .next()
         for (int i = 0; i < this.size() - 1; i++) {
 
             //assign hashes to new strings for code legibility
-            String currHash = getBlock(i).getHash();
-            String nextPrevHash = getBlock(i+1).getPrevHash();
+            currHash = getBlock(i).getHash();
+            currTime = getBlock(i).getTimestamp();
+
+            nextPrevHash = getBlock(i+1).getPrevHash();
+            nextTime = getBlock(i+1).getTimestamp();
 
             //debug sout
             if (false) {
@@ -66,9 +72,10 @@ public class Blockchain extends ArrayList<Block> {
             }
 
             //check hash congruency through blocks
-            if ( !currHash.equals(nextPrevHash) ) {
-                return false;
-            }
+            if ( !currHash.equals(nextPrevHash) ) return false;
+
+            //check time is equal or later through blocks
+            if (currTime > nextTime) return false;
 
             //TODO should also test chain of RSA-signature from genesis to all validators and possibly citizens
         }
