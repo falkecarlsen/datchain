@@ -1,6 +1,7 @@
-package dk.aau.dat.a311b.datchain;
+package dk.aau.cs.a311c.datchain;
 
 import java.util.ArrayList;
+import dk.aau.cs.a311c.datchain.utility.RSA;
 
 public class Datchain {
 
@@ -10,9 +11,9 @@ public class Datchain {
         ValidatorBlock validator01 = new ValidatorBlock("Validator", "ValidatorPublicKey", genesis01.getHash(), "GenesisSignature");
         ValidatorBlock validator02 = new ValidatorBlock("Validator", "ValidatorPublicKey", validator01.getHash(), "GenesisSignature");
         ValidatorBlock validator03 = new ValidatorBlock("Validator", "ValidatorPublicKey", validator02.getHash(), "GenesisSignature");
-        CitizenBlock citizen01 = new CitizenBlock("Citizen Name1", "CitizenPublicKey", validator03.getHash(), validator01.getIdentity(), validator01.getIdentityPublicKey());
-        CitizenBlock citizen02 = new CitizenBlock("Citizen Name2", "CitizenPublicKey", citizen01.getHash(), validator02.getIdentity(), validator02.getIdentityPublicKey());
-        CitizenBlock citizen03 = new CitizenBlock("Citizen Name3", "CitizenPublicKey", citizen02.getHash(), validator03.getIdentity(), validator03.getIdentityPublicKey());
+        CitizenBlock citizen01 = new CitizenBlock("Citizen Name1", "CitizenPublicKey", validator03.getHash(), validator01.getIdentity(), validator01.getIdentityPublicKey(), "ValidatorSignature");
+        CitizenBlock citizen02 = new CitizenBlock("Citizen Name2", "CitizenPublicKey", citizen01.getHash(), validator02.getIdentity(), validator02.getIdentityPublicKey(), "ValidatorSignature");
+        CitizenBlock citizen03 = new CitizenBlock("Citizen Name3", "CitizenPublicKey", citizen02.getHash(), validator03.getIdentity(), validator03.getIdentityPublicKey(), "ValidatorSignature");
 
         Blockchain chain02 = new Blockchain();
         chain02.addValidatedBlock(genesis01, validator01);
@@ -32,13 +33,13 @@ public class Datchain {
         //System.out.println(searchResultBlock01.getIdentity());
         //System.out.println(searchResultBlock02.getIdentity() + " " + searchResultBlock02.getIdentityPublicKey());
 
-        System.out.println("RSA-keys present: " + RSAgen.keysPresent());
+        System.out.println("RSA-keys present: " + RSA.keysPresent());
         //Byte[] ciphertext = RSAgen.encrypt("Random String", pubkey);
         //System.out.println("Decrypted text: " + RSAgen.decrypt(ciphertext, privkey));
 
         //create Search object and run identity search for printing
         ArrayList<Block> temp = new Search().FuzzySearchIdentity("citizz", chain02, 2);
         temp.forEach( block -> System.out.println(block.getIdentity()) );
-
+        System.out.println("RSA keys generated: " + RSA.keyGenerator());
     }
 }
