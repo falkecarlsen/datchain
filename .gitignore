@@ -9,6 +9,7 @@
 /datchain/data/public.key
 
 # User-specific stuff:
+/datchain/data/*
 /datchain/.idea/**/workspace.xml
 /datchain/.idea/**/tasks.xml
 /datchain/.idea/dictionaries

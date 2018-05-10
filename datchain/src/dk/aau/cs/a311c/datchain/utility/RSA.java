@@ -1,4 +1,4 @@
-package dk.aau.dat.a311b.datchain.utility;
+package dk.aau.cs.a311c.datchain.utility;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -10,7 +10,7 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 
-import static dk.aau.dat.a311b.datchain.utility.RSA.Constants.*;
+import static dk.aau.cs.a311c.datchain.utility.RSA.Constants.*;
 
 public class RSA {
 

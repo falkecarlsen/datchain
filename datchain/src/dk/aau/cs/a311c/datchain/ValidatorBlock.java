@@ -1,4 +1,4 @@
-package dk.aau.dat.a311b.datchain;
+package dk.aau.cs.a311c.datchain;
 
 public class ValidatorBlock extends Block {
 
