@@ -1,5 +1,5 @@
+package dk.aau.cs.a311c.datchain;
 
-import dk.aau.dat.a311b.datchain.CitizenBlock;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -14,7 +14,7 @@ class CitizenBlockTest {
 
     @Test
     void computeHash() {
-        CitizenBlock block01 = new CitizenBlock("Citizen Name", "CitizenPubKey", "9817324939382", "Validator", "ValidatorPubKey");
+        CitizenBlock block01 = new CitizenBlock("Citizen Name", "CitizenPubKey", "9817324939382", "Validator", "ValidatorPubKey", "ValidatorSignature");
         String hashInput = "Citizen Name" + "CitizenPubKey" + "9817324939382" + "Validator" + "ValidatorPubKey" + block01.getTimestamp();
 
         MessageDigest messageDigest = null;
@@ -35,7 +35,7 @@ class CitizenBlockTest {
 
     @Test
     void getHash() {
-        CitizenBlock block01 = new CitizenBlock("Citizen Name", "CitizenPubKey", "9817324939382", "Validator", "ValidatorPubKey");
+        CitizenBlock block01 = new CitizenBlock("Citizen Name", "CitizenPubKey", "9817324939382", "Validator", "ValidatorPubKey", "ValidatorSignature");
         String hashInput = "Citizen Name" + "CitizenPubKey" + "9817324939382" + "Validator" + "ValidatorPubKey" + block01.getTimestamp();
 
         MessageDigest messageDigest = null;
@@ -56,27 +56,27 @@ class CitizenBlockTest {
 
     @Test
     void getPrevHash() {
-        CitizenBlock block01 = new CitizenBlock("Citizen Name", "CitizenPubKey", "9817324939382", "Validator", "ValidatorPubKey");
-        CitizenBlock block02= new CitizenBlock("Citizen Name", "CitizenPubKey", block01.getHash(), "Validator", "ValidatorPubKey");
+        CitizenBlock block01 = new CitizenBlock("Citizen Name", "CitizenPubKey", "9817324939382", "Validator", "ValidatorPubKey", "ValidatorSignature");
+        CitizenBlock block02= new CitizenBlock("Citizen Name", "CitizenPubKey", block01.getHash(), "Validator", "ValidatorPubKey", "ValidatorSignature");
 
         assertEquals(block01.getHash(), block02.getPrevHash());
     }
 
     @Test
     void getTimestamp() {
-        CitizenBlock block01 = new CitizenBlock("Validator", "ValidatorPubkey", "Citizen Name", "CitizenPubKey", "0000000000");
+        CitizenBlock block01 = new CitizenBlock("Validator", "ValidatorPubkey", "Citizen Name", "CitizenPubKey", "0000000000", "ValidatorSignature");
         assertEquals(now().getEpochSecond(), block01.getTimestamp());
     }
 
     @Test
     void getPubKey() {
-        CitizenBlock block01 = new CitizenBlock("Citizen Name", "CitizenPubKey", "9817324939382", "Validator", "ValidatorPubKey");
+        CitizenBlock block01 = new CitizenBlock("Citizen Name", "CitizenPubKey", "9817324939382", "Validator", "ValidatorPubKey", "ValidatorSignature");
         assertEquals("CitizenPubKey", block01.getIdentityPublicKey());
     }
 
     @Test
     void getIdentity() {
-        CitizenBlock block01 = new CitizenBlock("Citizen Name", "CitizenPubKey", "9817324939382", "Validator", "ValidatorPubKey");
+        CitizenBlock block01 = new CitizenBlock("Citizen Name", "CitizenPubKey", "9817324939382", "Validator", "ValidatorPubKey", "ValidatorSignature");
         assertEquals("Citizen Name", block01.getIdentity());
     }
     

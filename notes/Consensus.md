@@ -1,4 +1,4 @@
-# Concensus-algoritm
+# Consensus-algoritm
 This document outlines the considerations and ideas behind a goverment-enforced registry of persons, their properties and ways of implementation
 
 ## Genesis-authority
