@@ -1,4 +1,6 @@
-import dk.aau.dat.a311b.datchain.CitizenBlock;
+package dk.aau.cs.a311c.datchain;
+
+import dk.aau.dat.a311c.datchain.CitizenBlock;
 import org.junit.jupiter.api.Test;
 
 import static java.time.Instant.now;

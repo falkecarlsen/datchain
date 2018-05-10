@@ -1,4 +1,4 @@
-package dk.aau.dat.a311b.datchain;
+package dk.aau.dat.a311c.datchain;
 
 //https://github.com/xdrop/fuzzywuzzy for fuzzy string matching
 import me.xdrop.fuzzywuzzy.FuzzySearch;
