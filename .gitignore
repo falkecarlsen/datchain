@@ -4,15 +4,16 @@
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
+# RSA-specific stuff:
+/datchain/data/private.key
+/datchain/data/public.key
+
 # User-specific stuff:
 /datchain/data/*
 /datchain/.idea/**/workspace.xml
 /datchain/.idea/**/tasks.xml
 /datchain/.idea/dictionaries
 /datchain/.idea/vcs.xml
-/datchain/.idea/misc.xml
-/datchain/.idea/modules.xml
-/datchain/datchain.iml
 
 # Sensitive or high-churn files:
 /datchain/.idea/**/dataSources/

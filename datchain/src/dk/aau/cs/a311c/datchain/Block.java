@@ -1,4 +1,4 @@
-package dk.aau.dat.a311c.datchain;
+package dk.aau.cs.a311c.datchain;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -9,6 +9,7 @@ import static java.time.Instant.now;
 
 abstract class Block {
 
+    //common fields for all blocks
     private final String identity;
     private final String identityPublicKey;
     private final String prevHash;

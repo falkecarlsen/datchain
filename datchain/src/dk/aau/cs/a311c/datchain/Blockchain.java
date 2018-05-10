@@ -1,10 +1,10 @@
-package dk.aau.dat.a311c.datchain;
+package dk.aau.cs.a311c.datchain;
 
 //https://github.com/xdrop/fuzzywuzzy for fuzzy string matching
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import java.util.ArrayList;
 
-public class Blockchain extends ArrayList<Block> implements Chain {
+public class Blockchain extends ArrayList<Block> {
 
     public boolean addValidatedBlock(Block block, Block validator) {
 
@@ -52,12 +52,18 @@ public class Blockchain extends ArrayList<Block> implements Chain {
 
     public boolean validateChain() {
 
+        String currHash, nextPrevHash;
+        long currTime, nextTime;
+
         //stop loop short one of this.size() as last block will not have .next()
         for (int i = 0; i < this.size() - 1; i++) {
 
             //assign hashes to new strings for code legibility
-            String currHash = getBlock(i).getHash();
-            String nextPrevHash = getBlock(i+1).getPrevHash();
+            currHash = getBlock(i).getHash();
+            currTime = getBlock(i).getTimestamp();
+
+            nextPrevHash = getBlock(i+1).getPrevHash();
+            nextTime = getBlock(i+1).getTimestamp();
 
             //debug sout
             if (false) {
@@ -66,9 +72,10 @@ public class Blockchain extends ArrayList<Block> implements Chain {
             }
 
             //check hash congruency through blocks
-            if ( !currHash.equals(nextPrevHash) ) {
-                return false;
-            }
+            if ( !currHash.equals(nextPrevHash) ) return false;
+
+            //check time is equal or later through blocks
+            if (currTime > nextTime) return false;
 
             //TODO should also test chain of RSA-signature from genesis to all validators and possibly citizens
         }
@@ -76,52 +83,17 @@ public class Blockchain extends ArrayList<Block> implements Chain {
         return true;
     }
 
-    //TODO should be expanded to create another arraylist of blocks,
-    //TODO should also utilise the ratio supplied by fuzzysearch to suggest a block, the user might be searching for
-    public Block searchSingleIdentity(String term) {
-
-        //create string-array for holding identities for searching
-        ArrayList<String> arrayIdentity = new ArrayList<>();
-
-        //iterate through chain and put identities in arrayIdentity, such that indices match between the two arrays
-        for (int i = 0; i < this.size(); i++) {
-            arrayIdentity.add(this.getBlock(i).getIdentity());
-        }
-        //return for this chain-object, the block that FuzzySearch ranks with the highest ratio depending on supplied term
-        return this.getBlock( FuzzySearch.extractOne(term, arrayIdentity).getIndex() );
-    }
-
-    public Block searchSinglePublicKey(String term) {
-
-        //create string-array for holding public keys for searching
-        ArrayList<String> arrayPublicKeys = new ArrayList<>();
-
-        //iterate through chain and put public keys in arrayPublicKeys, such that indices match between the two arrays
-        for (int i = 0; i < this.size(); i++) {
-            arrayPublicKeys.add(this.getBlock(i).getIdentity());
-        }
-        //return for this chain-object, the block that FuzzySearch ranks with the highest ratio depending on supplied term
-        return this.getBlock( FuzzySearch.extractOne(term, arrayPublicKeys).getIndex() );
-    }
-
     //ArrayList doesn't implement a .last() method, thus we implement one ourselves
     public Block getHead() {
-        Block head;
- /*       if (this.size() > 0) {
-            head = this.get(this.size() - 1);
-        } else {
-            throw new RuntimeException("No blocks added, can't get head");
-        }
-        */
 
+        Block head;
         try {
+            //throw exception if no blocks are added, probably not the prettiest handling
+            if (this.size() == 0) throw new RuntimeException("ERROR: No blocks added, cannot get head");
             head = this.get(this.size() - 1);
         } catch (IndexOutOfBoundsException e) {
             throw new IndexOutOfBoundsException("ERROR: No blocks added, cannot get head" + e.getMessage());
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Fuck!");
         }
-
         return head;
     }
 

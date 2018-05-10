@@ -1,4 +1,4 @@
-package dk.aau.dat.a311c.datchain.gui;
+package dk.aau.cs.a311c.datchain.gui;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
