@@ -1,6 +1,7 @@
 package dk.aau.dat.a311c.datchain;
 
 import java.util.ArrayList;
+import dk.aau.dat.a311b.datchain.utility.RSA;
 
 public class Datchain {
 
@@ -39,6 +40,6 @@ public class Datchain {
         //create Search object and run identity search for printing
         ArrayList<Block> temp = new Search().FuzzySearchIdentity("citizz", chain02, 2);
         temp.forEach( block -> System.out.println(block.getIdentity()) );
-
+        System.out.println("RSA keys generated: " + RSA.keyGenerator());
     }
 }
