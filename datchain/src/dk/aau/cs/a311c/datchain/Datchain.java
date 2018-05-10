@@ -1,7 +1,8 @@
 package dk.aau.cs.a311c.datchain;
 
-import java.util.ArrayList;
 import dk.aau.cs.a311c.datchain.utility.RSA;
+
+import java.util.ArrayList;
 
 public class Datchain {
 
@@ -26,7 +27,6 @@ public class Datchain {
 
         System.out.println("chain02 validated: " + chain02.validateChain());
 
-
         //testing out fuzzy search matching
         //Block searchResultBlock01 = chain02.searchSingleIdentity("citiz nahym");
         //Block searchResultBlock02 = chain02.searchSinglePublicKey("gænæsæs Påblæk kay");
@@ -39,7 +39,8 @@ public class Datchain {
 
         //create Search object and run identity search for printing
         ArrayList<Block> temp = new Search().FuzzySearchIdentity("citizz", chain02, 2);
-        temp.forEach( block -> System.out.println(block.getIdentity()) );
-        System.out.println("RSA keys generated: " + RSA.keyGenerator());
+        temp.forEach(block -> System.out.println(block.getIdentity()));
+        System.out.println("RSA keys generated: " + RSA.keyPairWriter());
+        System.out.println("RSA-keys present: " + RSA.keysPresent());
     }
 }
