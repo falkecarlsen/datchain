@@ -53,20 +53,34 @@ public class RSA {
                 //TODO needs destroy of keygen states
             } catch (NoSuchAlgorithmException e) {
                 System.out.println("ERROR: System does not support RSA generation! " + e.getMessage());
+                return false;
             } catch (InvalidParameterException e) {
                 System.out.println("ERROR: System does not support RSA bitlength of " + KEYBITLENGTH + ". " + e.getMessage());
+                return false;
             } catch (IOException e) {
                 System.out.println("ERROR: IO exception caught: " + e.getMessage());
+                return false;
             } catch (InvalidPathException e) {
                 System.out.println("ERROR: RSA key location cannot be resolved! Reason: " + e.getReason());
+                return false;
             } catch (SecurityException e) {
                 System.out.println("ERROR: Program does not have permissions to write here! " + e.getMessage());
+                return false;
+            } catch (Exception e) {
+                System.out.println("ERROR: Unknown exception: " + e.getMessage());
+                return false;
             }
             return true;
     }
 
-    //TODO
     public static boolean keysPresent() {
+        try {
+            Path privateKey = Paths.get(KEYLOCATION + "/" + PRIVATE_KEY_FILE);
+            Path publicKey = Paths.get(KEYLOCATION + "/" + PUBLIC_KEY_FILE);
+            return Files.exists(privateKey) && Files.exists(publicKey);
+        } catch (InvalidPathException e) {
+            System.out.println("ERROR: Cannot get keys from: " + KEYLOCATION + ". " + e.getMessage());
+        }
         return true;
     }
 
