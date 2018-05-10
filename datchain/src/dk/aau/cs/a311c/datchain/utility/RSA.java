@@ -9,40 +9,37 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-
-import static dk.aau.cs.a311c.datchain.utility.RSA.Constants.*;
 
 public class RSA {
 
-    class Constants {
+    //declaring constants
+    static final String RSAALGORITHM = "RSA";
+    //choose RSA-variant with padding for encryption and decryption to disallow zero-char attacks
+    static final String CRYPTALGORITHM = "RSA/ECB/OAEPWithSHA-512AndMGF1Padding";
+    static final int KEYBITLENGTH = 4096;
+    //static final String KEYLOCATION = "data/";
+    static final String CITIZENLOCATION = "citizen/";
+    static final String PRIVATE_KEY_FILE = "private.key";
+    static final String PUBLIC_KEY_FILE = "public.key";
 
-        static final String RSAALGORITHM = "RSA";
-        //choose RSA-variant with padding for encryption and decryption to disallow zero-char attacks
-        static final String CRYPTALGORITHM = "RSA/ECB/OAEPWithSHA-512AndMGF1Padding";
-        static final int KEYBITLENGTH = 4096;
-        static final String KEYLOCATION = "data/";
-        static final String CITIZENLOCATION = "citizen/";
-        static final String PRIVATE_KEY_FILE = "private.key";
-        static final String PUBLIC_KEY_FILE = "public.key";
-    }
-
-    static public boolean keyPairWriter() {
+    static public boolean keyPairWriter(KeyPair keyPair, String directory) {
         try {
-            KeyPair keyPair = keyPairInit();
-            //if KEYLOCATION doesn't exist, create the directory
-            Path location = Paths.get(KEYLOCATION);
-            if (!Files.exists(location)) Files.createDirectory(Paths.get(KEYLOCATION));
+            //if keyLocation doesn't exist, create the directory
+            if (!Files.exists(Paths.get(directory))) Files.createDirectory(Paths.get(directory));
 
             //get key bytes and encode them to base64 strings for storage
             String encodedPrivateKey = new String(Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()));
             String encodedPublicKey = new String(Base64.getEncoder().encode(keyPair.getPublic().getEncoded()));
 
             //create keyfile paths at KEYLOCATION
-            Path privatekeyFile = Paths.get(KEYLOCATION + PRIVATE_KEY_FILE);
-            Path publickeyFile = Paths.get(KEYLOCATION + PUBLIC_KEY_FILE);
+            Path privatekeyFile = Paths.get(directory + PRIVATE_KEY_FILE);
+            Path publickeyFile = Paths.get(directory + PUBLIC_KEY_FILE);
 
-            //write strings to file in UTF-8 and return true
+            //write strings to file in UTF-8 encoding and return true
             Files.write(privatekeyFile, encodedPrivateKey.getBytes("UTF-8"));
             Files.write(publickeyFile, encodedPublicKey.getBytes("UTF-8"));
             return true;
@@ -55,10 +52,17 @@ public class RSA {
         return false;
     }
 
-    static private KeyPair keyPairInit() {
+    static public PublicKey getPublicKey(KeyPair keyPair) {
+        return keyPair.getPublic();
+    }
 
+    static public PrivateKey getPrivateKey(KeyPair keyPair) {
+        return keyPair.getPrivate();
+    }
+
+    static public KeyPair keyPairInit() {
         try {
-            //initialize and generate keys from constants
+            //initialize and generate keys from constants, allowing SecureRandom implementation to be chosen at runtime
             final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(RSAALGORITHM);
             keyPairGenerator.initialize(KEYBITLENGTH);
             return keyPairGenerator.generateKeyPair();
@@ -67,24 +71,72 @@ public class RSA {
             System.out.println("ERROR: System does not support RSA generation with: " + e.getMessage());
         } catch (InvalidParameterException e) {
             System.out.println("ERROR: System does not support RSA bitlength of " + KEYBITLENGTH + ". " + e.getMessage());
-        } catch (InvalidPathException e) {
-            System.out.println("ERROR: RSA key location cannot be resolved! Reason: " + e.getReason());
-        } catch (SecurityException e) {
-            System.out.println("ERROR: Program does not have permissions to write here! " + e.getMessage());
         } catch (Exception e) {
             System.out.println("ERROR: Unknown exception: " + e.getMessage());
         }
-        //return null, if something went wrong and exceptions hasn't been caught
+        //if exceptions hasn't been caught
         return null;
     }
 
-    public static boolean keysPresent() {
+    public static PrivateKey getPrivateKeyFromFile(String filename) {
         try {
-            Path privateKey = Paths.get(KEYLOCATION + PRIVATE_KEY_FILE);
-            Path publicKey = Paths.get(KEYLOCATION + PUBLIC_KEY_FILE);
+            //get path to filename supplied
+            Path filePath = Paths.get(filename);
+
+            //read all bytes from file, stored in unicode, and decode bytes to raw encoding
+            byte[] keyByteArray = Base64.getDecoder().decode(Files.readAllBytes(filePath));
+
+            //initialise keyfactory with cryptographic algorithm used
+            KeyFactory keyFactory = KeyFactory.getInstance(RSAALGORITHM);
+            //return regenerated privatekey-spec as privatekey object
+            return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(keyByteArray));
+
+        } catch (UnsupportedEncodingException e) {
+            System.out.println("ERROR: Unsupported encoding exception! Cannot get bytes from file: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("ERROR: IO exception caught! " + e.getMessage());
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("ERROR: System does not support RSA generation with: " + e.getMessage());
+        } catch (InvalidKeySpecException e) {
+            System.out.println("ERROR: Invalid key specification, cannot get private key specification! " + e.getMessage());
+        }
+        //if exceptions hasn't been caught
+        return null;
+    }
+
+    public static PublicKey getPublicKeyFromFile(String filename) {
+        try {
+            //get path to filename supplied
+            Path filePath = Paths.get(filename);
+
+            //read all bytes from file, stored in unicode, and decode bytes to raw encoding
+            byte[] keyByteArray = Base64.getDecoder().decode(Files.readAllBytes(filePath));
+
+            //initialise keyfactory with cryptographic algorithm used
+            KeyFactory keyFactory = KeyFactory.getInstance(RSAALGORITHM);
+            //return regenerated publickey-spec as publickey object
+            return keyFactory.generatePublic(new X509EncodedKeySpec(keyByteArray));
+
+        } catch (UnsupportedEncodingException e) {
+            System.out.println("ERROR: Unsupported encoding exception! Cannot get bytes from file: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("ERROR: IO exception caught! " + e.getMessage());
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("ERROR: System does not support RSA generation with: " + e.getMessage());
+        } catch (InvalidKeySpecException e) {
+            System.out.println("ERROR: Invalid key specification, cannot get private key specification! " + e.getMessage());
+        }
+        //if exceptions hasn't been caught
+        return null;
+    }
+
+    public static boolean keysPresent(String directory) {
+        try {
+            Path privateKey = Paths.get(directory + PRIVATE_KEY_FILE);
+            Path publicKey = Paths.get(directory + PUBLIC_KEY_FILE);
             return Files.exists(privateKey) && Files.exists(publicKey);
         } catch (InvalidPathException e) {
-            System.out.println("ERROR: Cannot get keys from: " + KEYLOCATION + ". " + e.getMessage());
+            System.out.println("ERROR: Cannot get keys from: " + directory + ". " + e.getMessage());
             return false;
         }
     }
