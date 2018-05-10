@@ -1,4 +1,4 @@
-package dk.aau.dat.a311c.datchain;
+package dk.aau.cs.a311c.datchain;
 
 public class GenesisBlock extends Block {
 

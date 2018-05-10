@@ -1,9 +1,5 @@
 package dk.aau.cs.a311c.datchain;
 
-import dk.aau.dat.a311c.datchain.Blockchain;
-import dk.aau.dat.a311c.datchain.CitizenBlock;
-import dk.aau.dat.a311c.datchain.GenesisBlock;
-import dk.aau.dat.a311c.datchain.ValidatorBlock;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

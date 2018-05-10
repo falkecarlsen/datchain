@@ -1,4 +1,4 @@
-package dk.aau.dat.a311c.datchain.gui;
+package dk.aau.cs.a311c.datchain.gui;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;

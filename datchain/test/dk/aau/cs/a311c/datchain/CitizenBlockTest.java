@@ -1,6 +1,5 @@
 package dk.aau.cs.a311c.datchain;
 
-import dk.aau.dat.a311c.datchain.CitizenBlock;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
