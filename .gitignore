@@ -8,6 +8,9 @@
 /datchain/data/private.key
 /datchain/data/public.key
 
+# Test-specific stuff:
+/datchain/testData/*
+
 # User-specific stuff:
 /datchain/data/*
 /datchain/.idea/**/workspace.xml
