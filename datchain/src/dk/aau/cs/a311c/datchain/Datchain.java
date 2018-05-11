@@ -1,7 +1,10 @@
 package dk.aau.cs.a311c.datchain;
 
-import java.util.ArrayList;
 import dk.aau.cs.a311c.datchain.utility.RSA;
+
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 public class Datchain {
 
@@ -27,19 +30,29 @@ public class Datchain {
         System.out.println("chain02 validated: " + chain02.validateChain());
 
 
-        //testing out fuzzy search matching
-        //Block searchResultBlock01 = chain02.searchSingleIdentity("citiz nahym");
-        //Block searchResultBlock02 = chain02.searchSinglePublicKey("gænæsæs Påblæk kay");
-        //System.out.println(searchResultBlock01.getIdentity());
-        //System.out.println(searchResultBlock02.getIdentity() + " " + searchResultBlock02.getIdentityPublicKey());
+        System.out.println("RSA-keys present: " + RSA.keysPresent("data/"));
 
-        System.out.println("RSA-keys present: " + RSA.keysPresent());
-        //Byte[] ciphertext = RSAgen.encrypt("Random String", pubkey);
-        //System.out.println("Decrypted text: " + RSAgen.decrypt(ciphertext, privkey));
+        KeyPair keyPair = RSA.keyPairInit();
 
-        //create Search object and run identity search for printing
-        ArrayList<Block> temp = new Search().FuzzySearchIdentity("citizz", chain02, 2);
-        temp.forEach( block -> System.out.println(block.getIdentity()) );
-        System.out.println("RSA keys generated: " + RSA.keyGenerator());
+        PublicKey publicKey = RSA.getPublicKey(keyPair);
+        PrivateKey privateKey = RSA.getPrivateKey(keyPair);
+
+        System.out.println("RSA keys generated: " + RSA.keyPairWriter(keyPair, "data/"));
+
+        PublicKey publicKeyFromFile = RSA.getPublicKeyFromFile("data/public.key");
+        PrivateKey privateKeyFromFile = RSA.getPrivateKeyFromFile("data/private.key");
+
+        System.out.println("Public keys from file equal? " + publicKey.equals(publicKeyFromFile));
+        System.out.println("Private keys from file equal? " + privateKey.equals(privateKeyFromFile));
+
+        //Current implementation of encryption does not support more than 382 bytes
+        String lorem1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque a risus posuere, malesuada nisl non, tempor nunc. Quisque quis sem vitae nunc fermentum rutrum a et neque. Curabitur sed mauris pulvinar, lobortis lacus sed, commodo ligula. Praesent suscipit, mauris eu mattis pulvinar, ante risus mollis tortor, ac iaculis augue elit porta nisl. Pellentesque quis urna interdum velit ultricies rhoncus imperdiet vel libero. Maecenas nec leo massa. Pellentesque lorem purus, scelerisque et ante sit amet, bibendum vehicula metus. Nunc cursus dui at erat pellentesque, eu mollis neque ultrices. Integer consequat varius dui, eget placerat diam egestas eget. Nulla rhoncus odio sed velit commodo, id accumsan erat venenatis. Suspendisse ut nulla ante. Quisque sed urna nunc. Sed egestas, tortor id fermentum convallis, eros quam vulputate neque, eget condimentum quam turpis sed enim. Maecenas metus est, congue id mollis non, tempus vel nisi. In elementum velit ipsum, quis euismod lorem suscipit at. Morbi malesuada nullam.";
+
+        String lorem2 = RSA.blockCipherDecrypt(RSA.blockCipherEncrypt(lorem1, publicKey), privateKey);
+
+        System.out.println("cleartext length in bytes: " + lorem1.length());
+        System.out.println("ciphertext length in bytes: " + lorem2.length());
+        System.out.println("Are strings equal? " + lorem2.equals(lorem1));
+
     }
 }
