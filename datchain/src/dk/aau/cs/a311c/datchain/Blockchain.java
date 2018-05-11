@@ -1,7 +1,5 @@
 package dk.aau.cs.a311c.datchain;
 
-//https://github.com/xdrop/fuzzywuzzy for fuzzy string matching
-import me.xdrop.fuzzywuzzy.FuzzySearch;
 import java.util.ArrayList;
 
 public class Blockchain extends ArrayList<Block> {
