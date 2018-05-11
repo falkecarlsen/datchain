@@ -1,7 +1,9 @@
 package dk.aau.cs.a311c.datchain.utility;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
@@ -17,14 +19,32 @@ import java.util.Base64;
 public class RSA {
 
     //declaring constants
-    static final String RSAALGORITHM = "RSA";
+    private static final String RSAALGORITHM = "RSA";
     //choose RSA-variant with padding for encryption and decryption to disallow zero-char attacks
-    static final String CRYPTALGORITHM = "RSA/ECB/OAEPWithSHA-512AndMGF1Padding";
-    static final int KEYBITLENGTH = 4096;
+    private static final String CRYPTALGORITHM = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
+    private static final int KEYBITLENGTH = 4096;
     //static final String KEYLOCATION = "data/";
     static final String CITIZENLOCATION = "citizen/";
-    static final String PRIVATE_KEY_FILE = "private.key";
-    static final String PUBLIC_KEY_FILE = "public.key";
+    private static final String PRIVATE_KEY_FILE = "private.key";
+    private static final String PUBLIC_KEY_FILE = "public.key";
+
+    static public KeyPair keyPairInit() {
+        try {
+            //initialize and generate keys from constants, allowing SecureRandom implementation to be chosen at runtime
+            final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(RSAALGORITHM);
+            keyPairGenerator.initialize(KEYBITLENGTH);
+            return keyPairGenerator.generateKeyPair();
+
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("ERROR: System does not support RSA generation with: " + e.getMessage());
+        } catch (InvalidParameterException e) {
+            System.out.println("ERROR: System does not support RSA bitlength of " + KEYBITLENGTH + ". " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("ERROR: Unknown exception: " + e.getMessage());
+        }
+        //if exceptions hasn't been caught
+        return null;
+    }
 
     static public boolean keyPairWriter(KeyPair keyPair, String directory) {
         try {
@@ -58,24 +78,6 @@ public class RSA {
 
     static public PrivateKey getPrivateKey(KeyPair keyPair) {
         return keyPair.getPrivate();
-    }
-
-    static public KeyPair keyPairInit() {
-        try {
-            //initialize and generate keys from constants, allowing SecureRandom implementation to be chosen at runtime
-            final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(RSAALGORITHM);
-            keyPairGenerator.initialize(KEYBITLENGTH);
-            return keyPairGenerator.generateKeyPair();
-
-        } catch (NoSuchAlgorithmException e) {
-            System.out.println("ERROR: System does not support RSA generation with: " + e.getMessage());
-        } catch (InvalidParameterException e) {
-            System.out.println("ERROR: System does not support RSA bitlength of " + KEYBITLENGTH + ". " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("ERROR: Unknown exception: " + e.getMessage());
-        }
-        //if exceptions hasn't been caught
-        return null;
     }
 
     public static PrivateKey getPrivateKeyFromFile(String filename) {
@@ -141,12 +143,11 @@ public class RSA {
         }
     }
 
-    public static byte[] encrypt(String cleartext, PublicKey key) {
-        byte[] cipherText = null;
+    public static String encrypt(String cleartext, PublicKey key) {
         try {
             final Cipher cipher = Cipher.getInstance(CRYPTALGORITHM);
             cipher.init(Cipher.ENCRYPT_MODE, key);
-            cipherText = cipher.doFinal(cleartext.getBytes("Unicode"));
+            return Base64.getEncoder().encodeToString(cipher.doFinal(cleartext.getBytes("UTF-8")));
         } catch (UnsupportedEncodingException e) {
             System.out.println("ERROR: System does not have support for unicode encoding! " + e.getMessage());
         } catch (NoSuchAlgorithmException e) {
@@ -159,21 +160,26 @@ public class RSA {
         } catch (Exception e) {
             System.out.println("ERROR: Padding error in initializing instance! " + e.getMessage());
         }
-        return cipherText;
+        return null;
     }
 
-    public static String decrypt(byte[] text, PrivateKey key) {
-        byte[] decryptedtext = null;
+    public static String decrypt(String ciphertext, PrivateKey key) {
         try {
+            byte[] decodedCipher = Base64.getDecoder().decode(ciphertext);
             final Cipher cipher = Cipher.getInstance(CRYPTALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, key);
-            decryptedtext = cipher.doFinal(text);
-        } catch (Exception e) {
-            e.printStackTrace();
+            return new String(cipher.doFinal(decodedCipher));
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("ERROR: could not get + " + CRYPTALGORITHM + " for decrypting! " + e.getMessage());
+        } catch (InvalidKeyException e) {
+            System.out.println("ERROR: key does not match expected values! " + e.getMessage());
+        } catch (NoSuchPaddingException e) {
+            System.out.println("ERROR: Padding specified does not exist! " + e.getMessage());
+        } catch (BadPaddingException e) {
+            System.out.println("ERROR: Padding has encountered an error! " + e.getMessage());
+        } catch (IllegalBlockSizeException e) {
+            System.out.println("ERROR: Block size is different than expected! " + e.getMessage());
         }
-        //poor null-handling, avoid
-        assert decryptedtext != null;
-
-        return new String(decryptedtext);
+        return null;
     }
 }

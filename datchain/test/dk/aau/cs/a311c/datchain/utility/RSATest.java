@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RSATest {
 
-    static private String testDirectiory = "testData/";
+    static private final String testDirectiory = "testData/";
     static private KeyPair keyPair;
 
     @BeforeAll
