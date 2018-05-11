@@ -1,35 +1,132 @@
 package dk.aau.cs.a311c.datchain.gui;
 
+import dk.aau.cs.a311c.datchain.utility.RSA;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
+import static dk.aau.cs.a311c.datchain.utility.RSA.getPrivateKeyFromFile;
+import static dk.aau.cs.a311c.datchain.utility.RSA.getPublicKeyFromFile;
+
 public class Login {
+    static PrivateKey privateKey;
+    static PublicKey publicKey;
+    static String labelText = "Choose your key files";
+
     public static void login(Stage primaryStage) {
-        VBox root = new VBox(10);
-        root.setAlignment(Pos.CENTER);
-        root.setPadding(new Insets(10, 10, 10, 10));
-        Scene scene = new Scene(root, 600, 150);
+        //AtomicReference<PublicKey> publicKey = null;
+        //AtomicReference<PrivateKey> privateKey = null;
+
+        GridPane gridPane = new GridPane();
+        gridPane.setVgap(10);
+        gridPane.setHgap(10);
+        gridPane.setPadding(new Insets(10, 10, 10, 10));
+        gridPane.setAlignment(Pos.CENTER);
+        //vBox.setPadding(new Insets(10, 10, 10, 10));
+
+
+        //labels for guidance
+        Label label = new Label(labelText);
+        label.setMaxWidth(140);
+        label.setAlignment(Pos.CENTER);
+        GridPane.setConstraints(label, 1, 0);
+        gridPane.getChildren().add(label);
+
+        Label labelPrivateKey = new Label();
+        labelPrivateKey.setMaxWidth(140);
+        labelPrivateKey.setAlignment(Pos.CENTER);
+        GridPane.setConstraints(labelPrivateKey, 0, 2);
+        gridPane.getChildren().add(labelPrivateKey);
+
+        Label labelPublicKey = new Label();
+        labelPublicKey.setMaxWidth(140);
+        labelPublicKey.setAlignment(Pos.CENTER);
+        GridPane.setConstraints(labelPublicKey, 1, 2);
+        gridPane.getChildren().add(labelPublicKey);
+
+        Label labelLogin = new Label();
+        labelLogin.setMaxWidth(140);
+        labelLogin.setAlignment(Pos.CENTER);
+        GridPane.setConstraints(labelLogin, 2, 2);
+        gridPane.getChildren().add(labelLogin);
+
+        //private key button
+        Button privateKeyButton = new Button("Private key");
+        privateKeyButton.setMinWidth(140);
+        privateKeyButton.setOnAction(e -> {
+            privateKey = loadPrivateKey();
+            labelPrivateKey.setText("Chosen");
+            if (publicKey != null && privateKey != null) {
+                labelLogin.setText("Ready to login");
+            }
+        });
+        GridPane.setConstraints(privateKeyButton, 0, 1);
+        gridPane.getChildren().add(privateKeyButton);
+
+        //public key button
+        Button publicKeyButton = new Button("Public key");
+        publicKeyButton.setMinWidth(140);
+        publicKeyButton.setOnAction(e -> {
+            publicKey = loadPublicKey();
+            labelPublicKey.setText("Chosen");
+            if (publicKey != null && privateKey != null) {
+                labelLogin.setText("Ready to login");
+            }
+        });
+        GridPane.setConstraints(publicKeyButton, 1, 1);
+        gridPane.getChildren().add(publicKeyButton);
+
+        //challenge button
+        Button challengeButton = new Button("Login");
+        challengeButton.setMinWidth(140);
+        challengeButton.setOnMouseClicked(e -> labelText = issueChallenge(primaryStage));
+        GridPane.setConstraints(challengeButton, 2, 1);
+        gridPane.getChildren().add(challengeButton);
+
+        //setting scene
+        Scene scene = new Scene(gridPane, 500, 100);
         primaryStage.setResizable(false);
-
-        Label ID_label = new Label("Private-ID:");
-        root.getChildren().add(ID_label);
-
-        TextField ID_text = new TextField();
-        root.getChildren().add(ID_text);
-
-        Button Login_button = new Button("Login");
-        Login_button.setMinWidth(80);
-        Login_button.setMinHeight(30);
-        root.getChildren().add(Login_button);
-        Login_button.setOnMouseClicked(event -> MainScreen.screen(primaryStage));
-
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    private static PrivateKey loadPrivateKey() {
+        FileChooser fileChooserPrivate = new FileChooser();
+        File selectedFilePrivate = fileChooserPrivate.showOpenDialog(null);
+
+        if (selectedFilePrivate == null) {
+            //.setText("No file chosen");
+            return null;
+        } else return (getPrivateKeyFromFile(selectedFilePrivate.getAbsolutePath()));
+    }
+
+    private static PublicKey loadPublicKey() {
+        FileChooser fileChooserPrivate = new FileChooser();
+        File selectedFilePrivate = fileChooserPrivate.showOpenDialog(null);
+
+        if (selectedFilePrivate == null) {
+            //.setText("No file chosen");
+            return null;
+        } else return (getPublicKeyFromFile(selectedFilePrivate.getAbsolutePath()));
+    }
+
+    private static String issueChallenge(Stage primaryStage) {
+        String encryptedText = new String();
+        String decryptedText = new String();
+        encryptedText = RSA.encrypt("TEST", (PublicKey) publicKey);
+        decryptedText = RSA.decrypt(encryptedText, (PrivateKey) privateKey);
+        if (decryptedText.equals("TEST")) {
+            ValidatorScreen.validatorScreen(primaryStage);
+            return "Succes!";
+        } else return "Keys do not match";
     }
 }
