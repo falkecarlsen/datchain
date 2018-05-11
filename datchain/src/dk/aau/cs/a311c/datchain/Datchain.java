@@ -1,7 +1,11 @@
 package dk.aau.cs.a311c.datchain;
 
-import java.util.ArrayList;
 import dk.aau.cs.a311c.datchain.utility.RSA;
+
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.ArrayList;
 
 public class Datchain {
 
@@ -27,19 +31,21 @@ public class Datchain {
         System.out.println("chain02 validated: " + chain02.validateChain());
 
 
-        //testing out fuzzy search matching
-        //Block searchResultBlock01 = chain02.searchSingleIdentity("citiz nahym");
-        //Block searchResultBlock02 = chain02.searchSinglePublicKey("gænæsæs Påblæk kay");
-        //System.out.println(searchResultBlock01.getIdentity());
-        //System.out.println(searchResultBlock02.getIdentity() + " " + searchResultBlock02.getIdentityPublicKey());
+        System.out.println("RSA-keys present: " + RSA.keysPresent("data/"));
 
-        System.out.println("RSA-keys present: " + RSA.keysPresent());
-        //Byte[] ciphertext = RSAgen.encrypt("Random String", pubkey);
-        //System.out.println("Decrypted text: " + RSAgen.decrypt(ciphertext, privkey));
+        KeyPair keyPair = RSA.keyPairInit();
 
-        //create Search object and run identity search for printing
-        ArrayList<Block> temp = new Search().FuzzySearchIdentity("citizz", chain02, 2);
-        temp.forEach( block -> System.out.println(block.getIdentity()) );
-        System.out.println("RSA keys generated: " + RSA.keyGenerator());
+        PublicKey publicKey = RSA.getPublicKey(keyPair);
+        PrivateKey privateKey = RSA.getPrivateKey(keyPair);
+
+        System.out.println("RSA keys generated: " + RSA.keyPairWriter(keyPair, "data/"));
+
+        PublicKey publicKeyFromFile = RSA.getPublicKeyFromFile("data/public.key");
+        PrivateKey privateKeyFromFile = RSA.getPrivateKeyFromFile("data/private.key");
+
+        System.out.println("Public keys from file equal? " + publicKey.equals(publicKeyFromFile));
+        System.out.println("Private keys from file equal? " + privateKey.equals(privateKeyFromFile));
+
+
     }
 }
