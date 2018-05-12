@@ -21,17 +21,16 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 
 import static javafx.geometry.Pos.CENTER;
+import static javafx.geometry.Pos.CENTER_RIGHT;
 
 
 public class MainScreen {
 
-    static ArrayList<Block> searchResults = new ArrayList<Block>();
+    static ArrayList<Block> searchResults = new ArrayList<>();
     static ListView listView = new ListView<>();
-    static Text firstNameText = new Text();
-    static Text lastNameText = new Text();
+    static Text nameText = new Text();
     static Text birthdateText = new Text();
     static Text publicKeyText = new Text();
-    static Text identityText = new Text();
 
     public static void screen(Stage primaryStage, Blockchain chain) {
         GridPane gridLeft = new GridPane();
@@ -46,38 +45,29 @@ public class MainScreen {
         topPanel.setPadding(new Insets(5, 0, 10, 0));
 
         Button login_button = new Button("Login as validator");
-        login_button.setOnMouseClicked(event -> Login.login(primaryStage));
-        login_button.setMinWidth(125);
+        login_button.setOnMouseClicked(event -> Login.login(primaryStage, chain));
 
         topPanel.getChildren().add(login_button);
         topPanel.setAlignment(CENTER);
 
 
         //Left panel
-        Label firstname_label = new Label("First name:");
+        Label firstname_label = new Label("Name:");
         firstname_label.setMinWidth(75);
         gridLeft.setConstraints(firstname_label, 1, 1);
         gridLeft.getChildren().add(firstname_label);
 
-        Label lastname_label = new Label("Last name:");
-        lastname_label.setMinWidth(75);
-        gridLeft.setConstraints(lastname_label, 1, 2);
-        gridLeft.getChildren().add(lastname_label);
 
         Label birthdateLabel = new Label("Birthdate:");
         birthdateLabel.setMinWidth(75);
-        gridLeft.setConstraints(birthdateLabel, 1, 3);
+        gridLeft.setConstraints(birthdateLabel, 1, 2);
         gridLeft.getChildren().add(birthdateLabel);
 
         Label pbkLabel = new Label("Public key:");
         pbkLabel.setMinWidth(75);
-        gridLeft.setConstraints(pbkLabel, 1, 4);
+        gridLeft.setConstraints(pbkLabel, 1, 3);
         gridLeft.getChildren().add(pbkLabel);
 
-        Label identityLabel = new Label("Identity:");
-        identityLabel.setMinWidth(75);
-        gridLeft.setConstraints(identityLabel, 1, 5);
-        gridLeft.getChildren().add(identityLabel);
 
 
         Text text1 = new Text("            Chosen person");
@@ -86,24 +76,16 @@ public class MainScreen {
         gridLeft.getChildren().add(text1);
 
 
-        gridLeft.setConstraints(firstNameText, 2, 1);
-        gridLeft.getChildren().add(firstNameText);
+        gridLeft.setConstraints(nameText, 2, 1);
+        gridLeft.getChildren().add(nameText);
 
 
-        gridLeft.setConstraints(lastNameText, 2, 2);
-        gridLeft.getChildren().add(lastNameText);
-
-
-        gridLeft.setConstraints(birthdateText, 2, 3);
+        gridLeft.setConstraints(birthdateText, 2, 2);
         gridLeft.getChildren().add(birthdateText);
 
 
-        gridLeft.setConstraints(publicKeyText, 2, 4);
+        gridLeft.setConstraints(publicKeyText, 2, 3);
         gridLeft.getChildren().add(publicKeyText);
-
-
-        gridLeft.setConstraints(identityText, 2, 5);
-        gridLeft.getChildren().add(identityText);
 
 
 
@@ -116,17 +98,13 @@ public class MainScreen {
 
 
         listView.setMinWidth(200);
-        listView.setMaxHeight(120);
+        listView.setMaxHeight(100);
 
 
         gridRight.setConstraints(listView, 0, 1, 1, 1);
         gridRight.getChildren().add(listView);
 
-        /*search*/
-        /*Label term_label = new Label("Input:");
-        term_label.setMinWidth(150);
-        gridRight.setConstraints(term_label,0,0);
-        gridRight.getChildren().add(term_label);*/
+
         TextField term_text = new TextField();
         term_text.setPromptText("Search for name, date of birth, public key");
         term_text.setOnAction( e ->  {
@@ -196,20 +174,18 @@ public class MainScreen {
     }
 
     private static ArrayList<Block> getSearchResults(String searchTerm, Blockchain chain) {
-        System.out.println("Searching for " + searchTerm + " In the chain");
         Search search = new Search();
         ArrayList<Block> results = search.FuzzySearchIdentity((searchTerm), chain, 3);
         return results;
     }
 
     private static void setChosenBlockDetails() {
+        //need exception catch here
         int index = listView.getSelectionModel().getSelectedIndex();
 
-
-            firstNameText.setText(searchResults.get(index).getIdentity());
-            //lastNameText.setText(block.get(index).getIdentity());
+            nameText.setText(searchResults.get(index).getIdentity());
             //birthdateText.setText(block.get(index).getIdentity());
-            //publicKeyText.setText(searchResults.get(index).getIdentityPublicKey());
-            //identityText.setText(block.get(index).getIdentity());
+            publicKeyText.setText(searchResults.get(index).getIdentityPublicKey());
+
     }
 }

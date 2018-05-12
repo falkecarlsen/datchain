@@ -4,6 +4,7 @@ import dk.aau.cs.a311c.datchain.CitizenBlock;
 import dk.aau.cs.a311c.datchain.GenesisBlock;
 import dk.aau.cs.a311c.datchain.ValidatorBlock;
 import javafx.application.Application;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Wrapper extends Application {
@@ -33,7 +34,10 @@ public class Wrapper extends Application {
         chain.addValidatedBlock(citizen02, validator01);
         chain.addValidatedBlock(citizen03, validator01);
 
+
         primaryStage.setTitle("Datchain");
+        //might need a new logo to not infringe on copyright :shrug
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("blockchainLogo.jpg")));
         MainScreen.screen(primaryStage, chain);
     }
 }

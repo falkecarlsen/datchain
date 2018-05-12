@@ -1,5 +1,6 @@
 package dk.aau.cs.a311c.datchain.gui;
 
+import dk.aau.cs.a311c.datchain.Blockchain;
 import dk.aau.cs.a311c.datchain.utility.RSA;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,7 +23,7 @@ public class Login {
     static PublicKey publicKey;
     static String labelText = "Choose your key files";
 
-    public static void login(Stage primaryStage) {
+    public static void login(Stage primaryStage, Blockchain chain) {
         //AtomicReference<PublicKey> publicKey = null;
         //AtomicReference<PrivateKey> privateKey = null;
 
@@ -91,6 +92,13 @@ public class Login {
         challengeButton.setOnMouseClicked(e -> labelText = issueChallenge(primaryStage));
         GridPane.setConstraints(challengeButton, 2, 1);
         gridPane.getChildren().add(challengeButton);
+
+        //go back button
+        Button backButton = new Button("Return");
+        backButton.setOnAction(e -> MainScreen.screen(primaryStage,chain));
+        GridPane.setConstraints(backButton,0,0);
+        gridPane.getChildren().add(backButton);
+
 
         //setting scene
         Scene scene = new Scene(gridPane, 500, 100);
