@@ -203,34 +203,13 @@ public class MainScreen {
     }
 
     private static void setChosenBlockDetails() {
-        ObservableList<String> string = listView.getSelectionModel().getSelectedItems();
-
-        //only works if first name is not the same
-        if (string.get(0).equals(searchResults.get(0).getIdentity())) {
-            firstNameText.setText(searchResults.get(0).getIdentity());
-            //lastNameText.setText(block.get(0).getIdentity());
-            //birthdateText.setText(block.get(0).getIdentity());
-            //publicKeyText.setText(searchResults.get(0).getIdentityPublicKey());
-            //identityText.setText(block.get(0).getIdentity());
-        }
-        if (string.get(0).equals(searchResults.get(1).getIdentity())) {
-            firstNameText.setText(searchResults.get(1).getIdentity());
-            //lastNameText.setText(block.get(1).getIdentity());
-            //birthdateText.setText(block.get(1).getIdentity());
-            //publicKeyText.setText(searchResults.get(1).getIdentityPublicKey());
-            //identityText.setText(block.get(1).getIdentity());
-        }
-        if (string.get(0).equals(searchResults.get(2).getIdentity())) {
-            firstNameText.setText(searchResults.get(2).getIdentity());
-            //lastNameText.setText(block.get(2).getIdentity());
-            //birthdateText.setText(block.get(2).getIdentity());
-            //publicKeyText.setText(searchResults.get(2).getIdentityPublicKey());
-            //identityText.setText(block.get(2).getIdentity());
-        }
+        int index = listView.getSelectionModel().getSelectedIndex();
 
 
-
-
+            firstNameText.setText(searchResults.get(index).getIdentity());
+            //lastNameText.setText(block.get(index).getIdentity());
+            //birthdateText.setText(block.get(index).getIdentity());
+            //publicKeyText.setText(searchResults.get(index).getIdentityPublicKey());
+            //identityText.setText(block.get(index).getIdentity());
     }
-
 }
