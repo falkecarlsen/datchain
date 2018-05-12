@@ -4,6 +4,7 @@ import dk.aau.cs.a311c.datchain.Block;
 import dk.aau.cs.a311c.datchain.Blockchain;
 import dk.aau.cs.a311c.datchain.Datchain;
 import dk.aau.cs.a311c.datchain.Search;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -25,6 +26,12 @@ import static javafx.geometry.Pos.CENTER;
 public class MainScreen {
 
     static ArrayList<Block> searchResults = new ArrayList<Block>();
+    static ListView listView = new ListView<>();
+    static Text firstNameText = new Text();
+    static Text lastNameText = new Text();
+    static Text birthdateText = new Text();
+    static Text publicKeyText = new Text();
+    static Text identityText = new Text();
 
     public static void screen(Stage primaryStage, Blockchain chain) {
         GridPane gridLeft = new GridPane();
@@ -47,16 +54,6 @@ public class MainScreen {
 
 
         //Left panel
-        Text text1 = new Text("            Chosen person");
-        text1.setStyle("-fx-font-weight: bold");
-        gridLeft.setConstraints(text1, 2, 0);
-        gridLeft.getChildren().add(text1);
-
-        /*Label nullLabel = new Label("");
-        nullLabel.setMinWidth(75);
-        gridLeft.setConstraints(nullLabel,1,0);
-        gridLeft.getChildren().add(nullLabel);*/
-
         Label firstname_label = new Label("First name:");
         firstname_label.setMinWidth(75);
         gridLeft.setConstraints(firstname_label, 1, 1);
@@ -83,6 +80,33 @@ public class MainScreen {
         gridLeft.getChildren().add(identityLabel);
 
 
+        Text text1 = new Text("            Chosen person");
+        text1.setStyle("-fx-font-weight: bold");
+        gridLeft.setConstraints(text1, 2, 0);
+        gridLeft.getChildren().add(text1);
+
+
+        gridLeft.setConstraints(firstNameText, 2, 1);
+        gridLeft.getChildren().add(firstNameText);
+
+
+        gridLeft.setConstraints(lastNameText, 2, 2);
+        gridLeft.getChildren().add(lastNameText);
+
+
+        gridLeft.setConstraints(birthdateText, 2, 3);
+        gridLeft.getChildren().add(birthdateText);
+
+
+        gridLeft.setConstraints(publicKeyText, 2, 4);
+        gridLeft.getChildren().add(publicKeyText);
+
+
+        gridLeft.setConstraints(identityText, 2, 5);
+        gridLeft.getChildren().add(identityText);
+
+
+
         //right panel
         GridPane gridRight = new GridPane();
         gridRight.setVgap(10);
@@ -90,14 +114,13 @@ public class MainScreen {
         gridRight.setPadding(new Insets(10, 20, 10, 100));
 
 
-        ListView listView = new ListView<>();
+
         listView.setMinWidth(200);
         listView.setMaxHeight(120);
 
+
         gridRight.setConstraints(listView, 0, 1, 1, 1);
         gridRight.getChildren().add(listView);
-
-
 
         /*search*/
         /*Label term_label = new Label("Input:");
@@ -116,6 +139,12 @@ public class MainScreen {
 
         gridRight.setConstraints(term_text, 0, 0);
         gridRight.getChildren().add(term_text);
+
+        Button selectBlockButton = new Button("Select");
+        selectBlockButton.setOnMouseClicked(e -> setChosenBlockDetails());
+        gridRight.getChildren().add(selectBlockButton);
+        selectBlockButton.setAlignment(CENTER);
+        gridRight.setConstraints(selectBlockButton,0,2);
 
 
 
@@ -172,4 +201,36 @@ public class MainScreen {
         ArrayList<Block> results = search.FuzzySearchIdentity((searchTerm), chain, 3);
         return results;
     }
+
+    private static void setChosenBlockDetails() {
+        ObservableList<String> string = listView.getSelectionModel().getSelectedItems();
+
+        //only works if first name is not the same
+        if (string.get(0).equals(searchResults.get(0).getIdentity())) {
+            firstNameText.setText(searchResults.get(0).getIdentity());
+            //lastNameText.setText(block.get(0).getIdentity());
+            //birthdateText.setText(block.get(0).getIdentity());
+            //publicKeyText.setText(searchResults.get(0).getIdentityPublicKey());
+            //identityText.setText(block.get(0).getIdentity());
+        }
+        if (string.get(0).equals(searchResults.get(1).getIdentity())) {
+            firstNameText.setText(searchResults.get(1).getIdentity());
+            //lastNameText.setText(block.get(1).getIdentity());
+            //birthdateText.setText(block.get(1).getIdentity());
+            //publicKeyText.setText(searchResults.get(1).getIdentityPublicKey());
+            //identityText.setText(block.get(1).getIdentity());
+        }
+        if (string.get(0).equals(searchResults.get(2).getIdentity())) {
+            firstNameText.setText(searchResults.get(2).getIdentity());
+            //lastNameText.setText(block.get(2).getIdentity());
+            //birthdateText.setText(block.get(2).getIdentity());
+            //publicKeyText.setText(searchResults.get(2).getIdentityPublicKey());
+            //identityText.setText(block.get(2).getIdentity());
+        }
+
+
+
+
+    }
+
 }
