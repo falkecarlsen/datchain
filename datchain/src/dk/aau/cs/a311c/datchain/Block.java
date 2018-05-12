@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import static dk.aau.cs.a311c.datchain.utility.SHA.computeHash;
 import static java.time.Instant.now;
 
 public abstract class Block {
@@ -24,23 +25,6 @@ public abstract class Block {
         this.hash = computeHash(hashInput + this.timestamp);
     }
 
-    private String computeHash(String hashInput) {
-
-        MessageDigest messageDigest = null;
-
-        try {
-            messageDigest = MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        //TODO might be redundant or not proper error-handling
-        assert messageDigest != null;
-
-        //get hashInput as bytes in UTF-8 and update messageDigest
-        messageDigest.update(hashInput.getBytes(StandardCharsets.UTF_8));
-        //create digest byte-array with resulting hash and encode digest as hex-string
-        return String.format("%064x", new BigInteger(1, messageDigest.digest()));
-    }
 
     public String getHash() {
         return this.hash;
