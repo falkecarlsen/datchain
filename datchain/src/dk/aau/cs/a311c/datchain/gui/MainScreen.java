@@ -2,15 +2,14 @@ package dk.aau.cs.a311c.datchain.gui;
 
 import dk.aau.cs.a311c.datchain.Block;
 import dk.aau.cs.a311c.datchain.Blockchain;
-import dk.aau.cs.a311c.datchain.Datchain;
 import dk.aau.cs.a311c.datchain.Search;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -21,7 +20,6 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 
 import static javafx.geometry.Pos.CENTER;
-import static javafx.geometry.Pos.CENTER_RIGHT;
 
 
 public class MainScreen {
@@ -31,17 +29,13 @@ public class MainScreen {
     static Text nameText = new Text();
     static Text birthdateText = new Text();
     static Text publicKeyText = new Text();
+    static TableView<Block> table = new TableView<>();
 
     public static void screen(Stage primaryStage, Blockchain chain) {
-        GridPane gridLeft = new GridPane();
-        gridLeft.setVgap(10);
-        gridLeft.setHgap(8);
-        gridLeft.setPadding(new Insets(10, 20, 10, 20));
-        primaryStage.setResizable(false);
-
 
         //top panel
         HBox topPanel = new HBox();
+        topPanel.setStyle("-fx-background-color: #FFFFFF;");
         topPanel.setPadding(new Insets(5, 0, 10, 0));
 
         Button login_button = new Button("Login as validator");
@@ -51,84 +45,106 @@ public class MainScreen {
         topPanel.setAlignment(CENTER);
 
 
-        //Left panel
-        Label firstname_label = new Label("Name:");
-        firstname_label.setMinWidth(75);
-        gridLeft.setConstraints(firstname_label, 1, 1);
-        gridLeft.getChildren().add(firstname_label);
-
-
-        Label birthdateLabel = new Label("Birthdate:");
-        birthdateLabel.setMinWidth(75);
-        gridLeft.setConstraints(birthdateLabel, 1, 2);
-        gridLeft.getChildren().add(birthdateLabel);
-
-        Label pbkLabel = new Label("Public key:");
-        pbkLabel.setMinWidth(75);
-        gridLeft.setConstraints(pbkLabel, 1, 3);
-        gridLeft.getChildren().add(pbkLabel);
-
-
-
-        Text text1 = new Text("            Chosen person");
-        text1.setStyle("-fx-font-weight: bold");
-        gridLeft.setConstraints(text1, 2, 0);
-        gridLeft.getChildren().add(text1);
-
-
-        gridLeft.setConstraints(nameText, 2, 1);
-        gridLeft.getChildren().add(nameText);
-
-
-        gridLeft.setConstraints(birthdateText, 2, 2);
-        gridLeft.getChildren().add(birthdateText);
-
-
-        gridLeft.setConstraints(publicKeyText, 2, 3);
-        gridLeft.getChildren().add(publicKeyText);
-
-
-
-        //right panel
+        //Center panel
         GridPane gridRight = new GridPane();
         gridRight.setVgap(10);
         gridRight.setHgap(8);
         gridRight.setPadding(new Insets(10, 20, 10, 100));
+        gridRight.setStyle("-fx-background-color: #FFFFFF;");
 
 
+        Label firstname_label = new Label("Name:");
+        firstname_label.setMinWidth(75);
+        gridRight.setConstraints(firstname_label, 0, 3);
+        gridRight.getChildren().add(firstname_label);
 
-        listView.setMinWidth(200);
-        listView.setMaxHeight(100);
+
+        Label birthdateLabel = new Label("Birthdate:");
+        birthdateLabel.setMinWidth(75);
+        gridRight.setConstraints(birthdateLabel, 0, 4);
+        gridRight.getChildren().add(birthdateLabel);
+
+        Label pbkLabel = new Label("Public key:");
+        pbkLabel.setMinWidth(75);
+        gridRight.setConstraints(pbkLabel, 0, 5);
+        gridRight.getChildren().add(pbkLabel);
 
 
-        gridRight.setConstraints(listView, 0, 1, 1, 1);
-        gridRight.getChildren().add(listView);
+        Text text1 = new Text("Chosen person");
+        text1.setStyle("-fx-font-weight: bold");
+        GridPane.setHalignment(text1, HPos.CENTER);
+        gridRight.setConstraints(text1, 0, 2);
+        gridRight.getChildren().add(text1);
+
+
+        GridPane.setHalignment(nameText, HPos.CENTER);
+        gridRight.setConstraints(nameText, 0, 3);
+        gridRight.getChildren().add(nameText);
+
+        GridPane.setHalignment(birthdateText, HPos.CENTER);
+        gridRight.setConstraints(birthdateText, 0, 4);
+        gridRight.getChildren().add(birthdateText);
+
+
+        publicKeyText.setOnMouseClicked( e -> System.out.println("Placeholder, skal eksportere key"));
+        GridPane.setHalignment(publicKeyText, HPos.CENTER);
+        gridRight.setConstraints(publicKeyText, 0, 5);
+        gridRight.getChildren().add(publicKeyText);
+
+
+        //name column
+        TableColumn<Block, String> nameColumn = new TableColumn<>("Name");
+        nameColumn.setMinWidth(200);
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("identity"));
+
+        //DOB column
+        TableColumn<Block, String> DOBColumn = new TableColumn<>("Date of Birth");
+        DOBColumn.setMinWidth(200);
+        DOBColumn.setCellValueFactory(new PropertyValueFactory<>("identityDOB"));
+
+        //Pubkey column
+        TableColumn<Block, String> pubKeyColumn = new TableColumn<>("Public Key");
+        pubKeyColumn.setMinWidth(200);
+        pubKeyColumn.setCellValueFactory(new PropertyValueFactory<>("identityPublicKey"));
+
+        table = new TableView<>();
+        table.getColumns().addAll(nameColumn, DOBColumn, pubKeyColumn);
+        table.setMaxHeight(99);
+
+
+        gridRight.setConstraints(table, 0, 9, 1, 1);
+        gridRight.getChildren().add(table);
 
 
         TextField term_text = new TextField();
         term_text.setPromptText("Search for name, date of birth, public key");
-        term_text.setOnAction( e ->  {
+        term_text.setOnAction(e -> {
             searchResults = getSearchResults(term_text.getText().toString(), chain);
-            listView.getItems().clear();
-            listView.getItems().add(0,searchResults.get(0).getIdentity());
-            listView.getItems().add(1,searchResults.get(1).getIdentity());
-            listView.getItems().add(2,searchResults.get(2).getIdentity());
+            table.getItems().clear();
+
+            ObservableList<Block> blocks = FXCollections.observableArrayList();
+            blocks.add(searchResults.get(0));
+            blocks.add(searchResults.get(1));
+            blocks.add(searchResults.get(2));
+
+            table.setItems(blocks);
         });
 
-        gridRight.setConstraints(term_text, 0, 0);
+        gridRight.setConstraints(term_text, 0, 8);
         gridRight.getChildren().add(term_text);
+
 
         Button selectBlockButton = new Button("Select");
         selectBlockButton.setOnMouseClicked(e -> setChosenBlockDetails());
+        GridPane.setHalignment(selectBlockButton, HPos.CENTER);
         gridRight.getChildren().add(selectBlockButton);
-        selectBlockButton.setAlignment(CENTER);
-        gridRight.setConstraints(selectBlockButton,0,2);
-
+        gridRight.setConstraints(selectBlockButton, 0, 10);
 
 
         //bottompanel
         HBox bottomPanel = new HBox();
         bottomPanel.setSpacing(150);
+        bottomPanel.setStyle("-fx-background-color: #D3D3D3;");
         bottomPanel.setAlignment(CENTER);
         bottomPanel.setPadding(new Insets(10, 0, 5, 0));
 
@@ -157,11 +173,10 @@ public class MainScreen {
         //setting scene
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(topPanel);
-        borderPane.setLeft(gridLeft);
-        borderPane.setRight(gridRight);
+        borderPane.setCenter(gridRight);
         borderPane.setBottom(bottomPanel);
 
-        Scene scene = new Scene(borderPane, 620, 250);
+        Scene scene = new Scene(borderPane, 800, 450);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -181,11 +196,10 @@ public class MainScreen {
 
     private static void setChosenBlockDetails() {
         //need exception catch here
-        int index = listView.getSelectionModel().getSelectedIndex();
+        int index = table.getSelectionModel().getSelectedIndex();
 
-            nameText.setText(searchResults.get(index).getIdentity());
-            //birthdateText.setText(block.get(index).getIdentity());
-            publicKeyText.setText(searchResults.get(index).getIdentityPublicKey());
-
+        nameText.setText(searchResults.get(index).getIdentity());
+        birthdateText.setText(searchResults.get(index).getIdentityDOB());
+        publicKeyText.setText(searchResults.get(index).getIdentityPublicKey());
     }
 }

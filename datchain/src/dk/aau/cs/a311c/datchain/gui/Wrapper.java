@@ -16,13 +16,14 @@ public class Wrapper extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         //Blockchain for testing purposes
-        GenesisBlock genesis01 = new GenesisBlock("Michael", "GenesisPublicKey", "0000");
-        ValidatorBlock validator01 = new ValidatorBlock("Ingrid", "ValidatorPublicKey", genesis01.getHash(), "GenesisSignature");
-        ValidatorBlock validator02 = new ValidatorBlock("Susanne", "ValidatorPublicKey", validator01.getHash(), "GenesisSignature");
-        ValidatorBlock validator03 = new ValidatorBlock("Sanne", "ValidatorPublicKey", validator02.getHash(), "GenesisSignature");
-        CitizenBlock citizen01 = new CitizenBlock("Knud", "CitizenPublicKey", validator03.getHash(), validator01.getIdentity(), validator01.getIdentityPublicKey(), "ValidatorSignature");
-        CitizenBlock citizen02 = new CitizenBlock("Fiskarl", "CitizenPublicKey", citizen01.getHash(), validator02.getIdentity(), validator02.getIdentityPublicKey(), "ValidatorSignature");
-        CitizenBlock citizen03 = new CitizenBlock("Benjamin", "CitizenPublicKey", citizen02.getHash(), validator03.getIdentity(), validator03.getIdentityPublicKey(), "ValidatorSignature");
+        GenesisBlock genesis01 = new GenesisBlock("Kamilla","19-09-1980", "GenesisPublicKey", "0000");
+        ValidatorBlock validator01 = new ValidatorBlock("Tobias", "19-09-1980", "ValidatorPublicKey", genesis01.getHash(), "GenesisSignature");
+        ValidatorBlock validator02 = new ValidatorBlock("Jarl", "19-09-1980", "ValidatorPublicKey", validator01.getHash(), "GenesisSignature");
+        ValidatorBlock validator03 = new ValidatorBlock("Hans", "19-09-1980", "ValidatorPublicKey", validator02.getHash(), "GenesisSignature");
+        CitizenBlock citizen01 = new CitizenBlock("Fie", "19-09-1980", "CitizenPublicKey", validator03.getHash(), validator01.getIdentity(), validator01.getIdentityPublicKey(), "ValidatorSignature");
+        CitizenBlock citizen02 = new CitizenBlock("Christian", "19-09-1980", "CitizenPublicKey", citizen01.getHash(), validator02.getIdentity(), validator02.getIdentityPublicKey(), "ValidatorSignature");
+        CitizenBlock citizen03 = new CitizenBlock("Karl", "19-09-1980", "CitizenPublicKey", citizen02.getHash(), validator03.getIdentity(), validator03.getIdentityPublicKey(), "ValidatorSignature");
+
 
         Blockchain chain = new Blockchain();
 
