@@ -53,6 +53,6 @@ public class Datchain {
         System.out.println("cleartext length in bytes: " + lorem1.length());
         System.out.println("ciphertext length in bytes: " + lorem2.length());
         System.out.println("Are strings equal? " + lorem2.equals(lorem1));
-
     }
+
 }

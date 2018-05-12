@@ -127,6 +127,7 @@ public class Login {
         if (decryptedText.equals("TEST")) {
             ValidatorScreen.validatorScreen(primaryStage);
             return "Succes!";
+            //todo handle wrong keys
         } else return "Keys do not match";
     }
 }

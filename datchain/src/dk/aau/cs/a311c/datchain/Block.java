@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 
 import static java.time.Instant.now;
 
-abstract class Block {
+public abstract class Block {
 
     //common fields for all blocks
     private final String identity;
