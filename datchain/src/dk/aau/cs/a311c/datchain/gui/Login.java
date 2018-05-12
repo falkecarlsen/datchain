@@ -122,11 +122,15 @@ public class Login {
     private static String issueChallenge(Stage primaryStage) {
         byte[][] encryptedText;
         String decryptedText;
+        //TODO should conform to new implementation of blockwise encryption/decryption
+        /*
         encryptedText = RSA.blockCipherEncrypt("TEST", publicKey);
         decryptedText = RSA.blockCipherDecrypt(encryptedText, privateKey);
         if (decryptedText.equals("TEST")) {
             ValidatorScreen.validatorScreen(primaryStage);
             return "Succes!";
         } else return "Keys do not match";
+    */
+        return "bullshit"; //placeholder for compiling
     }
 }
