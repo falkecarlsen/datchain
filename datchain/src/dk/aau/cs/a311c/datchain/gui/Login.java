@@ -120,10 +120,10 @@ public class Login {
     }
 
     private static String issueChallenge(Stage primaryStage) {
-        String encryptedText = new String();
-        String decryptedText = new String();
-        encryptedText = RSA.encrypt("TEST", (PublicKey) publicKey);
-        decryptedText = RSA.decrypt(encryptedText, (PrivateKey) privateKey);
+        byte[][] encryptedText;
+        String decryptedText;
+        encryptedText = RSA.blockCipherEncrypt("TEST", publicKey);
+        decryptedText = RSA.blockCipherDecrypt(encryptedText, privateKey);
         if (decryptedText.equals("TEST")) {
             ValidatorScreen.validatorScreen(primaryStage);
             return "Succes!";
