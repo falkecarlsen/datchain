@@ -2,6 +2,7 @@ package dk.aau.cs.a311c.datchain.gui;
 
 import dk.aau.cs.a311c.datchain.Blockchain;
 import dk.aau.cs.a311c.datchain.utility.CipherBlock;
+import dk.aau.cs.a311c.datchain.utility.RandomChallenge;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -128,7 +129,8 @@ public class Login {
     }
 
     private static String issueChallenge(Stage primaryStage) {
-        String encryptedText = "randomteststring";
+        //get random challenge and declare Strings
+        String encryptedText = RandomChallenge.generateRandomChallenge();
         String decryptedText;
 
         //create cipherblock and build
