@@ -1,6 +1,7 @@
 package dk.aau.cs.a311c.datchain.gui;
 
-import dk.aau.cs.a311c.datchain.utility.RSA;
+import dk.aau.cs.a311c.datchain.Blockchain;
+import dk.aau.cs.a311c.datchain.utility.CipherBlock;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -22,7 +23,7 @@ public class Login {
     static PublicKey publicKey;
     static String labelText = "Choose your key files";
 
-    public static void login(Stage primaryStage) {
+    public static void login(Stage primaryStage, Blockchain chain) {
         //AtomicReference<PublicKey> publicKey = null;
         //AtomicReference<PrivateKey> privateKey = null;
 
@@ -92,6 +93,13 @@ public class Login {
         GridPane.setConstraints(challengeButton, 2, 1);
         gridPane.getChildren().add(challengeButton);
 
+        //go back button
+        Button backButton = new Button("Return");
+        backButton.setOnAction(e -> MainScreen.screen(primaryStage, chain));
+        GridPane.setConstraints(backButton, 0, 0);
+        gridPane.getChildren().add(backButton);
+
+
         //setting scene
         Scene scene = new Scene(gridPane, 500, 100);
         primaryStage.setResizable(false);
@@ -120,13 +128,22 @@ public class Login {
     }
 
     private static String issueChallenge(Stage primaryStage) {
-        String encryptedText = new String();
-        String decryptedText = new String();
-        encryptedText = RSA.encrypt("TEST", (PublicKey) publicKey);
-        decryptedText = RSA.decrypt(encryptedText, (PrivateKey) privateKey);
-        if (decryptedText.equals("TEST")) {
+        String encryptedText = "randomteststring";
+        String decryptedText;
+
+        //create cipherblock and build
+        CipherBlock cipherBlock = new CipherBlock(encryptedText);
+        cipherBlock.buildBlock();
+
+        //do operations on block
+        cipherBlock.encryptBlock(publicKey);
+        cipherBlock.decryptBlock(privateKey);
+
+        //if decrypted text matches cleartext, do
+        if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
             ValidatorScreen.validatorScreen(primaryStage);
-            return "Succes!";
-        } else return "Keys do not match";
+            return "Challenge completed successfully!";
+            //TODO handle wrong keys
+        } else return "Challenge completed unsuccessfully!";
     }
 }
