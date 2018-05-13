@@ -1,7 +1,7 @@
 package dk.aau.cs.a311c.datchain.gui;
 
 import dk.aau.cs.a311c.datchain.Blockchain;
-import dk.aau.cs.a311c.datchain.utility.RSA;
+import dk.aau.cs.a311c.datchain.utility.CipherBlock;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -95,8 +95,8 @@ public class Login {
 
         //go back button
         Button backButton = new Button("Return");
-        backButton.setOnAction(e -> MainScreen.screen(primaryStage,chain));
-        GridPane.setConstraints(backButton,0,0);
+        backButton.setOnAction(e -> MainScreen.screen(primaryStage, chain));
+        GridPane.setConstraints(backButton, 0, 0);
         gridPane.getChildren().add(backButton);
 
 
@@ -128,18 +128,22 @@ public class Login {
     }
 
     private static String issueChallenge(Stage primaryStage) {
-        byte[][] encryptedText;
+        String encryptedText = "randomteststring";
         String decryptedText;
-        //TODO should conform to new implementation of blockwise encryption/decryption
-        /*
-        encryptedText = RSA.blockCipherEncrypt("TEST", publicKey);
-        decryptedText = RSA.blockCipherDecrypt(encryptedText, privateKey);
-        if (decryptedText.equals("TEST")) {
+
+        //create cipherblock and build
+        CipherBlock cipherBlock = new CipherBlock(encryptedText);
+        cipherBlock.buildBlock();
+
+        //do operations on block
+        cipherBlock.encryptBlock(publicKey);
+        cipherBlock.decryptBlock(privateKey);
+
+        //if decrypted text matches cleartext, do
+        if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
             ValidatorScreen.validatorScreen(primaryStage);
-            return "Succes!";
-            //todo handle wrong keys
-        } else return "Keys do not match";
-    */
-        return "bullshit"; //placeholder for compiling
+            return "Challenge completed successfully!";
+            //TODO handle wrong keys
+        } else return "Challenge completed unsuccessfully!";
     }
 }
