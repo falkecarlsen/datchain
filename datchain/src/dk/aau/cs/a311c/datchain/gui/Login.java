@@ -2,6 +2,7 @@ package dk.aau.cs.a311c.datchain.gui;
 
 import dk.aau.cs.a311c.datchain.Blockchain;
 import dk.aau.cs.a311c.datchain.utility.CipherBlock;
+import dk.aau.cs.a311c.datchain.utility.RandomChallenge;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -22,6 +23,7 @@ public class Login {
     static PrivateKey privateKey;
     static PublicKey publicKey;
     static String labelText = "Choose your key files";
+    static Label labelLogin = new Label();
 
     public static void login(Stage primaryStage, Blockchain chain) {
         //AtomicReference<PublicKey> publicKey = null;
@@ -54,7 +56,6 @@ public class Login {
         GridPane.setConstraints(labelPublicKey, 1, 2);
         gridPane.getChildren().add(labelPublicKey);
 
-        Label labelLogin = new Label();
         labelLogin.setMaxWidth(140);
         labelLogin.setAlignment(Pos.CENTER);
         GridPane.setConstraints(labelLogin, 2, 2);
@@ -89,7 +90,7 @@ public class Login {
         //challenge button
         Button challengeButton = new Button("Login");
         challengeButton.setMinWidth(140);
-        challengeButton.setOnMouseClicked(e -> labelText = issueChallenge(primaryStage));
+        challengeButton.setOnMouseClicked(e -> issueChallenge(primaryStage));
         GridPane.setConstraints(challengeButton, 2, 1);
         gridPane.getChildren().add(challengeButton);
 
@@ -128,7 +129,8 @@ public class Login {
     }
 
     private static String issueChallenge(Stage primaryStage) {
-        String encryptedText = "randomteststring";
+        //get random challenge and declare Strings
+        String encryptedText = RandomChallenge.generateRandomChallenge();
         String decryptedText;
 
         //create cipherblock and build
@@ -141,7 +143,8 @@ public class Login {
 
         //if decrypted text matches cleartext, do
         if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
-            ValidatorScreen.validatorScreen(primaryStage);
+            //TODO fix validatorScreen method call for new signature
+            //ValidatorScreen.validatorScreen(primaryStage);
             return "Challenge completed successfully!";
             //TODO handle wrong keys
         } else return "Challenge completed unsuccessfully!";
