@@ -3,6 +3,7 @@ package dk.aau.cs.a311c.datchain.gui;
 import dk.aau.cs.a311c.datchain.Block;
 import dk.aau.cs.a311c.datchain.Blockchain;
 import dk.aau.cs.a311c.datchain.Search;
+import dk.aau.cs.a311c.datchain.ValidatorBlock;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -58,6 +59,13 @@ public class MainScreen {
         gridRight.setConstraints(firstname_label, 0, 3);
         gridRight.getChildren().add(firstname_label);
 
+        Button button = new Button("Goto validator");
+        button.setMinWidth(100);
+        gridRight.setConstraints(button, 0, 0);
+        gridRight.getChildren().add(button);
+        button.setOnAction(e->ValidatorScreen.validatorScreen(primaryStage, chain, (ValidatorBlock)chain.getBlock(1)));
+
+
 
         Label birthdateLabel = new Label("Birthdate:");
         birthdateLabel.setMinWidth(75);
@@ -109,10 +117,10 @@ public class MainScreen {
 
         table = new TableView<>();
         table.getColumns().addAll(nameColumn, DOBColumn, pubKeyColumn);
-        table.setMaxHeight(99);
+        table.setMaxHeight(150);
 
 
-        gridRight.setConstraints(table, 0, 9, 1, 1);
+        gridRight.setConstraints(table, 0, 10, 1, 1);
         gridRight.getChildren().add(table);
 
 
@@ -123,14 +131,15 @@ public class MainScreen {
             table.getItems().clear();
 
             ObservableList<Block> blocks = FXCollections.observableArrayList();
-            blocks.add(searchResults.get(0));
-            blocks.add(searchResults.get(1));
-            blocks.add(searchResults.get(2));
+
+            for (Block block : searchResults) {
+                blocks.add(block);
+            }
 
             table.setItems(blocks);
         });
 
-        gridRight.setConstraints(term_text, 0, 8);
+        gridRight.setConstraints(term_text, 0, 9);
         gridRight.getChildren().add(term_text);
 
 
@@ -138,7 +147,7 @@ public class MainScreen {
         selectBlockButton.setOnMouseClicked(e -> setChosenBlockDetails());
         GridPane.setHalignment(selectBlockButton, HPos.CENTER);
         gridRight.getChildren().add(selectBlockButton);
-        gridRight.setConstraints(selectBlockButton, 0, 10);
+        gridRight.setConstraints(selectBlockButton, 0, 11);
 
 
         //bottompanel
@@ -158,7 +167,7 @@ public class MainScreen {
         int numberOfNodes = 10;
         Text nodesLabel = new Text("Nodes:  " + numberOfNodes);
 
-        int numberOfBlocks = 497;
+        int numberOfBlocks = chain.size();
         Text blocksLabel = new Text("Blocks:  " + numberOfBlocks);
 
         bottomPanel.getChildren().addAll(nodesLabel, onlineLabel, blocksLabel);
@@ -176,7 +185,7 @@ public class MainScreen {
         borderPane.setCenter(gridRight);
         borderPane.setBottom(bottomPanel);
 
-        Scene scene = new Scene(borderPane, 800, 450);
+        Scene scene = new Scene(borderPane, 800, 520);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -190,7 +199,7 @@ public class MainScreen {
 
     private static ArrayList<Block> getSearchResults(String searchTerm, Blockchain chain) {
         Search search = new Search();
-        ArrayList<Block> results = search.FuzzySearchIdentity((searchTerm), chain, 3);
+        ArrayList<Block> results = search.FuzzySearchIdentity((searchTerm), chain, 5);
         return results;
     }
 
