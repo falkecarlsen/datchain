@@ -10,7 +10,7 @@ public class Datchain {
 
     public static void main(String[] args) {
 
-        GenesisBlock genesis01 = new GenesisBlock("Genesis", "GenesisPublicKey", "0000");
+        GenesisBlock genesis01 = new GenesisBlock("Genesis", "19-09-1980","GenesisPublicKey", "0000");
         ValidatorBlock validator01 = new ValidatorBlock("Validator", "19-09-1980", "ValidatorPublicKey", genesis01.getHash(), "GenesisSignature");
         ValidatorBlock validator02 = new ValidatorBlock("Validator", "19-09-1980", "ValidatorPublicKey", validator01.getHash(), "GenesisSignature");
         ValidatorBlock validator03 = new ValidatorBlock("Validator", "19-09-1980", "ValidatorPublicKey", validator02.getHash(), "GenesisSignature");
