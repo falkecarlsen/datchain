@@ -63,4 +63,5 @@ public class Datchain {
 
         System.out.println("Are strings equal? " + cipherBlock.getCleartext().equals(cipherBlock.getDecryptedText()));
     }
+
 }

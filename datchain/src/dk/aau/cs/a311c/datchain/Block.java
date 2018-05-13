@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import static dk.aau.cs.a311c.datchain.utility.SHA.computeHash;
 import static java.time.Instant.now;
 
-abstract class Block {
+public abstract class Block {
 
     //common fields for all blocks
     private final String identity;
