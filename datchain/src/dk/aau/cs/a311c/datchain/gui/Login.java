@@ -22,6 +22,7 @@ public class Login {
     static PrivateKey privateKey;
     static PublicKey publicKey;
     static String labelText = "Choose your key files";
+    static Label labelLogin = new Label();
 
     public static void login(Stage primaryStage, Blockchain chain) {
         //AtomicReference<PublicKey> publicKey = null;
@@ -54,7 +55,6 @@ public class Login {
         GridPane.setConstraints(labelPublicKey, 1, 2);
         gridPane.getChildren().add(labelPublicKey);
 
-        Label labelLogin = new Label();
         labelLogin.setMaxWidth(140);
         labelLogin.setAlignment(Pos.CENTER);
         GridPane.setConstraints(labelLogin, 2, 2);
@@ -89,7 +89,7 @@ public class Login {
         //challenge button
         Button challengeButton = new Button("Login");
         challengeButton.setMinWidth(140);
-        challengeButton.setOnMouseClicked(e -> labelText = issueChallenge(primaryStage));
+        challengeButton.setOnMouseClicked(e -> issueChallenge(primaryStage));
         GridPane.setConstraints(challengeButton, 2, 1);
         gridPane.getChildren().add(challengeButton);
 
@@ -127,7 +127,7 @@ public class Login {
         } else return (getPublicKeyFromFile(selectedFilePrivate.getAbsolutePath()));
     }
 
-    private static String issueChallenge(Stage primaryStage) {
+    private static void issueChallenge(Stage primaryStage) {
         byte[][] encryptedText;
         String decryptedText;
         //TODO should conform to new implementation of blockwise encryption/decryption
@@ -140,6 +140,6 @@ public class Login {
             //todo handle wrong keys
         } else return "Keys do not match";
     */
-        return "bullshit"; //placeholder for compiling
+        labelLogin.setText("Bullshit"); //placeholder for compiling
     }
 }
