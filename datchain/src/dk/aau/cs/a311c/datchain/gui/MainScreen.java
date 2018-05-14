@@ -2,12 +2,13 @@ package dk.aau.cs.a311c.datchain.gui;
 
 import dk.aau.cs.a311c.datchain.Block;
 import dk.aau.cs.a311c.datchain.Blockchain;
+import dk.aau.cs.a311c.datchain.GenesisBlock;
 import dk.aau.cs.a311c.datchain.Search;
-import dk.aau.cs.a311c.datchain.ValidatorBlock;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -48,9 +49,10 @@ public class MainScreen {
 
         //Center panel
         GridPane gridRight = new GridPane();
+        gridRight.setAlignment(Pos.CENTER);
         gridRight.setVgap(10);
         gridRight.setHgap(8);
-        gridRight.setPadding(new Insets(10, 20, 10, 100));
+        gridRight.setPadding(new Insets(10, 20, 10, 10));
         gridRight.setStyle("-fx-background-color: #FFFFFF;");
 
 
@@ -62,9 +64,8 @@ public class MainScreen {
         Button button = new Button("Goto validator");
         button.setMinWidth(100);
         gridRight.setConstraints(button, 0, 0);
-        gridRight.getChildren().add(button);
-        button.setOnAction(e->ValidatorScreen.validatorScreen(primaryStage, chain, (ValidatorBlock)chain.getBlock(1)));
-
+        gridRight.getChildren().add(button);//TODO genesis
+        button.setOnAction(e -> ValidatorScreen.validatorScreen(primaryStage, chain, (GenesisBlock) chain.getBlock(0)));
 
 
         Label birthdateLabel = new Label("Birthdate:");
@@ -94,7 +95,7 @@ public class MainScreen {
         gridRight.getChildren().add(birthdateText);
 
 
-        publicKeyText.setOnMouseClicked( e -> System.out.println("Placeholder, skal eksportere key"));
+        publicKeyText.setOnMouseClicked(e -> System.out.println("Placeholder, skal eksportere key"));
         GridPane.setHalignment(publicKeyText, HPos.CENTER);
         gridRight.setConstraints(publicKeyText, 0, 5);
         gridRight.getChildren().add(publicKeyText);
@@ -125,16 +126,14 @@ public class MainScreen {
 
 
         TextField term_text = new TextField();
-        term_text.setPromptText("Search for name, date of birth, public key");
-        term_text.setOnAction(e -> {
-            searchResults = getSearchResults(term_text.getText().toString(), chain);
+        term_text.setPromptText("Search for name, date of birth or public key");
+        term_text.setOnKeyPressed(e -> {
+            searchResults = getSearchResults(term_text.getText(), chain);
             table.getItems().clear();
 
             ObservableList<Block> blocks = FXCollections.observableArrayList();
 
-            for (Block block : searchResults) {
-                blocks.add(block);
-            }
+            blocks.addAll(searchResults);
 
             table.setItems(blocks);
         });
@@ -187,6 +186,7 @@ public class MainScreen {
 
         Scene scene = new Scene(borderPane, 800, 520);
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 

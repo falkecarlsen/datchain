@@ -105,6 +105,7 @@ public class Login {
         Scene scene = new Scene(gridPane, 500, 100);
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 
