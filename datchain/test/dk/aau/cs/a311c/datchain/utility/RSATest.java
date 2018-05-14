@@ -10,6 +10,7 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -18,7 +19,7 @@ class RSATest {
     static private final String testDirectiory = "testData/";
     static private KeyPair keyPair;
 
-    @BeforeAll
+    /*
     static void keyPairInitBefore() {
         //create keypair for testing
         KeyPair keyPair = RSA.keyPairInit();
@@ -34,6 +35,7 @@ class RSATest {
         //write keys to files in testDirectory
         RSA.keyPairWriter(keyPair, testDirectiory);
     }
+    */
 
     @Test
     void keyPairWriter() {
@@ -82,10 +84,61 @@ class RSATest {
     }
 
     @Test
-    void encrypt() {
+    void encryptDecrypt() {
+        KeyPair keyPair = RSA.keyPairInit();
+
+        String test = "teststringisverytestyandhasweirdchars¡$}ªßđ@$£ŋþĸðßßðđĸ€þnªŋ";
+
+        byte[] encryptedTest = RSA.encrypt(test.getBytes(), RSA.getPublicKey(keyPair));
+
+        //assert encryption succeeded
+        assertNotNull(encryptedTest);
+
+        byte[] decryptedTest = RSA.decrypt(encryptedTest, RSA.getPrivateKey(keyPair));
+
+        //trim string to avoid padding issues and assert equal with input
+        assertEquals(test, new String(decryptedTest).trim());
     }
 
     @Test
-    void decrypt() {
+    void getEncodedPrivateKey() {
+        KeyPair keyPair = RSA.keyPairInit();
+        //assert that keypair has been generated
+        assertNotNull(keyPair);
+
+        //assert that some string has been returned
+        assertNotNull(RSA.getEncodedPrivateKey(keyPair));
+    }
+
+    @Test
+    void getPrivateKeyFromEncoded() {
+        KeyPair keyPair = RSA.keyPairInit();
+        //assert that keypair has been generated
+        assertNotNull(keyPair);
+
+        String encodedPrivateKey = RSA.getEncodedPrivateKey(keyPair);
+
+        assertNotNull(RSA.getPrivateKeyFromEncoded(encodedPrivateKey));
+    }
+
+    @Test
+    void getEncodedPublicKey() {
+        KeyPair keyPair = RSA.keyPairInit();
+        //assert that keypair has been generated
+        assertNotNull(keyPair);
+
+        //assert that some string has been returned
+        assertNotNull(RSA.getEncodedPublicKey(keyPair));
+    }
+
+    @Test
+    void getPublicKeyFromEncoded() {
+        KeyPair keyPair = RSA.keyPairInit();
+        //assert that keypair has been generated
+        assertNotNull(keyPair);
+
+        String encodedPublicKey = RSA.getEncodedPublicKey(keyPair);
+
+        assertNotNull(RSA.getPublicKeyFromEncoded(encodedPublicKey));
     }
 }

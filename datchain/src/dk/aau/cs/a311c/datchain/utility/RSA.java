@@ -81,54 +81,6 @@ public class RSA {
         }
     }
 
-    public static String getEncodedPrivateKey(KeyPair keyPair) {
-        return new String(Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()));
-    }
-
-    public static PrivateKey getPrivateKeyFromEncoded(String encodedKey) {
-        return generatePrivateKey(Base64.getDecoder().decode(encodedKey));
-    }
-
-    public static PrivateKey getPrivateKeyFromFile(String filename) {
-        try {
-            //get path to filename supplied
-            Path filePath = Paths.get(filename);
-
-            //pass decoded bytes to generatePrivateKey and return generated private key
-            return generatePrivateKey(Base64.getDecoder().decode(Files.readAllBytes(filePath)));
-        } catch (UnsupportedEncodingException e) {
-            System.out.println("ERROR: Unsupported encoding exception! Cannot get bytes from file: " + e.getMessage());
-        } catch (IOException e) {
-            System.out.println("ERROR: IO exception caught! " + e.getMessage());
-        }
-        //if exceptions hasn't been caught
-        return null;
-    }
-
-    public static PrivateKey generatePrivateKey(byte[] keyByteArray) {
-        try {
-            //initialise keyfactory with cryptographic algorithm used
-            KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm);
-            //return regenerated privatekey-spec as privatekey object
-            return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(keyByteArray));
-
-        } catch (NoSuchAlgorithmException e) {
-            System.out.println("ERROR: System does not support RSA generation with: " + e.getMessage());
-        } catch (InvalidKeySpecException e) {
-            System.out.println("ERROR: Invalid key specification, cannot get private key specification! " + e.getMessage());
-        }
-        //if exceptions hasn't been caught
-        return null;
-    }
-
-    public static String getEncodedPublicKey(KeyPair keyPair) {
-        return new String(Base64.getEncoder().encode(keyPair.getPublic().getEncoded()));
-    }
-
-    public static PublicKey getPublicKeyFromEncoded(String encodedKey) {
-        return generatePublicKey(Base64.getDecoder().decode(encodedKey));
-    }
-
     public static PublicKey getPublicKeyFromFile(String filename) {
         try {
             //get path to filename supplied
@@ -146,7 +98,7 @@ public class RSA {
         return null;
     }
 
-    public static PublicKey generatePublicKey(byte[] keyByteArray) {
+    private static PublicKey generatePublicKey(byte[] keyByteArray) {
         try {
             //initialise keyfactory with cryptographic algorithm used
             KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm);
@@ -161,6 +113,52 @@ public class RSA {
         return null;
     }
 
+    public static PrivateKey getPrivateKeyFromFile(String filename) {
+        try {
+            //get path to filename supplied
+            Path filePath = Paths.get(filename);
+
+            //pass decoded bytes to generatePrivateKey and return generated private key
+            return generatePrivateKey(Base64.getDecoder().decode(Files.readAllBytes(filePath)));
+        } catch (UnsupportedEncodingException e) {
+            System.out.println("ERROR: Unsupported encoding exception! Cannot get bytes from file: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("ERROR: IO exception caught! " + e.getMessage());
+        }
+        return null;
+    }
+
+    private static PrivateKey generatePrivateKey(byte[] keyByteArray) {
+        try {
+            //initialise keyfactory with cryptographic algorithm used
+            KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm);
+            //return regenerated privatekey-spec as privatekey object
+            return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(keyByteArray));
+
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("ERROR: System does not support RSA generation with: " + e.getMessage());
+        } catch (InvalidKeySpecException e) {
+            System.out.println("ERROR: Invalid key specification, cannot get private key specification! " + e.getMessage());
+        }
+        return null;
+    }
+
+    public static String getEncodedPrivateKey(KeyPair keyPair) {
+        return new String(Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()));
+    }
+
+    public static PrivateKey getPrivateKeyFromEncoded(String encodedKey) {
+        return generatePrivateKey(Base64.getDecoder().decode(encodedKey));
+    }
+
+    public static String getEncodedPublicKey(KeyPair keyPair) {
+        return new String(Base64.getEncoder().encode(keyPair.getPublic().getEncoded()));
+    }
+
+    public static PublicKey getPublicKeyFromEncoded(String encodedKey) {
+        return generatePublicKey(Base64.getDecoder().decode(encodedKey));
+    }
+
     static byte[] encrypt(byte[] cleartext, Key key) {
         try {
             final Cipher cipher = Cipher.getInstance(cryptAlgorithm);
@@ -172,9 +170,8 @@ public class RSA {
             System.out.println("ERROR: Invalid key supplied! " + e.getMessage());
         } catch (IllegalBlockSizeException e) {
             System.out.println("ERROR: Invalid block size of bytes received! " + e.getMessage());
-            //catch remaining padding exceptions from Cipher.getInstance
         } catch (Exception e) {
-            System.out.println("ERROR: Padding error in initializing instance! " + e.getMessage());
+            System.out.println("ERROR: Encryption encountered an error! " + e.getMessage());
         }
         return null;
     }
