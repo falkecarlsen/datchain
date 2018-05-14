@@ -81,23 +81,37 @@ public class RSA {
         }
     }
 
+    public static String getEncodedPrivateKey(KeyPair keyPair) {
+        return new String(Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()));
+    }
+
+    public static PrivateKey getPrivateKeyFromEncoded(String encodedKey) {
+        return generatePrivateKey(Base64.getDecoder().decode(encodedKey));
+    }
+
     public static PrivateKey getPrivateKeyFromFile(String filename) {
         try {
             //get path to filename supplied
             Path filePath = Paths.get(filename);
 
-            //read all bytes from file, stored in unicode, and decode bytes to raw encoding
-            byte[] keyByteArray = Base64.getDecoder().decode(Files.readAllBytes(filePath));
+            //pass decoded bytes to generatePrivateKey and return generated private key
+            return generatePrivateKey(Base64.getDecoder().decode(Files.readAllBytes(filePath)));
+        } catch (UnsupportedEncodingException e) {
+            System.out.println("ERROR: Unsupported encoding exception! Cannot get bytes from file: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("ERROR: IO exception caught! " + e.getMessage());
+        }
+        //if exceptions hasn't been caught
+        return null;
+    }
 
+    public static PrivateKey generatePrivateKey(byte[] keyByteArray) {
+        try {
             //initialise keyfactory with cryptographic algorithm used
             KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm);
             //return regenerated privatekey-spec as privatekey object
             return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(keyByteArray));
 
-        } catch (UnsupportedEncodingException e) {
-            System.out.println("ERROR: Unsupported encoding exception! Cannot get bytes from file: " + e.getMessage());
-        } catch (IOException e) {
-            System.out.println("ERROR: IO exception caught! " + e.getMessage());
         } catch (NoSuchAlgorithmException e) {
             System.out.println("ERROR: System does not support RSA generation with: " + e.getMessage());
         } catch (InvalidKeySpecException e) {
@@ -107,23 +121,37 @@ public class RSA {
         return null;
     }
 
+    public static String getEncodedPublicKey(KeyPair keyPair) {
+        return new String(Base64.getEncoder().encode(keyPair.getPublic().getEncoded()));
+    }
+
+    public static PublicKey getPublicKeyFromEncoded(String encodedKey) {
+        return generatePublicKey(Base64.getDecoder().decode(encodedKey));
+    }
+
     public static PublicKey getPublicKeyFromFile(String filename) {
         try {
             //get path to filename supplied
             Path filePath = Paths.get(filename);
 
             //read all bytes from file, stored in unicode, and decode bytes to raw encoding
-            byte[] keyByteArray = Base64.getDecoder().decode(Files.readAllBytes(filePath));
-
-            //initialise keyfactory with cryptographic algorithm used
-            KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm);
-            //return regenerated publickey-spec as publickey object
-            return keyFactory.generatePublic(new X509EncodedKeySpec(keyByteArray));
+            return generatePublicKey(Base64.getDecoder().decode(Files.readAllBytes(filePath)));
 
         } catch (UnsupportedEncodingException e) {
             System.out.println("ERROR: Unsupported encoding exception! Cannot get bytes from file: " + e.getMessage());
         } catch (IOException e) {
             System.out.println("ERROR: IO exception caught! " + e.getMessage());
+        }
+        //if exceptions hasn't been caught
+        return null;
+    }
+
+    public static PublicKey generatePublicKey(byte[] keyByteArray) {
+        try {
+            //initialise keyfactory with cryptographic algorithm used
+            KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm);
+            //return regenerated publickey-spec as publickey object
+            return keyFactory.generatePublic(new X509EncodedKeySpec(keyByteArray));
         } catch (NoSuchAlgorithmException e) {
             System.out.println("ERROR: System does not support RSA generation with: " + e.getMessage());
         } catch (InvalidKeySpecException e) {
