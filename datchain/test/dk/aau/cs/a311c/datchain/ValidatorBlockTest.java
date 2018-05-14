@@ -8,7 +8,7 @@ class ValidatorBlockTest {
 
     @Test
     void testGetGenesisSignature() {
-        ValidatorBlock validator01 = new ValidatorBlock("Validator", "ValidatorPublicKey", "0000", "GenesisSignature");
+        ValidatorBlock validator01 = new ValidatorBlock("Validator", "19-09-1980","ValidatorPublicKey", "0000", "GenesisSignature");
         assertEquals("GenesisSignature", validator01.getGenesisSignature());
     }
 

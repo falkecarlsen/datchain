@@ -1,11 +1,16 @@
 package dk.aau.cs.a311c.datchain.gui;
 
+import dk.aau.cs.a311c.datchain.Block;
+import dk.aau.cs.a311c.datchain.Blockchain;
+import dk.aau.cs.a311c.datchain.Search;
+import dk.aau.cs.a311c.datchain.ValidatorBlock;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -13,95 +18,142 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+
 import static javafx.geometry.Pos.CENTER;
 
 
 public class MainScreen {
-    public static void screen(Stage primaryStage) {
-        GridPane gridLeft = new GridPane();
-        gridLeft.setVgap(10);
-        gridLeft.setHgap(8);
-        gridLeft.setPadding(new Insets(10, 20, 10, 20));
-        primaryStage.setResizable(false);
 
+    static ArrayList<Block> searchResults = new ArrayList<>();
+    static ListView listView = new ListView<>();
+    static Text nameText = new Text();
+    static Text birthdateText = new Text();
+    static Text publicKeyText = new Text();
+    static TableView<Block> table = new TableView<>();
+
+    public static void screen(Stage primaryStage, Blockchain chain) {
 
         //top panel
         HBox topPanel = new HBox();
+        topPanel.setStyle("-fx-background-color: #FFFFFF;");
         topPanel.setPadding(new Insets(5, 0, 10, 0));
 
         Button login_button = new Button("Login as validator");
-        login_button.setOnMouseClicked(event -> Login.login(primaryStage));
-        login_button.setMinWidth(125);
+        login_button.setOnMouseClicked(event -> Login.login(primaryStage, chain));
 
         topPanel.getChildren().add(login_button);
         topPanel.setAlignment(CENTER);
 
 
-        //Left panel
-        Text text1 = new Text("            Chosen person");
-        text1.setStyle("-fx-font-weight: bold");
-        gridLeft.setConstraints(text1, 2, 0);
-        gridLeft.getChildren().add(text1);
-
-        /*Label nullLabel = new Label("");
-        nullLabel.setMinWidth(75);
-        gridLeft.setConstraints(nullLabel,1,0);
-        gridLeft.getChildren().add(nullLabel);*/
-
-        Label firstname_label = new Label("First name:");
-        firstname_label.setMinWidth(75);
-        gridLeft.setConstraints(firstname_label, 1, 1);
-        gridLeft.getChildren().add(firstname_label);
-
-        Label lastname_label = new Label("Last name:");
-        lastname_label.setMinWidth(75);
-        gridLeft.setConstraints(lastname_label, 1, 2);
-        gridLeft.getChildren().add(lastname_label);
-
-        Label birthdateLabel = new Label("Birthdate:");
-        birthdateLabel.setMinWidth(75);
-        gridLeft.setConstraints(birthdateLabel, 1, 3);
-        gridLeft.getChildren().add(birthdateLabel);
-
-        Label pbkLabel = new Label("Public key:");
-        pbkLabel.setMinWidth(75);
-        gridLeft.setConstraints(pbkLabel, 1, 4);
-        gridLeft.getChildren().add(pbkLabel);
-
-        Label identityLabel = new Label("Identity:");
-        identityLabel.setMinWidth(75);
-        gridLeft.setConstraints(identityLabel, 1, 5);
-        gridLeft.getChildren().add(identityLabel);
-
-
-        //right panel
+        //Center panel
         GridPane gridRight = new GridPane();
         gridRight.setVgap(10);
         gridRight.setHgap(8);
         gridRight.setPadding(new Insets(10, 20, 10, 100));
+        gridRight.setStyle("-fx-background-color: #FFFFFF;");
 
-        /*search*/
-        /*Label term_label = new Label("Input:");
-        term_label.setMinWidth(150);
-        gridRight.setConstraints(term_label,0,0);
-        gridRight.getChildren().add(term_label);*/
+
+        Label firstname_label = new Label("Name:");
+        firstname_label.setMinWidth(75);
+        gridRight.setConstraints(firstname_label, 0, 3);
+        gridRight.getChildren().add(firstname_label);
+
+        Button button = new Button("Goto validator");
+        button.setMinWidth(100);
+        gridRight.setConstraints(button, 0, 0);
+        gridRight.getChildren().add(button);
+        button.setOnAction(e->ValidatorScreen.validatorScreen(primaryStage, chain, (ValidatorBlock)chain.getBlock(1)));
+
+
+
+        Label birthdateLabel = new Label("Birthdate:");
+        birthdateLabel.setMinWidth(75);
+        gridRight.setConstraints(birthdateLabel, 0, 4);
+        gridRight.getChildren().add(birthdateLabel);
+
+        Label pbkLabel = new Label("Public key:");
+        pbkLabel.setMinWidth(75);
+        gridRight.setConstraints(pbkLabel, 0, 5);
+        gridRight.getChildren().add(pbkLabel);
+
+
+        Text text1 = new Text("Chosen person");
+        text1.setStyle("-fx-font-weight: bold");
+        GridPane.setHalignment(text1, HPos.CENTER);
+        gridRight.setConstraints(text1, 0, 2);
+        gridRight.getChildren().add(text1);
+
+
+        GridPane.setHalignment(nameText, HPos.CENTER);
+        gridRight.setConstraints(nameText, 0, 3);
+        gridRight.getChildren().add(nameText);
+
+        GridPane.setHalignment(birthdateText, HPos.CENTER);
+        gridRight.setConstraints(birthdateText, 0, 4);
+        gridRight.getChildren().add(birthdateText);
+
+
+        publicKeyText.setOnMouseClicked( e -> System.out.println("Placeholder, skal eksportere key"));
+        GridPane.setHalignment(publicKeyText, HPos.CENTER);
+        gridRight.setConstraints(publicKeyText, 0, 5);
+        gridRight.getChildren().add(publicKeyText);
+
+
+        //name column
+        TableColumn<Block, String> nameColumn = new TableColumn<>("Name");
+        nameColumn.setMinWidth(200);
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("identity"));
+
+        //DOB column
+        TableColumn<Block, String> DOBColumn = new TableColumn<>("Date of Birth");
+        DOBColumn.setMinWidth(200);
+        DOBColumn.setCellValueFactory(new PropertyValueFactory<>("identityDOB"));
+
+        //Pubkey column
+        TableColumn<Block, String> pubKeyColumn = new TableColumn<>("Public Key");
+        pubKeyColumn.setMinWidth(200);
+        pubKeyColumn.setCellValueFactory(new PropertyValueFactory<>("identityPublicKey"));
+
+        table = new TableView<>();
+        table.getColumns().addAll(nameColumn, DOBColumn, pubKeyColumn);
+        table.setMaxHeight(150);
+
+
+        gridRight.setConstraints(table, 0, 10, 1, 1);
+        gridRight.getChildren().add(table);
+
+
         TextField term_text = new TextField();
         term_text.setPromptText("Search for name, date of birth, public key");
-        gridRight.setConstraints(term_text, 0, 0);
+        term_text.setOnAction(e -> {
+            searchResults = getSearchResults(term_text.getText().toString(), chain);
+            table.getItems().clear();
+
+            ObservableList<Block> blocks = FXCollections.observableArrayList();
+
+            for (Block block : searchResults) {
+                blocks.add(block);
+            }
+
+            table.setItems(blocks);
+        });
+
+        gridRight.setConstraints(term_text, 0, 9);
         gridRight.getChildren().add(term_text);
 
-        ListView listView = new ListView<>();
-        listView.setMinWidth(200);
-        listView.setMaxHeight(120);
 
-        listView.getItems().addAll("eks. 1", "eks. 2", "eks. 3");
-        gridRight.setConstraints(listView, 0, 1, 1, 1);
-        gridRight.getChildren().add(listView);
+        Button selectBlockButton = new Button("Select");
+        selectBlockButton.setOnMouseClicked(e -> setChosenBlockDetails());
+        GridPane.setHalignment(selectBlockButton, HPos.CENTER);
+        gridRight.getChildren().add(selectBlockButton);
+        gridRight.setConstraints(selectBlockButton, 0, 11);
 
 
         //bottompanel
         HBox bottomPanel = new HBox();
         bottomPanel.setSpacing(150);
+        bottomPanel.setStyle("-fx-background-color: #D3D3D3;");
         bottomPanel.setAlignment(CENTER);
         bottomPanel.setPadding(new Insets(10, 0, 5, 0));
 
@@ -115,7 +167,7 @@ public class MainScreen {
         int numberOfNodes = 10;
         Text nodesLabel = new Text("Nodes:  " + numberOfNodes);
 
-        int numberOfBlocks = 497;
+        int numberOfBlocks = chain.size();
         Text blocksLabel = new Text("Blocks:  " + numberOfBlocks);
 
         bottomPanel.getChildren().addAll(nodesLabel, onlineLabel, blocksLabel);
@@ -130,11 +182,10 @@ public class MainScreen {
         //setting scene
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(topPanel);
-        borderPane.setLeft(gridLeft);
-        borderPane.setRight(gridRight);
+        borderPane.setCenter(gridRight);
         borderPane.setBottom(bottomPanel);
 
-        Scene scene = new Scene(borderPane, 620, 250);
+        Scene scene = new Scene(borderPane, 800, 520);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -145,65 +196,19 @@ public class MainScreen {
             primaryStage.close();
         }
     }
+
+    private static ArrayList<Block> getSearchResults(String searchTerm, Blockchain chain) {
+        Search search = new Search();
+        ArrayList<Block> results = search.FuzzySearchIdentity((searchTerm), chain, 5);
+        return results;
+    }
+
+    private static void setChosenBlockDetails() {
+        //need exception catch here
+        int index = table.getSelectionModel().getSelectedIndex();
+
+        nameText.setText(searchResults.get(index).getIdentity());
+        birthdateText.setText(searchResults.get(index).getIdentityDOB());
+        publicKeyText.setText(searchResults.get(index).getIdentityPublicKey());
+    }
 }
-
-/*var firstname_label = new Label("Fornavn:");
-        firstname_label.setMinWidth(150);
-        root.setConstraints(firstname_label,0,0);
-        root.getChildren().add(firstname_label);
-        var firstname_text = new TextField();
-        root.setConstraints(firstname_text,0,1);
-        root.getChildren().add(firstname_text);
-
-        var lastname_label = new Label("Efternavn:");
-        root.setConstraints(lastname_label,0,2);
-        root.getChildren().add(lastname_label);
-        var lastname_text = new TextField();
-        root.setConstraints(lastname_text,0,3);
-        root.getChildren().add(lastname_text);
-
-        var ID_label = new Label("ID-nummer:");
-        root.setConstraints(ID_label,0,4);
-        root.getChildren().add(ID_label);
-        var ID_text = new TextField();
-        root.setConstraints(ID_text,0,5);
-        root.getChildren().add(ID_text);
-        */
-        /*Button Search_button = new Button("CloseProgramBox");
-        root.setConstraints(Search_button,0,7);
-        root.getChildren().add(Search_button);*/
-
-        /*Label public_key_label = new Label("Public Key:");
-        root.setConstraints(public_key_label,1,6);
-        root.getChildren().add(public_key_label);*/
-        /*
-        Label firstname = new Label("");
-        root.setConstraints(firstname,2,1);
-        root.getChildren().add(firstname);
-
-        Label lastname = new Label("");
-        root.setConstraints(lastname,2,2);
-        root.getChildren().add(lastname);
-
-        Label ID = new Label("");
-        root.setConstraints(ID,2,3);
-        root.getChildren().add(ID);
-
-        Label birthday = new Label("");
-        root.setConstraints(birthday,2,4);
-        root.getChildren().add(birthday);
-
-        Label public_key = new Label("");
-        root.setConstraints(public_key,2,5);
-        public_key.setMinWidth(75);
-        root.getChildren().add(public_key);
-*/
-
-        /*
-        Stage Search_stage = new Stage();
-        Search_stage.setTitle("CloseProgramBox");
-        GridPane root = new GridPane();
-        root.setVgap(7);
-        root.setHgap(5);
-        root.setPadding(new Insets(10, 10, 10, 10));
-        Scene scene = new Scene(root,600, 230);*/

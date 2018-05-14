@@ -1,6 +1,8 @@
 package dk.aau.cs.a311c.datchain.gui;
 
-import dk.aau.cs.a311c.datchain.utility.RSA;
+import dk.aau.cs.a311c.datchain.Blockchain;
+import dk.aau.cs.a311c.datchain.utility.CipherBlock;
+import dk.aau.cs.a311c.datchain.utility.RandomChallenge;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -21,8 +23,9 @@ public class Login {
     static PrivateKey privateKey;
     static PublicKey publicKey;
     static String labelText = "Choose your key files";
+    static Label labelLogin = new Label();
 
-    public static void login(Stage primaryStage) {
+    public static void login(Stage primaryStage, Blockchain chain) {
         //AtomicReference<PublicKey> publicKey = null;
         //AtomicReference<PrivateKey> privateKey = null;
 
@@ -53,7 +56,6 @@ public class Login {
         GridPane.setConstraints(labelPublicKey, 1, 2);
         gridPane.getChildren().add(labelPublicKey);
 
-        Label labelLogin = new Label();
         labelLogin.setMaxWidth(140);
         labelLogin.setAlignment(Pos.CENTER);
         GridPane.setConstraints(labelLogin, 2, 2);
@@ -88,9 +90,16 @@ public class Login {
         //challenge button
         Button challengeButton = new Button("Login");
         challengeButton.setMinWidth(140);
-        challengeButton.setOnMouseClicked(e -> labelText = issueChallenge(primaryStage));
+        challengeButton.setOnMouseClicked(e -> issueChallenge(primaryStage));
         GridPane.setConstraints(challengeButton, 2, 1);
         gridPane.getChildren().add(challengeButton);
+
+        //go back button
+        Button backButton = new Button("Return");
+        backButton.setOnAction(e -> MainScreen.screen(primaryStage, chain));
+        GridPane.setConstraints(backButton, 0, 0);
+        gridPane.getChildren().add(backButton);
+
 
         //setting scene
         Scene scene = new Scene(gridPane, 500, 100);
@@ -120,17 +129,24 @@ public class Login {
     }
 
     private static String issueChallenge(Stage primaryStage) {
-        byte[][] encryptedText;
+        //get random challenge and declare Strings
+        String encryptedText = RandomChallenge.generateRandomChallenge();
         String decryptedText;
-        //TODO should conform to new implementation of blockwise encryption/decryption
-        /*
-        encryptedText = RSA.blockCipherEncrypt("TEST", publicKey);
-        decryptedText = RSA.blockCipherDecrypt(encryptedText, privateKey);
-        if (decryptedText.equals("TEST")) {
-            ValidatorScreen.validatorScreen(primaryStage);
-            return "Succes!";
-        } else return "Keys do not match";
-    */
-        return "bullshit"; //placeholder for compiling
+
+        //create cipherblock and build
+        CipherBlock cipherBlock = new CipherBlock(encryptedText);
+        cipherBlock.buildBlock();
+
+        //do operations on block
+        cipherBlock.encryptBlock(publicKey);
+        cipherBlock.decryptBlock(privateKey);
+
+        //if decrypted text matches cleartext, do
+        if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
+            //TODO fix validatorScreen method call for new signature
+            //ValidatorScreen.validatorScreen(primaryStage);
+            return "Challenge completed successfully!";
+            //TODO handle wrong keys
+        } else return "Challenge completed unsuccessfully!";
     }
 }
