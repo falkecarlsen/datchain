@@ -51,8 +51,6 @@ public class Datchain {
 
         CipherBlock cipherBlock = new CipherBlock(lorem1);
 
-        cipherBlock.buildBlock();
-
         cipherBlock.encryptBlock(publicKey);
 
         cipherBlock.decryptBlock(privateKey);
