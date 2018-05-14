@@ -1,10 +1,5 @@
 package dk.aau.cs.a311c.datchain;
 
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import static dk.aau.cs.a311c.datchain.utility.SHA.computeHash;
 import static java.time.Instant.now;
 
@@ -18,15 +13,14 @@ public abstract class Block {
     private final String identityDOB;
     private final long timestamp;
 
-    protected Block(String identity, String identityPublicKey, String prevHash, String hashInput, String identityDOB) {
+    protected Block(String identity, String identityDOB, String identityPublicKey, String prevHash, String hashInput) {
         this.identity = identity;
+        this.identityDOB = identityDOB;
         this.identityPublicKey = identityPublicKey;
         this.prevHash = prevHash;
         this.timestamp = now().getEpochSecond();
         this.hash = computeHash(hashInput + this.timestamp);
-        this.identityDOB = identityDOB;
     }
-
 
     public String getHash() {
         return this.hash;
