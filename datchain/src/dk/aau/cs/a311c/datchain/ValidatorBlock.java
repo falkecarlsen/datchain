@@ -8,7 +8,7 @@ public class ValidatorBlock extends Block {
 
     public ValidatorBlock(String identity, String identityDOB, String identityPublicKey, String prevHash, String genesisSignature) {
         //call super-constructor with all variables as hashInput
-        super(identity, identityPublicKey, prevHash, identity + identityPublicKey + prevHash + genesisSignature);
+        super(identity, identityPublicKey, prevHash, identity + identityPublicKey + prevHash + genesisSignature, identityDOB);
         this.identityDOB = identityDOB;
         this.genesisSignature = genesisSignature;
     }
@@ -16,4 +16,5 @@ public class ValidatorBlock extends Block {
     public String getGenesisSignature() {
         return this.genesisSignature;
     }
+
 }

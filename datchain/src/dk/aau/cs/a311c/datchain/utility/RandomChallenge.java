@@ -1,0 +1,29 @@
+package dk.aau.cs.a311c.datchain.utility;
+
+import java.util.Random;
+
+import static java.time.Instant.now;
+
+public class RandomChallenge {
+
+    private static final int challengeLength = 64;
+    private static final String charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+
+    public static String generateRandomChallenge() {
+        //create new char array challengeLength long
+        char[] challenge = new char[challengeLength];
+
+        //for challengeLength, do
+        for (int i = 0; i < challengeLength; i++) {
+            //get random char between 0 and challengeLength and add to challenge
+            challenge[i] = charset.charAt(randomIntInRange(0, challengeLength));
+        }
+        //return challenge as String
+        return new String(challenge);
+    }
+
+    private static int randomIntInRange(int lower, int upper) {
+        return new Random(now().getNano()).nextInt(upper - lower) + lower;
+    }
+}
