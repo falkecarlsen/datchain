@@ -1,5 +1,6 @@
 package dk.aau.cs.a311c.datchain.gui;
 
+import dk.aau.cs.a311c.datchain.Block;
 import dk.aau.cs.a311c.datchain.Blockchain;
 import dk.aau.cs.a311c.datchain.GenesisBlock;
 import dk.aau.cs.a311c.datchain.ValidatorBlock;
@@ -16,7 +17,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.security.KeyPair;
-import java.util.Base64;
 
 
 public class ValidatorScreen {
@@ -49,8 +49,13 @@ public class ValidatorScreen {
 
     private static TextField identityText = new TextField();
 
-    public static void validatorScreen(Stage primaryStage, Blockchain chain, GenesisBlock genesis) {
+    public static void validatorScreen(Stage primaryStage, Blockchain chain, Block block) {
 
+        if (block instanceof GenesisBlock) {
+            System.out.println("logged in as genesis");
+        } else if (block instanceof ValidatorBlock) {
+            System.out.println("logged in as validator");
+        } else System.out.println("oh shit, you shouldnt be here, citizen");
 
         GridPane gridCenter = new GridPane();
         gridCenter.setVgap(10);
@@ -118,7 +123,7 @@ public class ValidatorScreen {
 
         addBlockButton.setText("Check if data is correct and submit block");
         GridPane.setHalignment(addBlockButton, HPos.CENTER);
-        addBlockButton.setOnAction(e -> submitBlock(chain, genesis));
+        addBlockButton.setOnAction(e -> submitBlock(chain, block));
         GridPane.setConstraints(addBlockButton, 1, 9);
         gridCenter.getChildren().add(addBlockButton);
         addBlockButton.setVisible(false);
@@ -149,7 +154,6 @@ public class ValidatorScreen {
             System.out.println("succes");
         } else birthdateLabel.setVisible(true);
     }
-//^(3[01]|[12][0-9]|0[1-9])-(1[0-2]|0[1-9])-[0-9]{4}$
 
     private static void saveInput(Blockchain chain) {
         prevHash = chain.getHead().getHash();
@@ -158,7 +162,7 @@ public class ValidatorScreen {
         addBlockButton.setVisible(true);
     }
 
-    private static void submitBlock(Blockchain chain, GenesisBlock genesis) {
+    private static void submitBlock(Blockchain chain, Block block) {
         //generates keys
         KeyPair keyPair = RSA.keyPairInit();
 
@@ -168,7 +172,7 @@ public class ValidatorScreen {
         //encodes public key to add to new block
         String encodedPublicKey = RSA.getEncodedPublicKey(keyPair);
 
-        chain.addValidatedBlock(new ValidatorBlock(identity, identityDOB, encodedPublicKey, prevHash, genesisSignature), genesis);
+        chain.addValidatedBlock(new ValidatorBlock(identity, identityDOB, encodedPublicKey, prevHash, genesisSignature), block);
         addBlockButton.setVisible(false);
         succesLabel.setVisible(true);
 
@@ -178,7 +182,7 @@ public class ValidatorScreen {
         prevHashText.clear();
         signatureText.clear();
     }
-//TODO when logging in, pass the genesis/validator pub key/block
-//TODO add logic to saving birthdate
-//TODO genesis signature //TODO search for validation in login screen, for which pub key
+
+//TODO genesis signature
+    //todo lagre data?
 }

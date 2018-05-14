@@ -20,7 +20,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 import static javafx.geometry.Pos.CENTER;
 
@@ -28,7 +27,6 @@ import static javafx.geometry.Pos.CENTER;
 public class MainScreen {
 
     static ArrayList<Block> searchResults = new ArrayList<>();
-    static ListView listView = new ListView<>();
     static Text nameText = new Text();
     static Text birthdateText = new Text();
     static Text publicKeyText = new Text();
@@ -202,7 +200,7 @@ public class MainScreen {
         Search search = new Search();
         ArrayList<Block> results = new ArrayList<>();
 
-        if (searchTerm.matches("[0-9]+")) {
+        if (searchTerm.matches("[0-9-]+")) {
             System.out.println("searching birthdate");
             //search birthdate
             //results = search.FuzzySearchIdentityPublicKey((searchTerm), chain, 5);

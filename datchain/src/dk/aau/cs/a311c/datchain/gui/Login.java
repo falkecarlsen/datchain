@@ -1,5 +1,6 @@
 package dk.aau.cs.a311c.datchain.gui;
 
+import dk.aau.cs.a311c.datchain.Block;
 import dk.aau.cs.a311c.datchain.Blockchain;
 import dk.aau.cs.a311c.datchain.utility.CipherBlock;
 import dk.aau.cs.a311c.datchain.utility.RandomChallenge;
@@ -90,7 +91,7 @@ public class Login {
         //challenge button
         Button challengeButton = new Button("Login");
         challengeButton.setMinWidth(140);
-        challengeButton.setOnMouseClicked(e -> issueChallenge(primaryStage));
+        challengeButton.setOnMouseClicked(e -> issueChallenge(primaryStage, chain));
         GridPane.setConstraints(challengeButton, 2, 1);
         gridPane.getChildren().add(challengeButton);
 
@@ -129,10 +130,11 @@ public class Login {
         } else return (getPublicKeyFromFile(selectedFilePrivate.getAbsolutePath()));
     }
 
-    private static String issueChallenge(Stage primaryStage) {
+    private static String issueChallenge(Stage primaryStage, Blockchain chain) {
         //get random challenge and declare Strings
         String encryptedText = RandomChallenge.generateRandomChallenge();
         String decryptedText;
+        int index = 0;
 
         //create cipherblock and build
         CipherBlock cipherBlock = new CipherBlock(encryptedText);
@@ -142,10 +144,20 @@ public class Login {
         cipherBlock.encryptBlock(publicKey);
         cipherBlock.decryptBlock(privateKey);
 
+        for (Block block : chain) {
+            if (block.getIdentityPublicKey().equals(publicKey)) ;
+            index = chain.indexOf(block);
+        }
+
+        System.out.println(index);
+
         //if decrypted text matches cleartext, do
         if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
             //TODO fix validatorScreen method call for new signature
-            //ValidatorScreen.validatorScreen(primaryStage);
+
+
+
+            ValidatorScreen.validatorScreen(primaryStage, chain, chain.getBlock(index));
             return "Challenge completed successfully!";
             //TODO handle wrong keys
         } else return "Challenge completed unsuccessfully!";

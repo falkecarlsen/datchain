@@ -1,4 +1,5 @@
 package dk.aau.cs.a311c.datchain.gui;
+
 import dk.aau.cs.a311c.datchain.Blockchain;
 import dk.aau.cs.a311c.datchain.CitizenBlock;
 import dk.aau.cs.a311c.datchain.GenesisBlock;
@@ -9,14 +10,16 @@ import javafx.stage.Stage;
 
 public class Wrapper extends Application {
 
-    public static void main(String[] args) {launch(args);}
+    public static void main(String[] args) {
+        launch(args);
+    }
 
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
         //Blockchain for testing purposes
-        GenesisBlock genesis01 = new GenesisBlock("Kamilla","19-09-1980", "GenesisPublicKey", "0000");
+        GenesisBlock genesis01 = new GenesisBlock("Kamilla", "19-09-1980", "GenesisPublicKey", "0000");
         ValidatorBlock validator01 = new ValidatorBlock("Tobias", "19-09-1980", "ValidatorPublicKey", genesis01.getHash(), "GenesisSignature");
         ValidatorBlock validator02 = new ValidatorBlock("Jarl", "19-09-1980", "ValidatorPublicKey", validator01.getHash(), "GenesisSignature");
         ValidatorBlock validator03 = new ValidatorBlock("Hans", "19-09-1980", "ValidatorPublicKey", validator02.getHash(), "GenesisSignature");
