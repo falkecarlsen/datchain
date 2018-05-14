@@ -20,6 +20,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import static javafx.geometry.Pos.CENTER;
 
@@ -127,7 +128,7 @@ public class MainScreen {
 
         TextField term_text = new TextField();
         term_text.setPromptText("Search for name, date of birth or public key");
-        term_text.setOnKeyPressed(e -> {
+        term_text.setOnKeyReleased(e -> {
             searchResults = getSearchResults(term_text.getText(), chain);
             table.getItems().clear();
 
@@ -199,8 +200,21 @@ public class MainScreen {
 
     private static ArrayList<Block> getSearchResults(String searchTerm, Blockchain chain) {
         Search search = new Search();
-        ArrayList<Block> results = search.FuzzySearchIdentity((searchTerm), chain, 5);
-        return results;
+        ArrayList<Block> results = new ArrayList<>();
+
+        if (searchTerm.matches("[0-9]+")) {
+            System.out.println("searching birthdate");
+            //search birthdate
+            //results = search.FuzzySearchIdentityPublicKey((searchTerm), chain, 5);
+            return results;
+        } else if (searchTerm.matches("[a-zA-Z]+")) {
+            results = search.FuzzySearchIdentity((searchTerm), chain, 5);
+            System.out.println("searching identity");
+            return results;
+        } else {
+            System.out.println("earching pub key");
+            return (results = search.FuzzySearchIdentityPublicKey((searchTerm), chain, 5));
+        }
     }
 
     private static void setChosenBlockDetails() {

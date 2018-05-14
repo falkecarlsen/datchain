@@ -144,26 +144,29 @@ public class ValidatorScreen {
 
     private static void saveDOBInput(String input) {
         System.out.println(input);
-        //if (input.matches("\\d{2}-[01]\\d-[0-3]\\d")) {
+        if (input.matches("^\\d{2}-\\d{2}-\\d{4}$")) {
             identityDOB = input;
             System.out.println("succes");
-       // } else birthdateLabel.setVisible(true); System.out.println("failure");
+        } else birthdateLabel.setVisible(true);
     }
-
+//^(3[01]|[12][0-9]|0[1-9])-(1[0-2]|0[1-9])-[0-9]{4}$
 
     private static void saveInput(Blockchain chain) {
-        prevHash = chain.getBlock(chain.size() - 1).getHash();
+        prevHash = chain.getHead().getHash();
         genesisSignature = signatureText.getText();
 
         addBlockButton.setVisible(true);
     }
 
     private static void submitBlock(Blockchain chain, GenesisBlock genesis) {
+        //generates keys
         KeyPair keyPair = RSA.keyPairInit();
+
+        //saves the keys on a file
         RSA.keyPairWriter(keyPair, "data/gui/");
 
-        //skal denne gemmes som string?
-        String encodedPublicKey = new String(Base64.getEncoder().encode(keyPair.getPublic().getEncoded()));
+        //encodes public key to add to new block
+        String encodedPublicKey = RSA.getEncodedPublicKey(keyPair);
 
         chain.addValidatedBlock(new ValidatorBlock(identity, identityDOB, encodedPublicKey, prevHash, genesisSignature), genesis);
         addBlockButton.setVisible(false);
