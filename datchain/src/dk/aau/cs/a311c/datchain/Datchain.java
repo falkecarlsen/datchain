@@ -1,5 +1,6 @@
 package dk.aau.cs.a311c.datchain;
 
+import dk.aau.cs.a311c.datchain.utility.CipherBlock;
 import dk.aau.cs.a311c.datchain.utility.RSA;
 
 import java.security.KeyPair;
@@ -48,11 +49,19 @@ public class Datchain {
         //Current implementation of encryption does not support more than 382 bytes
         String lorem1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque a risus posuere, malesuada nisl non, tempor nunc. Quisque quis sem vitae nunc fermentum rutrum a et neque. Curabitur sed mauris pulvinar, lobortis lacus sed, commodo ligula. Praesent suscipit, mauris eu mattis pulvinar, ante risus mollis tortor, ac iaculis augue elit porta nisl. Pellentesque quis urna interdum velit ultricies rhoncus imperdiet vel libero. Maecenas nec leo massa. Pellentesque lorem purus, scelerisque et ante sit amet, bibendum vehicula metus. Nunc cursus dui at erat pellentesque, eu mollis neque ultrices. Integer consequat varius dui, eget placerat diam egestas eget. Nulla rhoncus odio sed velit commodo, id accumsan erat venenatis. Suspendisse ut nulla ante. Quisque sed urna nunc. Sed egestas, tortor id fermentum convallis, eros quam vulputate neque, eget condimentum quam turpis sed enim. Maecenas metus est, congue id mollis non, tempus vel nisi. In elementum velit ipsum, quis euismod lorem suscipit at. Morbi malesuada nullam.";
 
-        String lorem2 = RSA.blockCipherDecrypt(RSA.blockCipherEncrypt(lorem1, publicKey), privateKey);
+        CipherBlock cipherBlock = new CipherBlock(lorem1);
 
-        System.out.println("cleartext length in bytes: " + lorem1.length());
-        System.out.println("ciphertext length in bytes: " + lorem2.length());
-        System.out.println("Are strings equal? " + lorem2.equals(lorem1));
+        cipherBlock.buildBlock();
 
+        cipherBlock.encryptBlock(publicKey);
+
+        cipherBlock.decryptBlock(privateKey);
+
+        cipherBlock.buildDecryptedText();
+
+        String decryptedText = cipherBlock.getDecryptedText();
+
+        System.out.println("Are strings equal? " + cipherBlock.getCleartext().equals(cipherBlock.getDecryptedText()));
     }
+
 }
