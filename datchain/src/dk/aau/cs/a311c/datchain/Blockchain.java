@@ -53,7 +53,7 @@ public class Blockchain extends ArrayList<Block> {
         String currHash, nextPrevHash;
         long currTime, nextTime;
 
-        //stop loop short one of this.size() as last block will not have .next()
+        //stop loop short one of this.size() as last block will not have next
         for (int i = 0; i < this.size() - 1; i++) {
 
             //assign hashes to new strings for code legibility
