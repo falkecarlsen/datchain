@@ -51,6 +51,7 @@ public class ValidatorScreen {
 
     public static void validatorScreen(Stage primaryStage, Blockchain chain, Block block) {
 
+
         if (block instanceof GenesisBlock) {
             System.out.println("logged in as genesis");
         } else if (block instanceof ValidatorBlock) {

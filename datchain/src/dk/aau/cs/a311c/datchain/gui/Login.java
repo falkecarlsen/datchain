@@ -134,7 +134,7 @@ public class Login {
         //get random challenge and declare Strings
         String encryptedText = RandomChallenge.generateRandomChallenge();
         String decryptedText;
-        int index = 0;
+        int index = -1;
 
         //create cipherblock and build
         CipherBlock cipherBlock = new CipherBlock(encryptedText);
@@ -143,21 +143,20 @@ public class Login {
         //do operations on block
         cipherBlock.encryptBlock(publicKey);
         cipherBlock.decryptBlock(privateKey);
+        cipherBlock.buildDecryptedText();
 
         for (Block block : chain) {
-            if (block.getIdentityPublicKey().equals(publicKey)) ;
-            index = chain.indexOf(block);
+            if (block.getIdentityPublicKey().equals(publicKey)) {
+                index = (chain.indexOf(block));
+            }
         }
 
         System.out.println(index);
 
         //if decrypted text matches cleartext, do
         if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
-            //TODO fix validatorScreen method call for new signature
 
-
-
-            ValidatorScreen.validatorScreen(primaryStage, chain, chain.getBlock(index));
+            ValidatorScreen.validatorScreen(primaryStage, chain, chain.getBlock(0));
             return "Challenge completed successfully!";
             //TODO handle wrong keys
         } else return "Challenge completed unsuccessfully!";
