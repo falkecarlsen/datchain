@@ -55,11 +55,18 @@ public class Datchain {
 
         cipherBlock.decryptBlock(privateKey);
 
-        cipherBlock.buildDecryptedText();
-
         String decryptedText = cipherBlock.getDecryptedText();
 
         System.out.println("Are strings equal? " + cipherBlock.getCleartext().equals(cipherBlock.getDecryptedText()));
+
+
+        CipherBlock cipherBlock1 = new CipherBlock(lorem1);
+
+        cipherBlock1.encryptBlock(privateKey);
+
+        cipherBlock1.decryptBlock(publicKey);
+
+        System.out.println("Are signature strings equal? " + cipherBlock1.getCleartext().equals(cipherBlock1.getDecryptedText()));
     }
 
 }

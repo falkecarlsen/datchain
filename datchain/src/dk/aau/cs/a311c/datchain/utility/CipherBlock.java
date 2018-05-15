@@ -16,7 +16,6 @@ public class CipherBlock {
     private String decryptedText;
 
     //TODO implement reverse operation (RSA signature)
-    //TODO by passing generic key, both encrypt and decrypt operations can be facilitated with one method
 
     public CipherBlock(String source) {
         //assign source string to cleartext and build block
@@ -64,9 +63,11 @@ public class CipherBlock {
             clearBlock[index] = decrypt(block, key);
             index++;
         }
+        //finally build decrypted cipher to string
+        this.buildDecryptedText();
     }
 
-    public void buildDecryptedText() {
+    private void buildDecryptedText() {
         //initialise StringBuilder for appending each block of decrypted string
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -85,4 +86,9 @@ public class CipherBlock {
     public String getDecryptedText() {
         return this.decryptedText;
     }
+
+    public CipherBlock getBlock() {
+        return this;
+    }
+
 }
