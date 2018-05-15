@@ -12,19 +12,18 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import java.io.File;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-
 import static dk.aau.cs.a311c.datchain.utility.RSA.getPrivateKeyFromFile;
 import static dk.aau.cs.a311c.datchain.utility.RSA.getPublicKeyFromFile;
 
 public class Login {
     static PrivateKey privateKey;
     static PublicKey publicKey;
-    static String labelText = "Choose your key files";
     static Label labelLogin = new Label();
+    static Label labelPrivateKey = new Label();
+    static Label labelPublicKey = new Label();
 
     public static void login(Stage primaryStage, Blockchain chain) {
         //AtomicReference<PublicKey> publicKey = null;
@@ -39,19 +38,17 @@ public class Login {
 
 
         //labels for guidance
-        Label label = new Label(labelText);
+        Label label = new Label("Choose your key files");
         label.setMaxWidth(140);
         label.setAlignment(Pos.CENTER);
         GridPane.setConstraints(label, 1, 0);
         gridPane.getChildren().add(label);
 
-        Label labelPrivateKey = new Label();
         labelPrivateKey.setMaxWidth(140);
         labelPrivateKey.setAlignment(Pos.CENTER);
         GridPane.setConstraints(labelPrivateKey, 0, 2);
         gridPane.getChildren().add(labelPrivateKey);
 
-        Label labelPublicKey = new Label();
         labelPublicKey.setMaxWidth(140);
         labelPublicKey.setAlignment(Pos.CENTER);
         GridPane.setConstraints(labelPublicKey, 1, 2);
@@ -67,8 +64,10 @@ public class Login {
         privateKeyButton.setMinWidth(140);
         privateKeyButton.setOnAction(e -> {
             privateKey = loadPrivateKey();
-            labelPrivateKey.setText("Chosen");
-            if (publicKey != null && privateKey != null) {
+            if (privateKey != null) {
+                labelPrivateKey.setText("Chosen");
+            }
+            if ((publicKey != null) && (privateKey != null)) {
                 labelLogin.setText("Ready to login");
             }
         });
@@ -80,8 +79,10 @@ public class Login {
         publicKeyButton.setMinWidth(140);
         publicKeyButton.setOnAction(e -> {
             publicKey = loadPublicKey();
-            labelPublicKey.setText("Chosen");
-            if (publicKey != null && privateKey != null) {
+            if (publicKey != null) {
+                labelPublicKey.setText("Chosen");
+            }
+            if ((publicKey != null) && (privateKey != null)) {
                 labelLogin.setText("Ready to login");
             }
         });
@@ -91,7 +92,7 @@ public class Login {
         //challenge button
         Button challengeButton = new Button("Login");
         challengeButton.setMinWidth(140);
-        challengeButton.setOnMouseClicked(e -> issueChallenge(primaryStage, chain));
+        challengeButton.setOnMouseClicked(e -> labelLogin.setText(issueChallenge(primaryStage, chain)));
         GridPane.setConstraints(challengeButton, 2, 1);
         gridPane.getChildren().add(challengeButton);
 
@@ -114,24 +115,33 @@ public class Login {
         FileChooser fileChooserPrivate = new FileChooser();
         File selectedFilePrivate = fileChooserPrivate.showOpenDialog(null);
 
-        if (selectedFilePrivate == null) {
-            //.setText("No file chosen");
+        //checks if the loaded file contains a private key
+        if (!(getPrivateKeyFromFile(selectedFilePrivate.getAbsolutePath()) instanceof PrivateKey)) {
+            labelPrivateKey.setText("File is not a private key");
             return null;
         } else return (getPrivateKeyFromFile(selectedFilePrivate.getAbsolutePath()));
     }
 
     private static PublicKey loadPublicKey() {
         FileChooser fileChooserPrivate = new FileChooser();
-        File selectedFilePrivate = fileChooserPrivate.showOpenDialog(null);
+        File selectedFilePublic = fileChooserPrivate.showOpenDialog(null);
 
-        if (selectedFilePrivate == null) {
-            //.setText("No file chosen");
+        //checks if the loaded file contains a public key
+        if (!(getPublicKeyFromFile(selectedFilePublic.getAbsolutePath()) instanceof PublicKey)) {
+            labelPublicKey.setText("File is not a public key");
             return null;
-        } else return (getPublicKeyFromFile(selectedFilePrivate.getAbsolutePath()));
+        } else return (getPublicKeyFromFile(selectedFilePublic.getAbsolutePath()));
     }
 
     private static String issueChallenge(Stage primaryStage, Blockchain chain) {
         //get random challenge and declare Strings
+
+        if (privateKey == null) {
+            return "No private key chosen";
+        } else if (publicKey == null) {
+            return "No public key chosen";
+        }
+
         String encryptedText = RandomChallenge.generateRandomChallenge();
         String decryptedText;
         int index = -1;
@@ -151,14 +161,15 @@ public class Login {
             }
         }
 
-        System.out.println(index);
-
-        //if decrypted text matches cleartext, do
-        if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
-
-            ValidatorScreen.validatorScreen(primaryStage, chain, chain.getBlock(0));
-            return "Challenge completed successfully!";
-            //TODO handle wrong keys
-        } else return "Challenge completed unsuccessfully!";
+        if (index == -1) {
+            publicKey = null;
+            privateKey = null;
+            labelPublicKey.setText("");
+            labelPrivateKey.setText("");
+            return "Public key not in chain";
+        } else if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
+            ValidatorScreen.validatorScreen(primaryStage, chain, chain.getBlock(index));
+        }
+        return "The challenge failed";
     }
 }

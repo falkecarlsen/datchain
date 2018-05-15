@@ -202,8 +202,7 @@ public class MainScreen {
 
         if (searchTerm.matches("[0-9-]+")) {
             System.out.println("searching birthdate");
-            //search birthdate
-            //results = search.FuzzySearchIdentityPublicKey((searchTerm), chain, 5);
+            results = search.FuzzySearchIdentityDOB((searchTerm), chain, 5);
             return results;
         } else if (searchTerm.matches("[a-zA-Z]+")) {
             results = search.FuzzySearchIdentity((searchTerm), chain, 5);
