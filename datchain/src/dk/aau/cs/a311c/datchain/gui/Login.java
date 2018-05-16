@@ -169,7 +169,6 @@ public class Login {
 
         //create cipherblock and build
         CipherBlock cipherBlock = new CipherBlock(encryptedText);
-        cipherBlock.buildBlock();
 
         //do operations on block
         cipherBlock.encryptBlock(publicKey);
