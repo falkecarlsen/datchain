@@ -15,6 +15,9 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Base64;
+
+import static dk.aau.cs.a311c.datchain.utility.RSA.getEncodedPublicKey;
 import static dk.aau.cs.a311c.datchain.utility.RSA.getPrivateKeyFromFile;
 import static dk.aau.cs.a311c.datchain.utility.RSA.getPublicKeyFromFile;
 
@@ -26,15 +29,12 @@ public class Login {
     static Label labelPublicKey = new Label();
 
     public static void login(Stage primaryStage, Blockchain chain) {
-        //AtomicReference<PublicKey> publicKey = null;
-        //AtomicReference<PrivateKey> privateKey = null;
 
         GridPane gridPane = new GridPane();
         gridPane.setVgap(10);
         gridPane.setHgap(10);
         gridPane.setPadding(new Insets(10, 10, 10, 10));
         gridPane.setAlignment(Pos.CENTER);
-        //vBox.setPadding(new Insets(10, 10, 10, 10));
 
 
         //labels for guidance
@@ -156,11 +156,10 @@ public class Login {
         cipherBlock.buildDecryptedText();
 
         for (Block block : chain) {
-            if (block.getIdentityPublicKey().equals(publicKey)) {
+            if (block.getIdentityPublicKey().equals(new String(Base64.getEncoder().encode(publicKey.getEncoded())))) {
                 index = (chain.indexOf(block));
             }
         }
-
         if (index == -1) {
             publicKey = null;
             privateKey = null;

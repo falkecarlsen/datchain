@@ -1,9 +1,6 @@
 package dk.aau.cs.a311c.datchain.gui;
 
-import dk.aau.cs.a311c.datchain.Block;
-import dk.aau.cs.a311c.datchain.Blockchain;
-import dk.aau.cs.a311c.datchain.GenesisBlock;
-import dk.aau.cs.a311c.datchain.ValidatorBlock;
+import dk.aau.cs.a311c.datchain.*;
 import dk.aau.cs.a311c.datchain.utility.RSA;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -26,6 +23,7 @@ public class ValidatorScreen {
     private static String identityDOB;
     private static String prevHash;
     private static String genesisSignature;
+    private static String validatorSignature;
 
 
     //choose pubkey, pub key should be generated here
@@ -45,18 +43,18 @@ public class ValidatorScreen {
     //succes label
     private static Label succesLabel = new Label("Success!");
 
-    private static Label birthdateLabel = new Label("Wrong format, try again");
+    private static Label errorLabel = new Label("");
 
     private static TextField identityText = new TextField();
 
+    private static Label label = new Label();
+
     public static void validatorScreen(Stage primaryStage, Blockchain chain, Block block) {
 
-
-        if (block instanceof GenesisBlock) {
-            System.out.println("logged in as genesis");
-        } else if (block instanceof ValidatorBlock) {
-            System.out.println("logged in as validator");
-        } else System.out.println("oh shit, you shouldnt be here, citizen");
+        //if somehow a citizen got logged in, return to mainscreen
+        if (!((block instanceof GenesisBlock) || (block instanceof ValidatorBlock)))  {
+            MainScreen.screen(primaryStage,chain);
+        }
 
         GridPane gridCenter = new GridPane();
         gridCenter.setVgap(10);
@@ -72,29 +70,31 @@ public class ValidatorScreen {
         gridCenter.getChildren().add(backButton);
 
         //direction label
-        Label label = new Label("Enter the details of the validator you wish to add");
+        if ( block instanceof GenesisBlock) {
+            label.setText("Enter the details of the validator you wish to add");
+        } else if ( block instanceof ValidatorBlock) {
+            label.setText("Enter the details of the citizen you wish to add");
+        }
         GridPane.setHalignment(label, HPos.CENTER);
         GridPane.setConstraints(label, 1, 4);
         gridCenter.getChildren().add(label);
 
         //identity textfield
         identityText.setPromptText("Enter the identity");
-        identityText.setOnAction(e -> saveIdentityInput(identityText.getText()));
         GridPane.setConstraints(identityText, 1, 5);
         gridCenter.getChildren().add(identityText);
 
-        //birthdate textfield mangler logik her til at checke formatet
+        //birthdate textfield
         DOBText.setPromptText("Enter the date of birth, DD-MM-YYYY");
-        DOBText.setOnAction(e -> saveDOBInput(DOBText.getText()));
         GridPane.setConstraints(DOBText, 1, 6);
         gridCenter.getChildren().add(DOBText);
 
 
-        GridPane.setHalignment(birthdateLabel, HPos.CENTER);
-        birthdateLabel.setVisible(false);
-        birthdateLabel.setTextFill(Color.RED);
-        GridPane.setConstraints(birthdateLabel, 1, 7);
-        gridCenter.getChildren().add(birthdateLabel);
+        //error label for wrong DOB format
+        GridPane.setHalignment(errorLabel, HPos.CENTER);
+        errorLabel.setTextFill(Color.RED);
+        GridPane.setConstraints(errorLabel, 1, 7);
+        gridCenter.getChildren().add(errorLabel);
 
         //choose pubkey, pub key should be generated here, not be an input. could also choose file
         /*pubKeyText.setPromptText("Enter the public Key");
@@ -114,10 +114,10 @@ public class ValidatorScreen {
         gridCenter.setConstraints(signatureText, 1, 7);
         gridCenter.getChildren().add(signatureText);*/
 
-        //add validator button
+        //save input data
         Button saveDataButton = new Button("Save data");
         GridPane.setHalignment(saveDataButton, HPos.CENTER);
-        saveDataButton.setOnAction(e -> saveInput(chain));
+        saveDataButton.setOnAction(e -> saveInput(chain, identityText.getText(), DOBText.getText()));
         GridPane.setConstraints(saveDataButton, 1, 8);
         gridCenter.getChildren().add(saveDataButton);
 
@@ -144,26 +144,21 @@ public class ValidatorScreen {
         primaryStage.show();
     }
 
-    private static void saveIdentityInput(String input) {
-        identity = input;
-    }
 
-    private static void saveDOBInput(String input) {
-        System.out.println(input);
-        if (input.matches("^\\d{2}-\\d{2}-\\d{4}$")) {
-            identityDOB = input;
-            System.out.println("succes");
-        } else birthdateLabel.setVisible(true);
-    }
 
-    private static void saveInput(Blockchain chain) {
-        prevHash = chain.getHead().getHash();
-        genesisSignature = signatureText.getText();
-
-        addBlockButton.setVisible(true);
+    private static void saveInput(Blockchain chain, String identityInput, String DOBInput) {
+        succesLabel.setVisible(false);
+        if (identityInput.matches("[a-z A-Z]")) {
+            identity = identityInput;
+            if (DOBInput.matches("^\\d{2}-\\d{2}-\\d{4}$")) {
+                identityDOB = DOBInput;
+                addBlockButton.setVisible(true);
+            } else errorLabel.setText("Wrong date of birth format, try again");
+        } else errorLabel.setText("Wrong identity format, supports only alphabetical");
     }
 
     private static void submitBlock(Blockchain chain, Block block) {
+
         //generates keys
         KeyPair keyPair = RSA.keyPairInit();
 
@@ -172,18 +167,18 @@ public class ValidatorScreen {
 
         //encodes public key to add to new block
         String encodedPublicKey = RSA.getEncodedPublicKey(keyPair);
-
-        chain.addValidatedBlock(new ValidatorBlock(identity, identityDOB, encodedPublicKey, prevHash, genesisSignature), block);
+        //TODO SIGNATURE
+        //gets the hash of the last block
+        prevHash = chain.getHead().getHash();
+        if (block instanceof GenesisBlock) {
+            chain.addValidatedBlock(new ValidatorBlock(identity, identityDOB, encodedPublicKey, prevHash, genesisSignature), block);
+        } else if (block instanceof ValidatorBlock) {
+            chain.addValidatedBlock(new CitizenBlock(identity,identityDOB,encodedPublicKey,prevHash,block.getIdentity(),block.getIdentityPublicKey(),validatorSignature), block);
+        }
         addBlockButton.setVisible(false);
         succesLabel.setVisible(true);
 
         identityText.clear();
         DOBText.clear();
-        pubKeyText.clear();
-        prevHashText.clear();
-        signatureText.clear();
     }
-
-//TODO genesis signature
-    //todo lagre data?
 }
