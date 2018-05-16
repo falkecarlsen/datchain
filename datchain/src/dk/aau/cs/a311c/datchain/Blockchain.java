@@ -63,12 +63,6 @@ public class Blockchain extends ArrayList<Block> {
             nextPrevHash = getBlock(i+1).getPrevHash();
             nextTime = getBlock(i+1).getTimestamp();
 
-            //debug sout
-            if (false) {
-                System.out.println("block at index currHash" + i + ": " + currHash);
-                System.out.println("block at index prevHash" + (i + 1) + ": " + nextPrevHash + "\n");
-            }
-
             //check hash congruency through blocks
             if ( !currHash.equals(nextPrevHash) ) return false;
 

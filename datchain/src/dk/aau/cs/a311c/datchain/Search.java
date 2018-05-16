@@ -51,4 +51,23 @@ public class Search {
         return blockResults;
     }
 
+    public ArrayList<Block> FuzzySearchIdentityDOB(String term, Blockchain chain, int cutoff) {
+
+        //avoid OutOfBounds exception
+        if (cutoff > chain.size()) cutoff = chain.size();
+
+        //deep copy block to arraySource
+        for (int i = 0; i < chain.size(); i++) {
+            this.arraySource.add(chain.getBlock(i).getIdentityDOB());
+        }
+        //run fuzzywuzzy on string-copy of public keys with a size of cutoff
+        searchResults = FuzzySearch.extractTop(term, arraySource, cutoff);
+
+        //for cutoff, get blocks from chain, from searchResults and add to primitive arraylist
+        for (ExtractedResult searchResult : searchResults) {
+            blockResults.add(chain.getBlock(searchResult.getIndex()));
+        }
+        return blockResults;
+    }
+
 }
