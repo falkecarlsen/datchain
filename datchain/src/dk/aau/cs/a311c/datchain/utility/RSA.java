@@ -21,7 +21,10 @@ public class RSA {
     //declaring constants
     private static final String keyAlgorithm = "RSA";
     //choose RSA-variant with padding for encryption and decryption to discourage zero-char attacks
-    private static final String cryptAlgorithm = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
+    //private static final String cryptAlgorithm = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
+    private static final String cryptAlgorithm = "RSA";
+    //private static final String signatureAlgorithm = "SHA256withRSA";
+    private static final String signatureAlgorithm = "MD5withRSA";
     private static final int bitlengthKey = 4096;
     private static final String privateKeyFilename = "private.key";
     private static final String publicKeyFilename = "public.key";
@@ -174,6 +177,46 @@ public class RSA {
             System.out.println("ERROR: Encryption encountered an error! " + e.getMessage());
         }
         return null;
+    }
+
+    public static byte[] sign(String cleartext, PrivateKey privateKey) {
+        try {
+            //get instance of Signature with given constant; signatureAlgorithm
+            final Signature signature = Signature.getInstance(signatureAlgorithm);
+            //initialise signature with private key
+            signature.initSign(privateKey);
+            //pass cleartext as bytes to signature and update
+            signature.update(cleartext.getBytes());
+            //return base64 encoded bytearray of signature
+            return Base64.getEncoder().encode(signature.sign());
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            System.out.println("ERROR: Invalid key supplied! " + e.getMessage());
+        } catch (SignatureException e) {
+            System.out.println("ERROR: Some error has occurred when verifying signature! " + e.getMessage());
+        }
+        return null;
+    }
+    
+    public static boolean verifySignature(String cleartext, byte[] textSignature, PublicKey publicKey) {
+        try {
+            //get instance of Signature with given constant; signatureAlgorithm
+            final Signature signature = Signature.getInstance(signatureAlgorithm);
+            //initialise signature with public key
+            signature.initVerify(publicKey);
+            //update signature with expected cleartext
+            signature.update(cleartext.getBytes());
+            //return boolean on whether keypair, where public key originates, signed textSignature
+            return signature.verify(Base64.getDecoder().decode(textSignature));
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("ERROR: System does not have support for RSA-signature of this type!" + e.getMessage());
+        } catch (SignatureException e) {
+            System.out.println("ERROR: Some error has occurred when verifying signature! " + e.getMessage());
+        } catch (InvalidKeyException e) {
+            System.out.println("ERROR: Invalid key supplied! " + e.getMessage());
+        }
+        return false;
     }
 
     static byte[] decrypt(byte[] ciphertext, Key key) {

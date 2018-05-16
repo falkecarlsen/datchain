@@ -1,10 +1,11 @@
 package dk.aau.cs.a311c.datchain.utility;
 
 import java.security.Key;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Arrays;
 
-import static dk.aau.cs.a311c.datchain.utility.RSA.decrypt;
-import static dk.aau.cs.a311c.datchain.utility.RSA.encrypt;
+import static dk.aau.cs.a311c.datchain.utility.RSA.*;
 
 public class CipherBlock {
 
@@ -14,8 +15,7 @@ public class CipherBlock {
     private byte[][] cipherBlock;
     private byte[][] clearBlock;
     private String decryptedText;
-
-    //TODO implement reverse operation (RSA signature)
+    private byte[] signature;
 
     public CipherBlock(String source) {
         //assign source string to cleartext and build block
@@ -77,6 +77,14 @@ public class CipherBlock {
         }
         //assign newly built and trimmed string to decryptedText
         this.decryptedText = stringBuilder.toString().trim();
+    }
+
+    public void signBlock(PrivateKey privateKey) {
+        this.signature = RSA.sign(this.cleartext, privateKey);
+    }
+
+    public boolean verifyBlock(PublicKey publicKey) {
+        return RSA.verifySignature(this.cleartext, this.signature, publicKey);
     }
 
     public String getCleartext() {

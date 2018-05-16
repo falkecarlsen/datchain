@@ -3,9 +3,11 @@ package dk.aau.cs.a311c.datchain;
 import dk.aau.cs.a311c.datchain.utility.CipherBlock;
 import dk.aau.cs.a311c.datchain.utility.RSA;
 
+import javax.crypto.Cipher;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Arrays;
 
 public class Datchain {
 
@@ -46,7 +48,8 @@ public class Datchain {
         System.out.println("Public keys from file equal? " + publicKey.equals(publicKeyFromFile));
         System.out.println("Private keys from file equal? " + privateKey.equals(privateKeyFromFile));
 
-        //Current implementation of encryption does not support more than 382 bytes
+
+        //test out encryption/decryption in cipherblocks
         String lorem1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque a risus posuere, malesuada nisl non, tempor nunc. Quisque quis sem vitae nunc fermentum rutrum a et neque. Curabitur sed mauris pulvinar, lobortis lacus sed, commodo ligula. Praesent suscipit, mauris eu mattis pulvinar, ante risus mollis tortor, ac iaculis augue elit porta nisl. Pellentesque quis urna interdum velit ultricies rhoncus imperdiet vel libero. Maecenas nec leo massa. Pellentesque lorem purus, scelerisque et ante sit amet, bibendum vehicula metus. Nunc cursus dui at erat pellentesque, eu mollis neque ultrices. Integer consequat varius dui, eget placerat diam egestas eget. Nulla rhoncus odio sed velit commodo, id accumsan erat venenatis. Suspendisse ut nulla ante. Quisque sed urna nunc. Sed egestas, tortor id fermentum convallis, eros quam vulputate neque, eget condimentum quam turpis sed enim. Maecenas metus est, congue id mollis non, tempus vel nisi. In elementum velit ipsum, quis euismod lorem suscipit at. Morbi malesuada nullam.";
 
         CipherBlock cipherBlock = new CipherBlock(lorem1);
@@ -59,14 +62,18 @@ public class Datchain {
 
         System.out.println("Are strings equal? " + cipherBlock.getCleartext().equals(cipherBlock.getDecryptedText()));
 
+        //test out sign/verify in RSA
+
+        byte[] signed = RSA.sign(lorem1, privateKey);
+
+        System.out.println("did test pass signature? " + RSA.verifySignature(lorem1, signed, publicKey));
+
+        //test out sign/verify on cipherblocks
 
         CipherBlock cipherBlock1 = new CipherBlock(lorem1);
 
-        cipherBlock1.encryptBlock(privateKey);
+        cipherBlock1.signBlock(privateKey);
 
-        cipherBlock1.decryptBlock(publicKey);
-
-        System.out.println("Are signature strings equal? " + cipherBlock1.getCleartext().equals(cipherBlock1.getDecryptedText()));
+        System.out.println("did cipherblock pass signature? " + cipherBlock1.verifyBlock(publicKey));
     }
-
 }
