@@ -6,9 +6,8 @@ import static java.time.Instant.now;
 
 public class RandomChallenge {
 
-    private static final int challengeLength = 64;
+    private static final int challengeLength = 2048;
     private static final String charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
 
     public static String generateRandomChallenge() {
         //create new char array challengeLength long
@@ -24,6 +23,7 @@ public class RandomChallenge {
     }
 
     private static int randomIntInRange(int lower, int upper) {
+        //seed java.util random function for greater resolution when called in rapid succession
         return new Random(now().getNano()).nextInt(upper - lower) + lower;
     }
 }
