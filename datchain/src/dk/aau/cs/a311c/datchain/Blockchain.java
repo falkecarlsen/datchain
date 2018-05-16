@@ -4,6 +4,10 @@ import java.util.ArrayList;
 
 public class Blockchain extends ArrayList<Block> {
 
+    public Blockchain(GenesisBlock genesisBlock) {
+        this.add(genesisBlock);
+    }
+
     public boolean addValidatedBlock(Block block, Block validator) {
 
         //if local, current chain is not valid, abort adding block
@@ -12,24 +16,18 @@ public class Blockchain extends ArrayList<Block> {
         //check if block to be added is of GenesisBlock-type and if chainsize is 0
         if (GenesisBlock.class.isAssignableFrom(block.getClass()) && this.size() == 0) {
             System.out.println("Block is of GenesisBlock-type");
-            //TODO validate genesis-block by polling network resources for an existing, older chain, if not assume genuine
             this.add(block);
 
-        //check if block to be added is of ValidatorBlock-type and if chainsize is greater than 0
+            //check if block to be added is of ValidatorBlock-type and if chainsize is greater than 0
         } else if (ValidatorBlock.class.isAssignableFrom(block.getClass()) && this.size() > 0) {
             System.out.println("Block is of ValidatorBlock-type and chain has at least one block");
-            //TODO encrypt hash of proposed ValidatorBlock with public-key of genesis, confirming the authority of genesis
-            //TODO might need a builder-pattern for proper execution
             this.add(block);
 
-        //check if block to be added is of CitizenBlock-type and if chainsize is greater than 0
+            //check if block to be added is of CitizenBlock-type and if chainsize is greater than 0
         } else if (CitizenBlock.class.isAssignableFrom(block.getClass()) && this.size() > 1) {
-            System.out.println("Block is of CitizenBlock-type and chain has at least two block");
-            //TODO encrypt hash of proposed CitizenBlock with public-key of validator, confirming the authority of the validator
-            //TODO might need a builder-pattern for proper execution
             this.add(block);
 
-        //if none match, block is not recognized and a fatal error has occurred
+            //if none match, block is not recognized and a fatal error has occurred
         } else {
             throw new RuntimeException("ERROR: Block supplied does not match any types known!");
         }
@@ -60,11 +58,11 @@ public class Blockchain extends ArrayList<Block> {
             currHash = getBlock(i).getHash();
             currTime = getBlock(i).getTimestamp();
 
-            nextPrevHash = getBlock(i+1).getPrevHash();
-            nextTime = getBlock(i+1).getTimestamp();
+            nextPrevHash = getBlock(i + 1).getPrevHash();
+            nextTime = getBlock(i + 1).getTimestamp();
 
             //check hash congruency through blocks
-            if ( !currHash.equals(nextPrevHash) ) return false;
+            if (!currHash.equals(nextPrevHash)) return false;
 
             //check time is equal or later through blocks
             if (currTime > nextTime) return false;

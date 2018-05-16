@@ -3,11 +3,9 @@ package dk.aau.cs.a311c.datchain;
 import dk.aau.cs.a311c.datchain.utility.CipherBlock;
 import dk.aau.cs.a311c.datchain.utility.RSA;
 
-import javax.crypto.Cipher;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Arrays;
 
 public class Datchain {
 
@@ -21,8 +19,7 @@ public class Datchain {
         CitizenBlock citizen02 = new CitizenBlock("Citizen Name2", "19-09-1980", "CitizenPublicKey", citizen01.getHash(), validator02.getIdentity(), validator02.getIdentityPublicKey(), "ValidatorSignature");
         CitizenBlock citizen03 = new CitizenBlock("Citizen Name3", "19-09-1980", "CitizenPublicKey", citizen02.getHash(), validator03.getIdentity(), validator03.getIdentityPublicKey(), "ValidatorSignature");
 
-        Blockchain chain02 = new Blockchain();
-        chain02.addValidatedBlock(genesis01, validator01);
+        Blockchain chain02 = new Blockchain(genesis01);
         chain02.addValidatedBlock(validator01, validator01);
         chain02.addValidatedBlock(validator02, validator01);
         chain02.addValidatedBlock(validator03, validator01);
@@ -31,7 +28,6 @@ public class Datchain {
         chain02.addValidatedBlock(citizen03, validator01);
 
         System.out.println("chain02 validated: " + chain02.validateChain());
-
 
         System.out.println("RSA-keys present: " + RSA.keysPresent("data/"));
 

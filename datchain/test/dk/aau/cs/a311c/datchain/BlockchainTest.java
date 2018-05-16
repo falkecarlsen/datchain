@@ -12,7 +12,8 @@ class BlockchainTest {
 
     @Test
     void add() {
-        Blockchain chain = new Blockchain();
+        GenesisBlock genesisBlock = new GenesisBlock("Genesis", "19-09-1980", "GenesisPubkey", "45678909876545678");
+        Blockchain chain = new Blockchain(genesisBlock);
         CitizenBlock block01 = new CitizenBlock("Validator","19-09-1980","ValidatorPubkey", "Citizen Name", "CitizenPubKey", "9817324939382", "ValidatorSignature");
         CitizenBlock block02 = new CitizenBlock("Validator","19-09-1980","ValidatorPubkey", "Citizen Name", "CitizenPubKey", "9817324939382", "ValidatorSignature");
         CitizenBlock block03 = new CitizenBlock("Validator","19-09-1980","ValidatorPubkey", "Citizen Name", "CitizenPubKey", "9817324939382", "ValidatorSignature");
@@ -24,7 +25,8 @@ class BlockchainTest {
 
     @Test
     void validateChain() {
-        Blockchain chain = new Blockchain();
+        GenesisBlock genesisBlock = new GenesisBlock("Genesis", "19-09-1980", "GenesisPubkey", "45678909876545678");
+        Blockchain chain = new Blockchain(genesisBlock);
 
         GenesisBlock genesis01 = new GenesisBlock("Genesis","19-09-1980", "GenesisPublicKey", "0000");
 
@@ -58,7 +60,8 @@ class BlockchainTest {
 
     @Test
     void getHead() {
-        Blockchain chain = new Blockchain();
+        GenesisBlock genesisBlock = new GenesisBlock("Genesis", "19-09-1980", "GenesisPubkey", "45678909876545678");
+        Blockchain chain = new Blockchain(genesisBlock);
         CitizenBlock block01 = new CitizenBlock("Validator","19-09-1980","ValidatorPubkey", "Citizen Name", "CitizenPubKey", "9817324939382", "ValidatorSignature");
         CitizenBlock block02 = new CitizenBlock("Validator","19-09-1980","ValidatorPubkey", "Citizen Name", "CitizenPubKey", "9817324939382", "ValidatorSignature");
         CitizenBlock block03 = new CitizenBlock("Validator","19-09-1980","ValidatorPubkey", "Citizen Name", "CitizenPubKey", "9817324939382", "ValidatorSignature");
@@ -72,7 +75,8 @@ class BlockchainTest {
 
     @Test
     void getBlock() {
-        Blockchain chain = new Blockchain();
+        GenesisBlock genesisBlock = new GenesisBlock("Genesis", "19-09-1980", "GenesisPubkey", "45678909876545678");
+        Blockchain chain = new Blockchain(genesisBlock);
         CitizenBlock block01 = new CitizenBlock("Validator","19-09-1980","ValidatorPubkey", "Citizen Name", "CitizenPubKey", "9817324939382", "ValidatorSignature");
         CitizenBlock block02 = new CitizenBlock("Validator","19-09-1980","ValidatorPubkey", "Citizen Name", "CitizenPubKey", "9817324939382", "ValidatorSignature");
         CitizenBlock block03 = new CitizenBlock("Validator","19-09-1980","ValidatorPubkey", "Citizen Name", "CitizenPubKey", "9817324939382", "ValidatorSignature");
@@ -87,12 +91,13 @@ class BlockchainTest {
 
     @Test
     void getChain() {
-        Blockchain chain = new Blockchain();
+        GenesisBlock genesisBlock = new GenesisBlock("Genesis", "19-09-1980", "GenesisPubkey", "45678909876545678");
+
+        Blockchain chain = new Blockchain(genesisBlock);
         CitizenBlock block01 = new CitizenBlock("Validator","19-09-1980","ValidatorPubkey", "Citizen Name", "CitizenPubKey", "9817324939382", "ValidatorSignature");
         CitizenBlock block02 = new CitizenBlock("Validator","19-09-1980","ValidatorPubkey", "Citizen Name", "CitizenPubKey", "9817324939382", "ValidatorSignature");
         CitizenBlock block03 = new CitizenBlock("Validator","19-09-1980","ValidatorPubkey", "Citizen Name", "CitizenPubKey", "9817324939382", "ValidatorSignature");
 
         assertTrue(chain.equals(chain.getChain()));
-
     }
 }

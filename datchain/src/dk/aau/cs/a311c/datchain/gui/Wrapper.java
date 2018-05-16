@@ -27,8 +27,7 @@ public class Wrapper extends Application {
         CitizenBlock citizen02 = new CitizenBlock("Christian", "19-09-1980", "CitizenPublicKey", citizen01.getHash(), validator02.getIdentity(), validator02.getIdentityPublicKey(), "ValidatorSignature");
         CitizenBlock citizen03 = new CitizenBlock("Karl", "19-09-1980", "CitizenPublicKey", citizen02.getHash(), validator03.getIdentity(), validator03.getIdentityPublicKey(), "ValidatorSignature");
 
-        Blockchain chain = new Blockchain();
-        chain.addValidatedBlock(genesis01, validator01);
+        Blockchain chain = new Blockchain(genesis01);
         chain.addValidatedBlock(validator01, validator01);
         chain.addValidatedBlock(validator02, validator01);
         chain.addValidatedBlock(validator03, validator01);
