@@ -144,13 +144,15 @@ public class ValidatorScreen {
 
         //if the user that logged in (block) is a genesis, the user can only add validator blocks
         //the new block is added to the chain, with the required information
+
+        /* TODO needs to conform to privatekey from validator when creating blocks
         if (block instanceof GenesisBlock) {
             chain.addValidatedBlock(new ValidatorBlock(identity, identityDOB, encodedPublicKey, prevHash, genesisSignature), block);
             //else the user is a validator, and can add citizen blocks
         } else if (block instanceof ValidatorBlock) {
             chain.addValidatedBlock(new CitizenBlock(identity, identityDOB, encodedPublicKey, prevHash, block.getIdentity(), block.getIdentityPublicKey(), validatorSignature), block);
         }
-
+        */
         addBlockButton.setVisible(false);
         succesLabel.setVisible(true);
 

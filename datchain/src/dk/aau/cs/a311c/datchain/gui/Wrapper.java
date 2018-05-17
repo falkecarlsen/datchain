@@ -17,7 +17,7 @@ public class Wrapper extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
+        /* TODO needs to conform to privatekey from validator when creating blocks
         //Blockchain for testing purposes
         GenesisBlock genesis01 = new GenesisBlock("Kamilla", "19-09-1980", "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAh6mCcaGkk8dzT+qIF97/cnXGPPFmcMZetpDAP7Ih0Uxf1v+gGOQUAvmMk6ua3upXm72leRmYB7WyBQy5Pp+Tg1bzg90wwk+pspmwRvbW7E0idrgAE7GFJ9Wncdaps+jZHgBVBLWODcRT/jVqRb6Nvwo7TKS8PNOoejAm8m1kN3qwJH185fnuhF1wWRELuxe2OrY20a4QcPYlrTYW3O0AhWN01IyXeefWo3E289jdEHHEMR9082zKfFm2CMCwu45qD04MLq1p/aJzcoryULNs4EAYmWOXwP1foHNqlinV1psG/+Tl9a+2/iJg1IqcXMKE+5wOkAdX0U9VF4LZLaFZVPN5ptG0PB0WUTCxwTPvqt1AD0MDlaEiAj9qkDbJdCMobVSW3eos7fYGnwWn9T7I9AKp0jTq0yEaaPY4RccBoA/6mkl7AmCZQ1k03Q/fcpA69dZH/THNxjJnUHDFrcIQQk9FbtlUNu2FcFnB+w5Yu2wMzFllysENIM+NhGex/yTCXJXjFAR7enoU/U7+4+c+JMaNFYUN/+Cn6kKm7mEVpgHzFLTQx+Q9UmQudh9mzPMm5U4PeoNWD9DxKE/Mo8DAaNWqCfCJqU26RIgFgmcuEwJZQRSGhFqVRcT9w6K6oOIRGdRQxPMVlbeewD1AQNWKjPH4DF2noDaK/hy60yHkGF0CAwEAAQ==", "0000");
         ValidatorBlock validator01 = new ValidatorBlock("Tobias", "19-09-1980", "ValidatorPublicKey", genesis01.getHash(), "GenesisSignature");
@@ -35,10 +35,10 @@ public class Wrapper extends Application {
         chain.addValidatedBlock(citizen02, validator01);
         chain.addValidatedBlock(citizen03, validator01);
 
-
         primaryStage.setTitle("Datchain");
         //opens mainscreen
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("blockchainLogo.png")));
         MainScreen.screen(primaryStage, chain);
+        */
     }
 }

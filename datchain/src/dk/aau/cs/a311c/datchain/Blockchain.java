@@ -1,5 +1,8 @@
 package dk.aau.cs.a311c.datchain;
 
+import dk.aau.cs.a311c.datchain.utility.RSA;
+
+import java.security.PublicKey;
 import java.util.ArrayList;
 
 public class Blockchain extends ArrayList<Block> {
@@ -13,9 +16,11 @@ public class Blockchain extends ArrayList<Block> {
         //if local, current chain is not valid, abort adding block
         if (!this.validateChain()) return false;
 
+        // if block to be added is of GenesisBlock-type, return false - as only constructor can add Genesis
+        if (block instanceof  GenesisBlock) return false;
         //check if block to be added is of ValidatorBlock-type and if chainsize is greater than 0
         // and if block at 0 contains public key of genesis-block passed
-        if (block instanceof ValidatorBlock && this.size() > 0 && this.get(0).getIdentityPublicKey().equals(validator.getIdentityPublicKey())) {
+        else if (block instanceof ValidatorBlock && this.size() > 0 && this.get(0).getIdentityPublicKey().equals(validator.getIdentityPublicKey())) {
             System.out.println("Block is of ValidatorBlock-type and chain has at least one block");
             this.add(block);
 
@@ -78,6 +83,10 @@ public class Blockchain extends ArrayList<Block> {
                 return true;
         }
         return false;
+    }
+
+    public PublicKey getGenesisPublicKey() {
+        return RSA.getPublicKeyFromEncoded(this.get(0).getIdentityPublicKey());
     }
 
     //ArrayList doesn't implement a .last() method, thus we implement one ourselves
