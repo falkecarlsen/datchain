@@ -148,12 +148,20 @@ public class RSA {
         return new String(Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()));
     }
 
+    public static String getEncodedPrivateKey(PrivateKey privateKey) {
+        return new String(Base64.getEncoder().encode(privateKey.getEncoded()));
+    }
+
     public static PrivateKey getPrivateKeyFromEncoded(String encodedKey) {
         return generatePrivateKey(Base64.getDecoder().decode(encodedKey));
     }
 
     public static String getEncodedPublicKey(KeyPair keyPair) {
         return new String(Base64.getEncoder().encode(keyPair.getPublic().getEncoded()));
+    }
+
+    public static String getEncodedPublicKey(PublicKey publicKey) {
+        return new String(Base64.getEncoder().encode(publicKey.getEncoded()));
     }
 
     public static PublicKey getPublicKeyFromEncoded(String encodedKey) {
