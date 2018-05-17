@@ -173,7 +173,6 @@ public class Login {
         //do operations on block
         cipherBlock.encryptBlock(publicKey);
         cipherBlock.decryptBlock(privateKey);
-        cipherBlock.buildDecryptedText();
 
         //index for the block in the chain, which contains the given public key,
         // used to tell whether or not it is a validator or genesis logging in
