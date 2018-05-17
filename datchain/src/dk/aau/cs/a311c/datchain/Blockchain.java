@@ -13,23 +13,21 @@ public class Blockchain extends ArrayList<Block> {
         //if local, current chain is not valid, abort adding block
         if (!this.validateChain()) return false;
 
-        //check if block to be added is of GenesisBlock-type and if chainsize is 0
-        if (GenesisBlock.class.isAssignableFrom(block.getClass()) && this.size() == 0) {
-            System.out.println("Block is of GenesisBlock-type");
-            this.add(block);
-
-            //check if block to be added is of ValidatorBlock-type and if chainsize is greater than 0
-        } else if (ValidatorBlock.class.isAssignableFrom(block.getClass()) && this.size() > 0) {
+        //check if block to be added is of ValidatorBlock-type and if chainsize is greater than 0
+        // and if block at 0 contains public key of genesis-block passed
+        if (block instanceof ValidatorBlock && this.size() > 0 && this.get(0).getIdentityPublicKey().equals(validator.getIdentityPublicKey())) {
             System.out.println("Block is of ValidatorBlock-type and chain has at least one block");
             this.add(block);
 
             //check if block to be added is of CitizenBlock-type and if chainsize is greater than 0
-        } else if (CitizenBlock.class.isAssignableFrom(block.getClass()) && this.size() > 1) {
+            // and whether validator exists on chain using typecasting
+        } else if (block instanceof CitizenBlock && this.size() > 1 && validatorExistsOnChain((ValidatorBlock) validator)) {
+            System.out.println("Block is of citizen type and validator exists on chain");
             this.add(block);
 
             //if none match, block is not recognized and a fatal error has occurred
         } else {
-            throw new RuntimeException("ERROR: Block supplied does not match any types known!");
+            throw new RuntimeException("ERROR: Could not add block, some dependency is not satisfied!");
         }
         return true;
     }
@@ -71,6 +69,15 @@ public class Blockchain extends ArrayList<Block> {
         }
         //if no congruency errors are found, chain is valid
         return true;
+    }
+
+    //check all blocks in chain whether validators public key exists on chain
+    public boolean validatorExistsOnChain(ValidatorBlock validatorBlock) {
+        for (Block block : this) {
+            if (block instanceof ValidatorBlock && block.getIdentityPublicKey().equals(validatorBlock.getIdentityPublicKey()))
+                return true;
+        }
+        return false;
     }
 
     //ArrayList doesn't implement a .last() method, thus we implement one ourselves

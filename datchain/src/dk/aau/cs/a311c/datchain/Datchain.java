@@ -20,9 +20,9 @@ public class Datchain {
         CitizenBlock citizen03 = new CitizenBlock("Citizen Name3", "19-09-1980", "CitizenPublicKey", citizen02.getHash(), validator03.getIdentity(), validator03.getIdentityPublicKey(), "ValidatorSignature");
 
         Blockchain chain02 = new Blockchain(genesis01);
-        chain02.addValidatedBlock(validator01, validator01);
-        chain02.addValidatedBlock(validator02, validator01);
-        chain02.addValidatedBlock(validator03, validator01);
+        chain02.addValidatedBlock(validator01, genesis01);
+        chain02.addValidatedBlock(validator02, genesis01);
+        chain02.addValidatedBlock(validator03, genesis01);
         chain02.addValidatedBlock(citizen01, validator01);
         chain02.addValidatedBlock(citizen02, validator01);
         chain02.addValidatedBlock(citizen03, validator01);
