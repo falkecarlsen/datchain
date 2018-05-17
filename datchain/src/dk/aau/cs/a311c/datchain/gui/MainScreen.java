@@ -113,7 +113,7 @@ public class MainScreen {
         GridPane.setConstraints(publicKeyText, 0, 5);
         gridRight.getChildren().add(publicKeyText);
 
-        Button savePublicKeyButton = new Button("Save public key");
+        Button savePublicKeyButton = new Button("Save public key in datchain folder");
         savePublicKeyButton.setOnMouseClicked(e -> {
             try {
                 savePublicKey();
@@ -221,7 +221,7 @@ public class MainScreen {
 
     private static void savePublicKey() throws IOException {
         //TODO will only write in program folder
-        //opens a window for the user to select a file
+        //opens a window for the user to select a directory
         DirectoryChooser directory = new DirectoryChooser();
         File selectedDirectory = directory.showDialog(null);
 

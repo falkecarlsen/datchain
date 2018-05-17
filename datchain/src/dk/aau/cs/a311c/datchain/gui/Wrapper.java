@@ -21,7 +21,7 @@ public class Wrapper extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-
+        //TODO THIS MAKES THE SAME KEY EVERY TIME, STORAGE OF BLOCKS/KEYS
         //Blockchain for testing purposes
         KeyPair keyPairGenesis = RSA.keyPairInit();
         RSA.keyPairWriter(keyPairGenesis,"data/gui/genesis/");
