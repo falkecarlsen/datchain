@@ -4,6 +4,7 @@ import dk.aau.cs.a311c.datchain.Block;
 import dk.aau.cs.a311c.datchain.Blockchain;
 import dk.aau.cs.a311c.datchain.GenesisBlock;
 import dk.aau.cs.a311c.datchain.Search;
+import dk.aau.cs.a311c.datchain.utility.RSA;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -17,9 +18,19 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.Base64;
 
 import static javafx.geometry.Pos.CENTER;
 
@@ -31,6 +42,7 @@ public class MainScreen {
     private static Text birthdateText = new Text();
     private static Text publicKeyText = new Text();
     private static TableView<Block> table = new TableView<>();
+    private static String publicKey;
 
     public static void screen(Stage primaryStage, Blockchain chain) {
 
@@ -50,7 +62,7 @@ public class MainScreen {
 
         //Center panel contains the search functionality
         GridPane gridRight = new GridPane();
-        gridRight.setAlignment(Pos.CENTER);
+        gridRight.setAlignment(CENTER);
         gridRight.setVgap(10);
         gridRight.setHgap(8);
         gridRight.setPadding(new Insets(10, 20, 10, 10));
@@ -60,47 +72,57 @@ public class MainScreen {
         Text chosenPersonText = new Text("Chosen person");
         chosenPersonText.setStyle("-fx-font-weight: bold");
         GridPane.setHalignment(chosenPersonText, HPos.CENTER);
-        gridRight.setConstraints(chosenPersonText, 0, 2);
+        GridPane.setConstraints(chosenPersonText, 0, 2);
         gridRight.getChildren().add(chosenPersonText);
 
         //label for displaying the identity in chosen the block
         Label firstname_label = new Label("Name:");
         firstname_label.setMinWidth(75);
-        gridRight.setConstraints(firstname_label, 0, 3);
+        GridPane.setConstraints(firstname_label, 0, 3);
         gridRight.getChildren().add(firstname_label);
 
         //TODO REMOVE THIS BUTTON BEFORE TURNING IN THE PROGRAM
         Button button = new Button("Goto validator");
         button.setMinWidth(100);
-        gridRight.setConstraints(button, 0, 0);
-        gridRight.getChildren().add(button);
-        button.setOnAction(e -> ValidatorScreen.validatorScreen(primaryStage, chain, (GenesisBlock) chain.getBlock(0)));
-        
+        topPanel.getChildren().add(button);
+        button.setOnAction(e -> ValidatorScreen.validatorScreen(primaryStage, chain, chain.getBlock(0)));
+
         //label for displaying the birthdate in the chosen block
         Label birthdateLabel = new Label("Birthdate:");
         birthdateLabel.setMinWidth(75);
-        gridRight.setConstraints(birthdateLabel, 0, 4);
+        GridPane.setConstraints(birthdateLabel, 0, 4);
         gridRight.getChildren().add(birthdateLabel);
 
         //label for displaying the public key in the chosen block
         Label publicKeyLabel = new Label("Public key:");
         publicKeyLabel.setMinWidth(75);
-        gridRight.setConstraints(publicKeyLabel, 0, 5);
+        GridPane.setConstraints(publicKeyLabel, 0, 5);
         gridRight.getChildren().add(publicKeyLabel);
 
         //adding the texts for displaying the information in the chosen block
-        gridRight.setConstraints(identityText, 0, 3);
+        GridPane.setHalignment(identityText, HPos.CENTER);
+        GridPane.setConstraints(identityText, 0, 3);
         gridRight.getChildren().add(identityText);
 
-        
-        gridRight.setConstraints(birthdateText, 0, 4);
+
+        GridPane.setHalignment(birthdateText, HPos.CENTER);
+        GridPane.setConstraints(birthdateText, 0, 4);
         gridRight.getChildren().add(birthdateText);
 
-        //TODO should the public key be exported in the main screen? not implemented yet
-        publicKeyText.setOnMouseClicked(e -> System.out.println("Placeholder, should export key"));
         GridPane.setHalignment(publicKeyText, HPos.CENTER);
-        gridRight.setConstraints(publicKeyText, 0, 5);
+        GridPane.setConstraints(publicKeyText, 0, 5);
         gridRight.getChildren().add(publicKeyText);
+
+        Button savePublicKeyButton = new Button("Save public key");
+        savePublicKeyButton.setOnMouseClicked(e -> {
+            try {
+                savePublicKey();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        });
+        GridPane.setConstraints(savePublicKeyButton, 0, 0);
+        gridRight.getChildren().add(savePublicKeyButton);
 
 
         //name column for the tableview
@@ -120,11 +142,12 @@ public class MainScreen {
 
         //sets up the tableview, with the columns
         table = new TableView<>();
+        table.setPlaceholder(new Label(""));
         table.getColumns().addAll(nameColumn, DOBColumn, pubKeyColumn);
         table.setMaxHeight(150);
 
         //adds the tableview to the grid
-        gridRight.setConstraints(table, 0, 10, 1, 1);
+        GridPane.setConstraints(table, 0, 10, 1, 1);
         gridRight.getChildren().add(table);
 
         //textfield for searching in the chain, can search for name, birthdate or public key, by inputting either
@@ -144,7 +167,7 @@ public class MainScreen {
             //displays the search results
             table.setItems(blocks);
         });
-        gridRight.setConstraints(searchField, 0, 9);
+        GridPane.setConstraints(searchField, 0, 9);
         gridRight.getChildren().add(searchField);
 
         //select button for selecting which block to show properties of
@@ -152,7 +175,7 @@ public class MainScreen {
         selectBlockButton.setOnMouseClicked(e -> setChosenBlockDetails());
         GridPane.setHalignment(selectBlockButton, HPos.CENTER);
         gridRight.getChildren().add(selectBlockButton);
-        gridRight.setConstraints(selectBlockButton, 0, 11);
+        GridPane.setConstraints(selectBlockButton, 0, 11);
 
 
         //TODO REMOVE NODES AND ONLINE STATUS?
@@ -196,6 +219,18 @@ public class MainScreen {
         });
     }
 
+    private static void savePublicKey() throws IOException {
+        //TODO will only write in program folder
+        //opens a window for the user to select a file
+        DirectoryChooser directory = new DirectoryChooser();
+        File selectedDirectory = directory.showDialog(null);
+
+        //create keyfile paths at KEYLOCATION
+        Path publickeyFile = Paths.get(selectedDirectory + "public.key");
+
+        //write strings to file in UTF-8 encoding and return true
+        Files.write(publickeyFile, publicKey.getBytes("UTF-8"));
+    }
 
     private static void runPopUp(Stage primaryStage) {
         //calls the popUp to verify the user wants to close the program
@@ -230,13 +265,14 @@ public class MainScreen {
 
     //Sets the properties of the selected block, when the select button is pushed
     private static void setChosenBlockDetails() {
-        //TODO?need exception catch here
         //gets the selected index of the table, and returns value of the same index from the search results
         int index = table.getSelectionModel().getSelectedIndex();
-
-        identityText.setText(searchResults.get(index).getIdentity());
-        birthdateText.setText(searchResults.get(index).getIdentityDOB());
-        //the public key is made into a substring, because of the length
-        publicKeyText.setText(searchResults.get(index).getIdentityPublicKey().substring(0, 25)+"..........");
+        if (0 <= index && index <= 4) {
+            identityText.setText(searchResults.get(index).getIdentity());
+            birthdateText.setText(searchResults.get(index).getIdentityDOB());
+            //the public key is made into a substring, because of the length of the public key
+            publicKeyText.setText(searchResults.get(index).getIdentityPublicKey().substring(0, 25) + "..........");
+            publicKey = searchResults.get(index).getIdentityPublicKey();
+        }
     }
 }

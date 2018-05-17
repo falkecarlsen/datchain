@@ -64,7 +64,6 @@ public class Login {
         gridPane.getChildren().add(labelLogin);
 
 
-
         //setting up the 4 buttons
         //private key button
         Button privateKeyButton = new Button("Private key");
@@ -135,9 +134,10 @@ public class Login {
 
         //checks if the loaded file contains a private key, if it does, return the private key, else tell the user
         //he did not select a private key file
-        if (getPrivateKeyFromFile(selectedFilePrivate.getAbsolutePath()) instanceof PrivateKey) {
+        if (getPrivateKeyFromFile(selectedFilePrivate.getAbsolutePath()) != null) {
             return getPrivateKeyFromFile(selectedFilePrivate.getAbsolutePath());
-        } else labelPrivateKey.setText("File is not a private key"); return null;
+        } else labelPrivateKey.setText("File is not a private key");
+        return null;
     }
 
     //method that prompts the user to select a private key
@@ -148,9 +148,10 @@ public class Login {
 
         //checks if the loaded file contains a private key, if it does, return the public key, else tell the user
         //he did not select a public key file
-        if (getPublicKeyFromFile(selectedFilePublic.getAbsolutePath()) instanceof PublicKey) {
+        if (getPublicKeyFromFile(selectedFilePublic.getAbsolutePath()) != null) {
             return getPublicKeyFromFile(selectedFilePublic.getAbsolutePath());
-        } else labelPublicKey.setText("File is not a public key"); return null;
+        } else labelPublicKey.setText("File is not a public key");
+        return null;
     }
 
     //issues an RSA challenge based on the two selected keys
@@ -166,14 +167,12 @@ public class Login {
         //get random challenge and declare Strings
         String encryptedText = RandomChallenge.generateRandomChallenge();
 
-
         //create cipherblock and build
         CipherBlock cipherBlock = new CipherBlock(encryptedText);
 
         //do operations on block
         cipherBlock.encryptBlock(publicKey);
         cipherBlock.decryptBlock(privateKey);
-        cipherBlock.buildDecryptedText();
 
         //index for the block in the chain, which contains the given public key,
         // used to tell whether or not it is a validator or genesis logging in
@@ -184,6 +183,7 @@ public class Login {
                 index = (chain.indexOf(block));
             }
         }
+
         //if index is still -1, no block contains the public key, and therefore cannot log in. Resets keys and labels
         if (index == -1) {
             publicKey = null;

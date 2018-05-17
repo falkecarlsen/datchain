@@ -28,7 +28,7 @@ public class ValidatorScreen {
     private static Button addBlockButton = new Button("Check if data is correct and submit block");
     private static TextField DOBText = new TextField();
     private static TextField identityText = new TextField();
-    private static Label succesLabel = new Label("Success! Keys written to data folder");
+    private static Label succesLabel = new Label();
     private static Label errorLabel = new Label("");
     private static Label userPromptLabel = new Label();
 
@@ -59,6 +59,7 @@ public class ValidatorScreen {
         } else if (block instanceof ValidatorBlock) {
             userPromptLabel.setText("Enter the details of the citizen you wish to add");
         }
+
         //adds the directionlabel to the gridpane
         GridPane.setHalignment(userPromptLabel, HPos.CENTER);
         GridPane.setConstraints(userPromptLabel, 1, 4);
@@ -92,10 +93,8 @@ public class ValidatorScreen {
         addBlockButton.setOnAction(e -> submitBlock(chain, block));
         GridPane.setConstraints(addBlockButton, 1, 9);
         gridCenter.getChildren().add(addBlockButton);
-        addBlockButton.setVisible(false);
 
         //label to appear after block is submitted, is invisible until block is submitted
-        //TODO MIGHT DO A VERIFY CHAIN BEFORE SETTING THE LABEL TO BE VISIBLE
         GridPane.setHalignment(succesLabel, HPos.CENTER);
         succesLabel.setTextFill(Color.GREEN);
         GridPane.setConstraints(succesLabel, 1, 9);
@@ -129,7 +128,6 @@ public class ValidatorScreen {
     }
 
     private static void submitBlock(Blockchain chain, Block block) {
-
         //generates keys
         KeyPair keyPair = RSA.keyPairInit();
 
@@ -151,8 +149,12 @@ public class ValidatorScreen {
             chain.addValidatedBlock(new CitizenBlock(identity, identityDOB, encodedPublicKey, prevHash, block.getIdentity(), block.getIdentityPublicKey(), validatorSignature), block);
         }
 
-        addBlockButton.setVisible(false);
-        succesLabel.setVisible(true);
+
+        if (chain.validateChain()) {
+            addBlockButton.setVisible(false);
+            succesLabel.setText("Success! Keys written to data folder");
+        } else succesLabel.setText("Something went wrong");
+
 
         //clears the saved data
         identityText.clear();
