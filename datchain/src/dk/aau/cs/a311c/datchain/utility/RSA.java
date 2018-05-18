@@ -72,7 +72,12 @@ public class RSA {
         return false;
     }
 
-    static public boolean publicKeyWriter(String publicKey, File directory) {
+    static public boolean publicKeyWriter(String publicKey, String directory) {
+        //check if a public key is chosen
+        if (publicKey == null) {
+            return false;
+        }
+
         try {
             //create keyfile paths at KEYLOCATION
             Path publickeyFile = Paths.get(directory + "public.key");
