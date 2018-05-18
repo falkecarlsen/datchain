@@ -1,17 +1,12 @@
 package dk.aau.cs.a311c.datchain.gui;
 
 import dk.aau.cs.a311c.datchain.Blockchain;
-import dk.aau.cs.a311c.datchain.GenesisBlock;
-import dk.aau.cs.a311c.datchain.cryptography.RSA;
 import dk.aau.cs.a311c.datchain.utility.StoreChain;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 
 public class Wrapper extends Application {
 
@@ -21,25 +16,17 @@ public class Wrapper extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Blockchain chain = new Blockchain();
+        Blockchain chain;
+        primaryStage.setTitle("Datchain");
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("blockchainLogo.png")));
 
         //TODO MAKE DOB TO A DATE AND DO A CHECKEDY CHECK WHEN NEW BLOCK xD
         //TODO ALL KEYS START THE SAME
         if (new File("data/blockchain.obj").isFile()) {
             chain = StoreChain.readChainFromFilesystem("data/");
-
-            //opens mainscreen
-            primaryStage.setTitle("Datchain");
-            primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("blockchainLogo.png")));
             MainScreen.screen(primaryStage, chain);
         } else {
-
-            primaryStage.setTitle("Datchain");
-            //opens mainscreen
-            primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("blockchainLogo.png")));
-
             ValidatorScreen.initialStartup(primaryStage);
-            //TODO MAKE GENESIS CREATION SCREEN DANK AF
         }
 
 

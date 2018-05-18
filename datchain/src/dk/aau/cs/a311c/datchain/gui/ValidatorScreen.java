@@ -8,7 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -17,8 +16,6 @@ import javafx.stage.Stage;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-
-import static dk.aau.cs.a311c.datchain.gui.MainScreen.runPopUp;
 
 
 class ValidatorScreen {
@@ -171,11 +168,12 @@ class ValidatorScreen {
     }
 
     private static void submitGenesis(Stage primaryStage) {
-        //generates
+        //generates key for the genesis and stores them
         KeyPair genesisKeypair = RSA.keyPairInit();
         PublicKey genesisPublicKey = RSA.getPublicKey(genesisKeypair);
         RSA.keyPairWriter(genesisKeypair, "data/gui/genesis/");
 
+        //creates the genesis and adds it to a new chain
         GenesisBlock genesis01 = new GenesisBlock(identity, identityDOB, RSA.getEncodedPublicKey(genesisPublicKey), "0000");
         Blockchain chain = new Blockchain(genesis01);
 
