@@ -21,10 +21,8 @@ public class RSA {
     //declaring constants
     private static final String keyAlgorithm = "RSA";
     //choose RSA-variant with padding for encryption and decryption to discourage zero-char attacks
-    //private static final String cryptAlgorithm = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
-    private static final String cryptAlgorithm = "RSA";
-    //private static final String signatureAlgorithm = "SHA256withRSA";
-    private static final String signatureAlgorithm = "MD5withRSA";
+    private static final String cryptAlgorithm = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
+    private static final String signatureAlgorithm = "SHA512withRSA";
     private static final int bitlengthKey = 4096;
     private static final String privateKeyFilename = "private.key";
     private static final String publicKeyFilename = "public.key";
@@ -150,12 +148,20 @@ public class RSA {
         return new String(Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()));
     }
 
+    public static String getEncodedPrivateKey(PrivateKey privateKey) {
+        return new String(Base64.getEncoder().encode(privateKey.getEncoded()));
+    }
+
     public static PrivateKey getPrivateKeyFromEncoded(String encodedKey) {
         return generatePrivateKey(Base64.getDecoder().decode(encodedKey));
     }
 
     public static String getEncodedPublicKey(KeyPair keyPair) {
         return new String(Base64.getEncoder().encode(keyPair.getPublic().getEncoded()));
+    }
+
+    public static String getEncodedPublicKey(PublicKey publicKey) {
+        return new String(Base64.getEncoder().encode(publicKey.getEncoded()));
     }
 
     public static PublicKey getPublicKeyFromEncoded(String encodedKey) {
@@ -198,7 +204,7 @@ public class RSA {
         }
         return null;
     }
-    
+
     public static boolean verifySignature(String cleartext, byte[] textSignature, PublicKey publicKey) {
         try {
             //get instance of Signature with given constant; signatureAlgorithm
