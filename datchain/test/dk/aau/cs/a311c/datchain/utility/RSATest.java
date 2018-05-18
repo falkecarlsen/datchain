@@ -1,5 +1,6 @@
 package dk.aau.cs.a311c.datchain.utility;
 
+import dk.aau.cs.a311c.datchain.cryptography.RSA;
 import org.junit.jupiter.api.Test;
 
 import java.security.KeyPair;
@@ -31,7 +32,7 @@ class RSATest {
         //write keys to files in testDirectory
         RSA.keyPairWriter(keyPair, testDirectiory);
     }
-    */
+
 
     @Test
     void keyPairWriter() {
@@ -137,4 +138,5 @@ class RSATest {
 
         assertNotNull(RSA.getPublicKeyFromEncoded(encodedPublicKey));
     }
+    */
 }

@@ -4,8 +4,8 @@ import dk.aau.cs.a311c.datchain.Block;
 import dk.aau.cs.a311c.datchain.Blockchain;
 import dk.aau.cs.a311c.datchain.GenesisBlock;
 import dk.aau.cs.a311c.datchain.ValidatorBlock;
-import dk.aau.cs.a311c.datchain.utility.CipherBlock;
-import dk.aau.cs.a311c.datchain.utility.RandomChallenge;
+import dk.aau.cs.a311c.datchain.cryptography.CipherBlock;
+import dk.aau.cs.a311c.datchain.cryptography.RandomChallenge;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -19,7 +19,7 @@ import java.io.File;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-import static dk.aau.cs.a311c.datchain.utility.RSA.*;
+import static dk.aau.cs.a311c.datchain.cryptography.RSA.*;
 
 class Login {
     private static PrivateKey privateKey;

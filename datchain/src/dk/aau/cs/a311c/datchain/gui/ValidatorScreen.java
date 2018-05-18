@@ -1,7 +1,7 @@
 package dk.aau.cs.a311c.datchain.gui;
 
 import dk.aau.cs.a311c.datchain.*;
-import dk.aau.cs.a311c.datchain.utility.RSA;
+import dk.aau.cs.a311c.datchain.cryptography.RSA;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;

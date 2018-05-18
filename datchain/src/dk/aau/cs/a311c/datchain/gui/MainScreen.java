@@ -1,7 +1,8 @@
 package dk.aau.cs.a311c.datchain.gui;
 
 import dk.aau.cs.a311c.datchain.*;
-import dk.aau.cs.a311c.datchain.utility.RSA;
+import dk.aau.cs.a311c.datchain.cryptography.RSA;
+import dk.aau.cs.a311c.datchain.utility.Search;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;

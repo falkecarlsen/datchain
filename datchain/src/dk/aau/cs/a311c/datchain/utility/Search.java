@@ -1,7 +1,9 @@
-package dk.aau.cs.a311c.datchain;
+package dk.aau.cs.a311c.datchain.utility;
 
 //https://github.com/xdrop/fuzzywuzzy for fuzzy string matching
 
+import dk.aau.cs.a311c.datchain.Block;
+import dk.aau.cs.a311c.datchain.Blockchain;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 
