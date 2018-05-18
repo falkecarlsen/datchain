@@ -16,7 +16,7 @@ public class ValidatorBlock extends Block {
         this.genesisSignature = RSA.sign(getVolatileInformation(), validatorPrivateKey);
     }
 
-    public byte[] getGenesisSignature() {
+    private byte[] getGenesisSignature() {
         return this.genesisSignature;
     }
 

@@ -2,6 +2,7 @@ package dk.aau.cs.a311c.datchain;
 
 import dk.aau.cs.a311c.datchain.utility.CipherBlock;
 import dk.aau.cs.a311c.datchain.utility.RSA;
+import dk.aau.cs.a311c.datchain.utility.StoreChain;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -66,6 +67,21 @@ public class Datchain {
 
         System.out.println("chain02 validated: " + chain.validateChain());
 
+        //test serialisation
+
+        System.out.println("Coud chain be serialised and written to filesystem? " + StoreChain.writeChainToFilesystem("data/", chain));
+
+        Blockchain reconstitutedChain = StoreChain.readChainFromFilesystem("data/");
+
+        System.out.println("is reconstituted chain valid? " + reconstitutedChain.validateChain());
+
+        System.out.println("is reconstituted chain size: " + reconstitutedChain.size());
+        System.out.println("does reconstituted chain contain validator01? " + reconstitutedChain.validatorExistsOnChain(validator01));
+        System.out.println("does reconstituted chain contain validator02? " + reconstitutedChain.validatorExistsOnChain(validator02));
+        System.out.println("does reconstituted chain contain validator03? " + reconstitutedChain.validatorExistsOnChain(validator03));
+
+        //test keys
+
         System.out.println("RSA-keys present: " + RSA.keysPresent("data/"));
 
         KeyPair keyPair = RSA.keyPairInit();
@@ -107,13 +123,13 @@ public class Datchain {
 
         cipherBlock1.signBlock(privateKey);
 
-        System.out.println(Arrays.toString(cipherBlock1.getSignature()));
+        //System.out.println(Arrays.toString(cipherBlock1.getSignature()));
 
         CipherBlock cipherBlock2 = new CipherBlock(lorem1);
 
         cipherBlock2.signBlock(privateKey);
 
-        System.out.println(Arrays.toString(cipherBlock2.getSignature()));
+        //System.out.println(Arrays.toString(cipherBlock2.getSignature()));
 
         System.out.println("did cipherblock pass signature? " + cipherBlock1.verifyBlock(publicKey));
     }
