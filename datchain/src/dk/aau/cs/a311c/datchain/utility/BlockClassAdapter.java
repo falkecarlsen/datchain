@@ -18,7 +18,7 @@ public class BlockClassAdapter implements JsonSerializer<Block>, JsonDeserialize
     }
 
     @Override
-    public Block deserialize(JsonElement json, Type typeofT, JsonDeserializationContext context) {
+    public Block deserialize(JsonElement json, Type redundantType, JsonDeserializationContext context) {
         JsonObject jsonObject = json.getAsJsonObject();
         //get SimpleName of class specified when serialising
         String type = jsonObject.get("type").getAsString();

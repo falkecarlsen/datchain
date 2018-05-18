@@ -43,8 +43,8 @@ public class StoreChain {
         Gson gson = new GsonBuilder().registerTypeAdapter(Block.class, new BlockClassAdapter()).create();
         //create new Blockchain object, utilising no-args constructor for this specific purpose
         Blockchain blockchain = new Blockchain();
-        //addAdd blocks from serialised json to newly created Blockchain
-        blockchain.addAll(gson.fromJson(jsonChain, Blockchain.class));
+        //assign reconstituted Blockchain from serialised json to newly created Blockchain
+        blockchain = gson.fromJson(jsonChain, Blockchain.class);
         return blockchain;
     }
 
