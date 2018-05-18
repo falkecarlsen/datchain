@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 
 public class CloseProgram {
 
-    static boolean answer;
+    private static boolean answer;
 
     public static boolean display() {
 

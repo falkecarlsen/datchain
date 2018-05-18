@@ -4,6 +4,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
@@ -67,6 +68,20 @@ public class RSA {
             System.out.println("ERROR: Unsupported encoding! (UTF-8) " + e.getMessage());
         } catch (IOException e) {
             System.out.println("ERROR: IOException caught! " + e.getMessage());
+        }
+        return false;
+    }
+
+    static public boolean publicKeyWriter(String publicKey, File directory) {
+        try {
+            //create keyfile paths at KEYLOCATION
+            Path publickeyFile = Paths.get(directory + "public.key");
+
+            //write strings to file in UTF-8 encoding and return true
+            Files.write(publickeyFile, publicKey.getBytes("UTF-8"));
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return false;
     }
