@@ -1,7 +1,7 @@
 package dk.aau.cs.a311c.datchain;
 
-import dk.aau.cs.a311c.datchain.utility.CipherBlock;
-import dk.aau.cs.a311c.datchain.utility.RSA;
+import dk.aau.cs.a311c.datchain.cryptography.CipherBlock;
+import dk.aau.cs.a311c.datchain.cryptography.RSA;
 import dk.aau.cs.a311c.datchain.utility.StoreChain;
 
 import java.security.KeyPair;

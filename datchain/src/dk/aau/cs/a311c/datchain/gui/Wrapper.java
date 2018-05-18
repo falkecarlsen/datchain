@@ -4,7 +4,7 @@ import dk.aau.cs.a311c.datchain.Blockchain;
 import dk.aau.cs.a311c.datchain.CitizenBlock;
 import dk.aau.cs.a311c.datchain.GenesisBlock;
 import dk.aau.cs.a311c.datchain.ValidatorBlock;
-import dk.aau.cs.a311c.datchain.utility.RSA;
+import dk.aau.cs.a311c.datchain.cryptography.RSA;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;

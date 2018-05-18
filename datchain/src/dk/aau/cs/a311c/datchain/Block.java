@@ -1,6 +1,6 @@
 package dk.aau.cs.a311c.datchain;
 
-import static dk.aau.cs.a311c.datchain.utility.SHA.computeHash;
+import static dk.aau.cs.a311c.datchain.cryptography.SHA.computeHash;
 import static java.time.Instant.now;
 
 public abstract class Block {

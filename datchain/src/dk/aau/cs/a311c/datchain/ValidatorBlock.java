@@ -1,6 +1,6 @@
 package dk.aau.cs.a311c.datchain;
 
-import dk.aau.cs.a311c.datchain.utility.RSA;
+import dk.aau.cs.a311c.datchain.cryptography.RSA;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
