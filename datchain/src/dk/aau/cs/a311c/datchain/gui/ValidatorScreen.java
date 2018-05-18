@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -15,10 +16,12 @@ import javafx.stage.Stage;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
+import java.security.PublicKey;
+
+import static dk.aau.cs.a311c.datchain.gui.MainScreen.runPopUp;
 
 
 class ValidatorScreen {
-
     //input data
     private static String identity;
     private static String identityDOB;
@@ -32,7 +35,6 @@ class ValidatorScreen {
     private static Label userPromptLabel = new Label();
 
     public static void validatorScreen(Stage primaryStage, Blockchain chain, Block block, PrivateKey validatorPrivateKey) {
-
         //if somehow a citizen got logged in, return to mainscreen
         if (!((block instanceof GenesisBlock) || (block instanceof ValidatorBlock))) {
             MainScreen.screen(primaryStage, chain);
@@ -166,5 +168,84 @@ class ValidatorScreen {
             identityText.clear();
             DOBText.clear();
         } else succesLabel.setText("Something went wrong");
+    }
+
+    private static void submitGenesis(Stage primaryStage) {
+        //generates
+        KeyPair genesisKeypair = RSA.keyPairInit();
+        PublicKey genesisPublicKey = RSA.getPublicKey(genesisKeypair);
+        RSA.keyPairWriter(genesisKeypair, "data/gui/genesis/");
+
+        GenesisBlock genesis01 = new GenesisBlock(identity, identityDOB, RSA.getEncodedPublicKey(genesisPublicKey), "0000");
+        Blockchain chain = new Blockchain(genesis01);
+
+        //opens mainscreen
+        MainScreen.screen(primaryStage, chain);
+    }
+
+
+    public static void initialStartup(Stage primaryStage) {
+
+        //setting up the gridpane to be used in the scene
+        GridPane gridCenter = new GridPane();
+        gridCenter.setVgap(10);
+        gridCenter.setHgap(8);
+        gridCenter.setPadding(new Insets(10, 20, 10, 10));
+        gridCenter.setStyle("-fx-background-color: #FFFFFF;");
+
+
+        //direction label
+        userPromptLabel.setText("Enter the details of the genesis");
+
+        //adds the directionlabel to the gridpane
+        GridPane.setHalignment(userPromptLabel, HPos.CENTER);
+        GridPane.setConstraints(userPromptLabel, 1, 4);
+        gridCenter.getChildren().add(userPromptLabel);
+
+        //identity textfield
+        identityText.setPromptText("Enter the identity");
+        GridPane.setConstraints(identityText, 1, 5);
+        gridCenter.getChildren().add(identityText);
+
+        //birthdate textfield
+        DOBText.setPromptText("Enter the date of birth, DD-MM-YYYY");
+        GridPane.setConstraints(DOBText, 1, 6);
+        gridCenter.getChildren().add(DOBText);
+
+        //error label for wrong DOB format, positioned under the date of birth textfield
+        GridPane.setHalignment(errorLabel, HPos.CENTER);
+        errorLabel.setTextFill(Color.RED);
+        GridPane.setConstraints(errorLabel, 1, 7);
+        gridCenter.getChildren().add(errorLabel);
+
+        //button to be used to save the input data, saves both identity and DOB
+        Button saveDataButton = new Button("Save data");
+        GridPane.setHalignment(saveDataButton, HPos.CENTER);
+        saveDataButton.setOnAction(e -> saveInput(identityText.getText(), DOBText.getText()));
+        GridPane.setConstraints(saveDataButton, 1, 8);
+        gridCenter.getChildren().add(saveDataButton);
+
+        //button to submit the block to the chain, is invisible until the user input data in the correct format
+        GridPane.setHalignment(addBlockButton, HPos.CENTER);
+        addBlockButton.setVisible(false);
+        addBlockButton.setOnAction(e -> ValidatorScreen.submitGenesis(primaryStage));
+        GridPane.setConstraints(addBlockButton, 1, 9);
+        gridCenter.getChildren().add(addBlockButton);
+
+        //label to appear after block is submitted, is invisible until block is submitted
+        GridPane.setHalignment(succesLabel, HPos.CENTER);
+        succesLabel.setTextFill(Color.GREEN);
+        GridPane.setConstraints(succesLabel, 1, 9);
+        gridCenter.getChildren().add(succesLabel);
+        succesLabel.setVisible(false);
+
+        //setting up the scene in a borderpane
+        BorderPane borderPane = new BorderPane();
+        borderPane.setCenter(gridCenter);
+        Scene scene = new Scene(borderPane, 260, 275);
+
+        primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
+        primaryStage.show();
     }
 }

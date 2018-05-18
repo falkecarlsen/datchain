@@ -223,7 +223,7 @@ class MainScreen {
         //RSA.publicKeyWriter(publicKey, selectedDirectory);
     }
 
-    private static void runPopUp(Stage primaryStage, Blockchain chain) {
+    static void runPopUp(Stage primaryStage, Blockchain chain) {
         //calls the popUp to verify the user wants to close the program
         boolean answer = CloseProgram.display();
         if (answer) {

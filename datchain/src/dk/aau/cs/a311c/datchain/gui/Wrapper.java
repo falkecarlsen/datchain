@@ -27,15 +27,19 @@ public class Wrapper extends Application {
         //TODO ALL KEYS START THE SAME
         if (new File("data/blockchain.obj").isFile()) {
             chain = StoreChain.readChainFromFilesystem("data/");
-        } else {
-            //TODO MAKE GENESIS CREATION SCREEN DANK AF
-            KeyPair genesisKeypair = RSA.keyPairInit();
-            PrivateKey genesisPrivateKey = RSA.getPrivateKey(genesisKeypair);
-            PublicKey genesisPublicKey = RSA.getPublicKey(genesisKeypair);
-            RSA.keyPairWriter(genesisKeypair, "data/gui/genesis/");
 
-            GenesisBlock genesis01 = new GenesisBlock("Erik Lauridsen", "19-09-1980", RSA.getEncodedPublicKey(genesisPublicKey), "0000");
-            chain = new Blockchain(genesis01);
+            //opens mainscreen
+            primaryStage.setTitle("Datchain");
+            primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("blockchainLogo.png")));
+            MainScreen.screen(primaryStage, chain);
+        } else {
+
+            primaryStage.setTitle("Datchain");
+            //opens mainscreen
+            primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("blockchainLogo.png")));
+
+            ValidatorScreen.initialStartup(primaryStage);
+            //TODO MAKE GENESIS CREATION SCREEN DANK AF
         }
 
 
@@ -90,10 +94,5 @@ public class Wrapper extends Application {
 
         CitizenBlock citizen03 = new CitizenBlock("Annie Skriver Købke", "05-09-1986", RSA.getEncodedPublicKey(citizenKeypair03), citizen02.getHash(), chain.getHead().getHash(), validator03.getIdentityPublicKey(), validatorPrivate03);
         chain.addValidatedBlock(citizen03, validator01);*/
-
-        primaryStage.setTitle("Datchain");
-        //opens mainscreen
-        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("blockchainLogo.png")));
-        MainScreen.screen(primaryStage, chain);
     }
 }
