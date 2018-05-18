@@ -1,10 +1,9 @@
-package dk.aau.cs.a311c.datchain.utility;
+package dk.aau.cs.a311c.datchain.cryptography;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
@@ -30,9 +29,11 @@ public class RSA {
 
     static public KeyPair keyPairInit() {
         try {
-            //initialize and generate keys from constants, allowing SecureRandom implementation to be chosen at runtime
+            //declare keyPairGenerator with keyAlgorithm for creating keypair
             final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(keyAlgorithm);
-            keyPairGenerator.initialize(bitlengthKey);
+            //initialise keyPairGenerator with bitlengthKey and SecureRandom with RandomChallenge as bytes
+            keyPairGenerator.initialize(bitlengthKey, new SecureRandom(RandomChallenge.generateRandomChallenge().getBytes()));
+            //return generated KeyPair
             return keyPairGenerator.generateKeyPair();
 
         } catch (NoSuchAlgorithmException e) {
@@ -42,7 +43,7 @@ public class RSA {
         } catch (Exception e) {
             System.out.println("ERROR: Unknown exception: " + e.getMessage());
         }
-        //if exceptions hasn't been caught
+        //if exceptions has been caught, return null
         return null;
     }
 
@@ -69,11 +70,19 @@ public class RSA {
         } catch (IOException e) {
             System.out.println("ERROR: IOException caught! " + e.getMessage());
         }
+        //if exceptions has been caught, return false
         return false;
     }
 
-    static public boolean publicKeyWriter(String publicKey, File directory) {
+    static public boolean publicKeyWriter(String publicKey, String directory) {
         try {
+            //check if a public key is chosen
+            if (publicKey == null) {
+                return false;
+            }
+            //if keyLocation doesn't exist, create the directory
+            if (!Files.exists(Paths.get(directory))) Files.createDirectory(Paths.get(directory));
+
             //create keyfile paths at KEYLOCATION
             Path publickeyFile = Paths.get(directory + "public.key");
 
@@ -83,15 +92,19 @@ public class RSA {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //if exceptions has been caught, return false
         return false;
     }
 
     public static boolean keysPresent(String directory) {
         try {
+            //declare paths for expected keys
             Path privateKey = Paths.get(directory + privateKeyFilename);
             Path publicKey = Paths.get(directory + publicKeyFilename);
+            //return boolean of both paths exists
             return Files.exists(privateKey) && Files.exists(publicKey);
         } catch (InvalidPathException e) {
+            //if exception is caught, print error and return false
             System.out.println("ERROR: Cannot get keys from: " + directory + ". " + e.getMessage());
             return false;
         }
@@ -110,7 +123,7 @@ public class RSA {
         } catch (IOException e) {
             System.out.println("ERROR: IO exception caught! " + e.getMessage());
         }
-        //if exceptions hasn't been caught
+        //if exceptions has been caught, return null
         return null;
     }
 
@@ -125,7 +138,7 @@ public class RSA {
         } catch (InvalidKeySpecException e) {
             System.out.println("ERROR: Invalid key specification, cannot get private key specification! " + e.getMessage());
         }
-        //if exceptions hasn't been caught
+        //if exceptions has been caught, return null
         return null;
     }
 
@@ -141,6 +154,7 @@ public class RSA {
         } catch (IOException e) {
             System.out.println("ERROR: IO exception caught! " + e.getMessage());
         }
+        //if exceptions has been caught, return null
         return null;
     }
 
@@ -156,29 +170,36 @@ public class RSA {
         } catch (InvalidKeySpecException e) {
             System.out.println("ERROR: Invalid key specification, cannot get private key specification! " + e.getMessage());
         }
+        //if exceptions has been caught, return null
         return null;
     }
 
+    //gets encoded private key from keypair
     public static String getEncodedPrivateKey(KeyPair keyPair) {
         return new String(Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()));
     }
 
+    //gets encoded private key from PrivateKey
     public static String getEncodedPrivateKey(PrivateKey privateKey) {
         return new String(Base64.getEncoder().encode(privateKey.getEncoded()));
     }
 
+    //generates Private Key object from encoded private key string
     public static PrivateKey getPrivateKeyFromEncoded(String encodedKey) {
         return generatePrivateKey(Base64.getDecoder().decode(encodedKey));
     }
 
+    //gets encoded public key from keypair
     public static String getEncodedPublicKey(KeyPair keyPair) {
         return new String(Base64.getEncoder().encode(keyPair.getPublic().getEncoded()));
     }
 
+    //gets public key from PublicKey
     public static String getEncodedPublicKey(PublicKey publicKey) {
         return new String(Base64.getEncoder().encode(publicKey.getEncoded()));
     }
 
+    //generates Public Key object from encoded public key string
     public static PublicKey getPublicKeyFromEncoded(String encodedKey) {
         return generatePublicKey(Base64.getDecoder().decode(encodedKey));
     }
@@ -197,6 +218,7 @@ public class RSA {
         } catch (Exception e) {
             System.out.println("ERROR: Encryption encountered an error! " + e.getMessage());
         }
+        //if exceptions has been caught, return null
         return null;
     }
 
@@ -217,6 +239,7 @@ public class RSA {
         } catch (SignatureException e) {
             System.out.println("ERROR: Some error has occurred when verifying signature! " + e.getMessage());
         }
+        //if exceptions has been caught, return null
         return null;
     }
 
@@ -237,6 +260,7 @@ public class RSA {
         } catch (InvalidKeyException e) {
             System.out.println("ERROR: Invalid key supplied! " + e.getMessage());
         }
+        //if exceptions has been caught, return false
         return false;
     }
 
@@ -256,6 +280,7 @@ public class RSA {
         } catch (IllegalBlockSizeException e) {
             System.out.println("ERROR: Block size is different than expected! " + e.getMessage());
         }
+        //if exceptions has been caught, return null
         return null;
     }
 

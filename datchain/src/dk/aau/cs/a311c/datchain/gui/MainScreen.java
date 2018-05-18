@@ -1,7 +1,9 @@
 package dk.aau.cs.a311c.datchain.gui;
 
 import dk.aau.cs.a311c.datchain.*;
-import dk.aau.cs.a311c.datchain.utility.RSA;
+import dk.aau.cs.a311c.datchain.cryptography.RSA;
+import dk.aau.cs.a311c.datchain.utility.Search;
+import dk.aau.cs.a311c.datchain.utility.StoreChain;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -20,6 +22,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.util.ArrayList;
 
+import static dk.aau.cs.a311c.datchain.cryptography.RSA.publicKeyWriter;
 import static javafx.geometry.Pos.CENTER;
 
 
@@ -35,8 +38,8 @@ class MainScreen {
 
     public static void screen(Stage primaryStage, Blockchain chain) {
 
-        //this stage uses a borderpane, which contains a top, center and bottom panel
 
+        //this stage uses a borderpane, which contains a top, center and bottom panel
         //top panel, which just contains the login button
         HBox topPanel = new HBox();
         topPanel.setStyle("-fx-background-color: #FFFFFF;");
@@ -106,7 +109,7 @@ class MainScreen {
         gridRight.getChildren().add(blockTypeText);
 
         Button savePublicKeyButton = new Button("Save public key in datchain folder");
-        savePublicKeyButton.setOnMouseClicked(e -> savePublicKey());
+        savePublicKeyButton.setOnMouseClicked(e -> publicKeyWriter(publicKey, "data/gui/selectedKey/"));
         GridPane.setConstraints(savePublicKeyButton, 0, 0);
         gridRight.getChildren().add(savePublicKeyButton);
 
@@ -126,6 +129,7 @@ class MainScreen {
         pubKeyColumn.setMinWidth(200);
         pubKeyColumn.setCellValueFactory(new PropertyValueFactory<>("identityPublicKey"));
 
+
         //sets up the tableview, with the columns
         table = new TableView<>();
         table.setPlaceholder(new Label(""));
@@ -135,6 +139,11 @@ class MainScreen {
         //adds the tableview to the grid
         GridPane.setConstraints(table, 0, 11, 1, 1);
         gridRight.getChildren().add(table);
+        table.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                setChosenBlockDetails();
+            }
+        });
 
         //textfield for searching in the chain, can search for name, birthdate or public key, by inputting either
         //alphabetical, digits, or both
@@ -201,22 +210,24 @@ class MainScreen {
         //if the user chooses to close the program, open the popup to prompt the user if he is sure he want to close it
         primaryStage.setOnCloseRequest(e -> {
             e.consume();
-            runPopUp(primaryStage);
+            runPopUp(primaryStage, chain);
         });
     }
 
+    //TODO might've fucked this up during merge
     private static void savePublicKey() {
         //opens a window for the user to select a directory
         DirectoryChooser directory = new DirectoryChooser();
         File selectedDirectory = directory.showDialog(null);
 
-        RSA.publicKeyWriter(publicKey, selectedDirectory);
+        //RSA.publicKeyWriter(publicKey, selectedDirectory);
     }
 
-    private static void runPopUp(Stage primaryStage) {
+    private static void runPopUp(Stage primaryStage, Blockchain chain) {
         //calls the popUp to verify the user wants to close the program
         boolean answer = CloseProgram.display();
         if (answer) {
+            StoreChain.writeChainToFilesystem("data/", chain);
             primaryStage.close();
         }
     }
@@ -225,21 +236,18 @@ class MainScreen {
     private static ArrayList<Block> getSearchResults(String searchTerm, Blockchain chain) {
         //create class to search and array for search results
         Search search = new Search();
-        ArrayList<Block> results = new ArrayList<>();
+        ArrayList<Block> results;
 
         //if the user input just numbers and hyphen, search for date of birth in the chain
         if (searchTerm.matches("[0-9-]+")) {
-            System.out.println("searching birthdate");
             results = search.FuzzySearchIdentityDOB((searchTerm), chain, 5);
             return results;
             //if the user input just alphabetical characters, search for identity in the chain
-        } else if (searchTerm.matches("[a-zA-Z]+")) {
+        } else if (searchTerm.matches("[a-zA-ZæøåÆØÅ ]+")) {
             results = search.FuzzySearchIdentity((searchTerm), chain, 5);
-            System.out.println("searching identity");
             return results;
         } else {
             //if none of the above is true, search for pub key, which can have many different characters
-            System.out.println("earching pub key");
             return (results = search.FuzzySearchIdentityPublicKey((searchTerm), chain, 5));
         }
     }
@@ -252,7 +260,8 @@ class MainScreen {
             identityText.setText(searchResults.get(index).getIdentity());
             birthdateText.setText(searchResults.get(index).getIdentityDOB());
             //the public key is made into a substring, because of the length of the public key
-            publicKeyText.setText(searchResults.get(index).getIdentityPublicKey().substring(0, 40) + "...");
+            //TODO should check for length before getting char 50 .. 90 as NPE might be thrown
+            publicKeyText.setText(searchResults.get(index).getIdentityPublicKey().substring(50, 90) + "...");
             publicKey = searchResults.get(index).getIdentityPublicKey();
             if (searchResults.get(index) instanceof GenesisBlock) {
                 blockTypeText.setText("Genesis");
