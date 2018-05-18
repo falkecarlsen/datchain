@@ -1,4 +1,4 @@
-package dk.aau.cs.a311c.datchain.utility;
+package dk.aau.cs.a311c.datchain.cryptography;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;

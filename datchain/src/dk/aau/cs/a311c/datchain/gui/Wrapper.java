@@ -1,14 +1,14 @@
 package dk.aau.cs.a311c.datchain.gui;
 
 import dk.aau.cs.a311c.datchain.Blockchain;
-import dk.aau.cs.a311c.datchain.CitizenBlock;
 import dk.aau.cs.a311c.datchain.GenesisBlock;
-import dk.aau.cs.a311c.datchain.ValidatorBlock;
-import dk.aau.cs.a311c.datchain.utility.RSA;
+import dk.aau.cs.a311c.datchain.cryptography.RSA;
+import dk.aau.cs.a311c.datchain.utility.StoreChain;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -20,10 +20,27 @@ public class Wrapper extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
+        Blockchain chain = new Blockchain();
+
+        //TODO MAKE DOB TO A DATE AND DO A CHECKEDY CHECK WHEN NEW BLOCK xD
         //TODO ALL KEYS START THE SAME
+        if (new File("data/blockchain.obj").isFile()) {
+            chain = StoreChain.readChainFromFilesystem("data/");
+        } else {
+            //TODO MAKE GENESIS CREATION SCREEN DANK AF
+            KeyPair genesisKeypair = RSA.keyPairInit();
+            PrivateKey genesisPrivateKey = RSA.getPrivateKey(genesisKeypair);
+            PublicKey genesisPublicKey = RSA.getPublicKey(genesisKeypair);
+            RSA.keyPairWriter(genesisKeypair, "data/gui/genesis/");
+
+            GenesisBlock genesis01 = new GenesisBlock("Erik Lauridsen", "19-09-1980", RSA.getEncodedPublicKey(genesisPublicKey), "0000");
+            chain = new Blockchain(genesis01);
+        }
+
+
         //create keypairs for testing
-        KeyPair genesisKeypair = RSA.keyPairInit();
+        /*KeyPair genesisKeypair = RSA.keyPairInit();
         PrivateKey genesisPrivateKey = RSA.getPrivateKey(genesisKeypair);
         PublicKey genesisPublicKey = RSA.getPublicKey(genesisKeypair);
         RSA.keyPairWriter(genesisKeypair, "data/gui/genesis/");
@@ -54,7 +71,7 @@ public class Wrapper extends Application {
 
 
         GenesisBlock genesis01 = new GenesisBlock("Erik Lauridsen", "19-09-1980", RSA.getEncodedPublicKey(genesisPublicKey), "0000");
-        Blockchain chain = new Blockchain(genesis01);
+        chain = new Blockchain(genesis01);
 
         ValidatorBlock validator01 = new ValidatorBlock("Kim Larsen", "19-05-1977", RSA.getEncodedPublicKey(validatorKeypair01), chain.getHead().getHash(), genesisPrivateKey);
         chain.addValidatedBlock(validator01, genesis01);
@@ -72,7 +89,7 @@ public class Wrapper extends Application {
         chain.addValidatedBlock(citizen02, validator01);
 
         CitizenBlock citizen03 = new CitizenBlock("Annie Skriver Købke", "05-09-1986", RSA.getEncodedPublicKey(citizenKeypair03), citizen02.getHash(), chain.getHead().getHash(), validator03.getIdentityPublicKey(), validatorPrivate03);
-        chain.addValidatedBlock(citizen03, validator01);
+        chain.addValidatedBlock(citizen03, validator01);*/
 
         primaryStage.setTitle("Datchain");
         //opens mainscreen
