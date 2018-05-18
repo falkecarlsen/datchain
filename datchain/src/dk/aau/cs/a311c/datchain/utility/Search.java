@@ -72,5 +72,4 @@ public class Search {
         }
         return blockResults;
     }
-
 }

@@ -22,8 +22,6 @@ class ValidatorScreen {
     //input data
     private static String identity;
     private static String identityDOB;
-    private static String genesisSignature;
-    private static String validatorSignature;
 
     //the label, buttons and textfields to be used on the stage
     private static Button addBlockButton = new Button("Check if data is correct and submit block");
@@ -118,11 +116,13 @@ class ValidatorScreen {
     private static void saveInput(String identityInput, String DOBInput) {
         succesLabel.setVisible(false);
         //íf the identity input consists of just alphabetical characters and spaces, save the input
-        if (identityInput.matches("[a-zA-Z ]+")) {
+        if (identityInput.matches("[a-zA-ZæøåÆØÅ ]+")) {
             identity = identityInput;
+            errorLabel.setText("");
             //if the date of birth input is of the format xx-xx-xxxx, where x are integers, save the input
             if (DOBInput.matches("^\\d{2}-\\d{2}-\\d{4}$")) {
                 identityDOB = DOBInput;
+                errorLabel.setText("");
                 //at this point, set the submit button visible
                 addBlockButton.setVisible(true);
             } else errorLabel.setText("Wrong date of birth format, try again");
@@ -134,7 +134,10 @@ class ValidatorScreen {
         KeyPair keyPair = RSA.keyPairInit();
 
         //saves the keys on a file
-        RSA.keyPairWriter(keyPair, "data/gui/");
+        String destination = "data/gui/createdBlock/" + identityText.getText() + "/";
+        RSA.keyPairWriter(keyPair, destination);
+
+        //RSA.keyPairWriter(genesisKeypair, "data/gui/genesis/");
 
         //encodes public key to add to new block
         String encodedPublicKey = RSA.getEncodedPublicKey(keyPair);
@@ -146,24 +149,22 @@ class ValidatorScreen {
         //the new block is added to the chain, with the required information
         if (block instanceof GenesisBlock) {
             chain.addValidatedBlock(new ValidatorBlock(identity, identityDOB, encodedPublicKey, prevHash, validatorPrivateKey), block);
-            if (chain.validateChain()) {
-                addBlockButton.setVisible(false);
-                succesLabel.setText("Success! Keys written to data folder");
-            } else succesLabel.setText("Something went wrong");
+            setLabelsAfterSubmittedBlock(chain);
             //else the user is a validator, and can add citizen blocks
         } else if (block instanceof ValidatorBlock) {
             chain.addValidatedBlock(new CitizenBlock(identity, identityDOB, encodedPublicKey, prevHash, block.getIdentity(), block.getIdentityPublicKey(), validatorPrivateKey), block);
-            if (chain.validateChain()) {
-                addBlockButton.setVisible(false);
-                succesLabel.setText("Success! Keys written to data folder");
-            } else succesLabel.setText("Something went wrong");
+            setLabelsAfterSubmittedBlock(chain);
         }
+    }
 
-        addBlockButton.setVisible(false);
+    private static void setLabelsAfterSubmittedBlock(Blockchain chain) {
         succesLabel.setVisible(true);
-
-        //clears the saved data
-        identityText.clear();
-        DOBText.clear();
+        if (chain.validateChain()) {
+            addBlockButton.setVisible(false);
+            succesLabel.setText("Success! Keys written to data folder");
+            //clears the saved data
+            identityText.clear();
+            DOBText.clear();
+        } else succesLabel.setText("Something went wrong");
     }
 }

@@ -74,7 +74,7 @@ class Login {
             privateKey = loadPrivateKey();
             if (privateKey != null) {
                 //if the file gets loaded, set the text under the button to "chosen"
-                labelPrivateKey.setText("Chosen");
+                labelPrivateKey.setText("Private key chosen");
             }
             //if both a public and private key is loaded, prompt the user to login by setting the label text
             if ((publicKey != null) && (privateKey != null)) {
@@ -93,7 +93,7 @@ class Login {
             publicKey = loadPublicKey();
             if (publicKey != null) {
                 //if the file gets loaded, set the text under the button to "chosen"
-                labelPublicKey.setText("Chosen");
+                labelPublicKey.setText("Public key chosen");
             }
             //if both a public and private key is loaded, prompt the user to login by setting the label text
             if ((publicKey != null) && (privateKey != null)) {
@@ -132,12 +132,14 @@ class Login {
         FileChooser fileChooserPrivate = new FileChooser();
         File selectedFilePrivate = fileChooserPrivate.showOpenDialog(null);
 
-        //checks if the loaded file contains a private key, if it does, return the private key, else tell the user
-        //he did not select a private key file
-        if (getPrivateKeyFromFile(selectedFilePrivate.getAbsolutePath()) != null) {
-            return getPrivateKeyFromFile(selectedFilePrivate.getAbsolutePath());
-        } else labelPrivateKey.setText("File is not a private key");
-        return null;
+        if (selectedFilePrivate != null) {
+            //checks if the loaded file contains a private key, if it does, return the private key, else tell the user
+            //he did not select a private key file
+            if (getPrivateKeyFromFile(selectedFilePrivate.getAbsolutePath()) != null) {
+                return getPrivateKeyFromFile(selectedFilePrivate.getAbsolutePath());
+            } else labelPrivateKey.setText("File is not a private key");
+            return null;
+        } else return null;
     }
 
     //method that prompts the user to select a private key
@@ -146,12 +148,14 @@ class Login {
         FileChooser fileChooserPrivate = new FileChooser();
         File selectedFilePublic = fileChooserPrivate.showOpenDialog(null);
 
-        //checks if the loaded file contains a private key, if it does, return the public key, else tell the user
-        //he did not select a public key file
-        if (getPublicKeyFromFile(selectedFilePublic.getAbsolutePath()) != null) {
-            return getPublicKeyFromFile(selectedFilePublic.getAbsolutePath());
-        } else labelPublicKey.setText("File is not a public key");
-        return null;
+        if (selectedFilePublic != null) {
+            //checks if the loaded file contains a private key, if it does, return the public key, else tell the user
+            //he did not select a public key file
+            if (getPublicKeyFromFile(selectedFilePublic.getAbsolutePath()) != null) {
+                return getPublicKeyFromFile(selectedFilePublic.getAbsolutePath());
+            } else labelPublicKey.setText("File is not a public key");
+            return null;
+        } else return null;
     }
 
     //issues an RSA challenge based on the two selected keys
@@ -164,16 +168,6 @@ class Login {
             return "No public key chosen";
         }
 
-        //get random challenge and declare Strings
-        String encryptedText = RandomChallenge.generateRandomChallenge();
-
-        //create cipherblock and build
-        CipherBlock cipherBlock = new CipherBlock(encryptedText);
-
-        //do operations on block
-        cipherBlock.encryptBlock(publicKey);
-        cipherBlock.decryptBlock(privateKey);
-
         //index for the block in the chain, which contains the given public key,
         // used to tell whether or not it is a validator or genesis logging in
         int index = -1;
@@ -185,7 +179,6 @@ class Login {
             }
         }
 
-
         //if index is still -1, no block contains the public key, and therefore cannot log in. Resets keys and labels
         if (index == -1) {
             publicKey = null;
@@ -194,7 +187,19 @@ class Login {
             labelPrivateKey.setText("");
             return "Public key not in chain or does not belong to validator";
         }
-        //else do a check, and see if the challenge is passed by the decrypted text, being the same as the cleartext
+
+        //get random challenge and declare Strings
+        String encryptedText = RandomChallenge.generateRandomChallenge();
+
+        //create cipherblock and build
+        CipherBlock cipherBlock = new CipherBlock(encryptedText);
+
+        //do operations on block
+        cipherBlock.encryptBlock(publicKey);
+        cipherBlock.decryptBlock(privateKey);
+
+
+        //do a check, and see if the challenge is passed by the decrypted text, being the same as the cleartext
         //if so, the public and private key match. the block containing the given public key is sent as an parameter
         if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
             labelPublicKey.setText("");
