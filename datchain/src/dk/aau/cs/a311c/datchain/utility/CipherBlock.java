@@ -87,6 +87,10 @@ public class CipherBlock {
         return RSA.verifySignature(this.cleartext, this.signature, publicKey);
     }
 
+    public byte[] getSignature() {
+        return this.signature;
+    }
+
     public String getCleartext() {
         return this.cleartext;
     }

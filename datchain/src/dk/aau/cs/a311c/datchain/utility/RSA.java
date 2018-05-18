@@ -4,6 +4,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
@@ -21,10 +22,8 @@ public class RSA {
     //declaring constants
     private static final String keyAlgorithm = "RSA";
     //choose RSA-variant with padding for encryption and decryption to discourage zero-char attacks
-    //private static final String cryptAlgorithm = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
-    private static final String cryptAlgorithm = "RSA";
-    //private static final String signatureAlgorithm = "SHA256withRSA";
-    private static final String signatureAlgorithm = "MD5withRSA";
+    private static final String cryptAlgorithm = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
+    private static final String signatureAlgorithm = "SHA512withRSA";
     private static final int bitlengthKey = 4096;
     private static final String privateKeyFilename = "private.key";
     private static final String publicKeyFilename = "public.key";
@@ -69,6 +68,20 @@ public class RSA {
             System.out.println("ERROR: Unsupported encoding! (UTF-8) " + e.getMessage());
         } catch (IOException e) {
             System.out.println("ERROR: IOException caught! " + e.getMessage());
+        }
+        return false;
+    }
+
+    static public boolean publicKeyWriter(String publicKey, File directory) {
+        try {
+            //create keyfile paths at KEYLOCATION
+            Path publickeyFile = Paths.get(directory + "public.key");
+
+            //write strings to file in UTF-8 encoding and return true
+            Files.write(publickeyFile, publicKey.getBytes("UTF-8"));
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return false;
     }
@@ -150,12 +163,20 @@ public class RSA {
         return new String(Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()));
     }
 
+    public static String getEncodedPrivateKey(PrivateKey privateKey) {
+        return new String(Base64.getEncoder().encode(privateKey.getEncoded()));
+    }
+
     public static PrivateKey getPrivateKeyFromEncoded(String encodedKey) {
         return generatePrivateKey(Base64.getDecoder().decode(encodedKey));
     }
 
     public static String getEncodedPublicKey(KeyPair keyPair) {
         return new String(Base64.getEncoder().encode(keyPair.getPublic().getEncoded()));
+    }
+
+    public static String getEncodedPublicKey(PublicKey publicKey) {
+        return new String(Base64.getEncoder().encode(publicKey.getEncoded()));
     }
 
     public static PublicKey getPublicKeyFromEncoded(String encodedKey) {

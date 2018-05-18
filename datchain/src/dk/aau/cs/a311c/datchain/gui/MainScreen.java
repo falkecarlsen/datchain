@@ -1,15 +1,11 @@
 package dk.aau.cs.a311c.datchain.gui;
 
-import dk.aau.cs.a311c.datchain.Block;
-import dk.aau.cs.a311c.datchain.Blockchain;
-import dk.aau.cs.a311c.datchain.GenesisBlock;
-import dk.aau.cs.a311c.datchain.Search;
+import dk.aau.cs.a311c.datchain.*;
 import dk.aau.cs.a311c.datchain.utility.RSA;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -19,18 +15,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.PublicKey;
 import java.util.ArrayList;
-import java.util.Base64;
 
 import static javafx.geometry.Pos.CENTER;
 
@@ -41,6 +29,7 @@ public class MainScreen {
     private static Text identityText = new Text();
     private static Text birthdateText = new Text();
     private static Text publicKeyText = new Text();
+    private static Text blockTypeText = new Text();
     private static TableView<Block> table = new TableView<>();
     private static String publicKey;
 
@@ -81,12 +70,6 @@ public class MainScreen {
         GridPane.setConstraints(firstname_label, 0, 3);
         gridRight.getChildren().add(firstname_label);
 
-        //TODO REMOVE THIS BUTTON BEFORE TURNING IN THE PROGRAM
-        Button button = new Button("Goto validator");
-        button.setMinWidth(100);
-        topPanel.getChildren().add(button);
-        button.setOnAction(e -> ValidatorScreen.validatorScreen(primaryStage, chain, chain.getBlock(0)));
-
         //label for displaying the birthdate in the chosen block
         Label birthdateLabel = new Label("Birthdate:");
         birthdateLabel.setMinWidth(75);
@@ -99,11 +82,16 @@ public class MainScreen {
         GridPane.setConstraints(publicKeyLabel, 0, 5);
         gridRight.getChildren().add(publicKeyLabel);
 
+        //label for displaying the public key in the chosen block
+        Label blockTypeLabel = new Label("Blocktype:");
+        blockTypeLabel.setMinWidth(75);
+        GridPane.setConstraints(blockTypeLabel, 0, 6);
+        gridRight.getChildren().add(blockTypeLabel);
+
         //adding the texts for displaying the information in the chosen block
         GridPane.setHalignment(identityText, HPos.CENTER);
         GridPane.setConstraints(identityText, 0, 3);
         gridRight.getChildren().add(identityText);
-
 
         GridPane.setHalignment(birthdateText, HPos.CENTER);
         GridPane.setConstraints(birthdateText, 0, 4);
@@ -113,14 +101,12 @@ public class MainScreen {
         GridPane.setConstraints(publicKeyText, 0, 5);
         gridRight.getChildren().add(publicKeyText);
 
+        GridPane.setHalignment(blockTypeText, HPos.CENTER);
+        GridPane.setConstraints(blockTypeText, 0, 6);
+        gridRight.getChildren().add(blockTypeText);
+
         Button savePublicKeyButton = new Button("Save public key in datchain folder");
-        savePublicKeyButton.setOnMouseClicked(e -> {
-            try {
-                savePublicKey();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-        });
+        savePublicKeyButton.setOnMouseClicked(e -> savePublicKey());
         GridPane.setConstraints(savePublicKeyButton, 0, 0);
         gridRight.getChildren().add(savePublicKeyButton);
 
@@ -147,7 +133,7 @@ public class MainScreen {
         table.setMaxHeight(150);
 
         //adds the tableview to the grid
-        GridPane.setConstraints(table, 0, 10, 1, 1);
+        GridPane.setConstraints(table, 0, 11, 1, 1);
         gridRight.getChildren().add(table);
 
         //textfield for searching in the chain, can search for name, birthdate or public key, by inputting either
@@ -167,7 +153,7 @@ public class MainScreen {
             //displays the search results
             table.setItems(blocks);
         });
-        GridPane.setConstraints(searchField, 0, 9);
+        GridPane.setConstraints(searchField, 0, 10);
         gridRight.getChildren().add(searchField);
 
         //select button for selecting which block to show properties of
@@ -175,7 +161,7 @@ public class MainScreen {
         selectBlockButton.setOnMouseClicked(e -> setChosenBlockDetails());
         GridPane.setHalignment(selectBlockButton, HPos.CENTER);
         gridRight.getChildren().add(selectBlockButton);
-        GridPane.setConstraints(selectBlockButton, 0, 11);
+        GridPane.setConstraints(selectBlockButton, 0, 12);
 
 
         //TODO REMOVE NODES AND ONLINE STATUS?
@@ -207,7 +193,7 @@ public class MainScreen {
         borderPane.setCenter(gridRight);
         borderPane.setBottom(bottomPanel);
 
-        Scene scene = new Scene(borderPane, 800, 520);
+        Scene scene = new Scene(borderPane, 800, 580);
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
@@ -219,17 +205,12 @@ public class MainScreen {
         });
     }
 
-    private static void savePublicKey() throws IOException {
-        //TODO will only write in program folder
+    private static void savePublicKey() {
         //opens a window for the user to select a directory
         DirectoryChooser directory = new DirectoryChooser();
         File selectedDirectory = directory.showDialog(null);
 
-        //create keyfile paths at KEYLOCATION
-        Path publickeyFile = Paths.get(selectedDirectory + "public.key");
-
-        //write strings to file in UTF-8 encoding and return true
-        Files.write(publickeyFile, publicKey.getBytes("UTF-8"));
+        RSA.publicKeyWriter(publicKey, selectedDirectory);
     }
 
     private static void runPopUp(Stage primaryStage) {
@@ -273,6 +254,13 @@ public class MainScreen {
             //the public key is made into a substring, because of the length of the public key
             publicKeyText.setText(searchResults.get(index).getIdentityPublicKey().substring(0, 25) + "..........");
             publicKey = searchResults.get(index).getIdentityPublicKey();
+            if (searchResults.get(index) instanceof GenesisBlock) {
+                blockTypeText.setText("Genesis");
+            } else if (searchResults.get(index) instanceof ValidatorBlock) {
+                blockTypeText.setText("Validator");
+            } else if (searchResults.get(index) instanceof CitizenBlock) {
+                blockTypeText.setText("Citizen");
+            }
         }
     }
 }

@@ -2,6 +2,8 @@ package dk.aau.cs.a311c.datchain.gui;
 
 import dk.aau.cs.a311c.datchain.Block;
 import dk.aau.cs.a311c.datchain.Blockchain;
+import dk.aau.cs.a311c.datchain.GenesisBlock;
+import dk.aau.cs.a311c.datchain.ValidatorBlock;
 import dk.aau.cs.a311c.datchain.utility.CipherBlock;
 import dk.aau.cs.a311c.datchain.utility.RandomChallenge;
 import javafx.geometry.Insets;
@@ -16,10 +18,8 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Base64;
 
-import static dk.aau.cs.a311c.datchain.utility.RSA.getPrivateKeyFromFile;
-import static dk.aau.cs.a311c.datchain.utility.RSA.getPublicKeyFromFile;
+import static dk.aau.cs.a311c.datchain.utility.RSA.*;
 
 public class Login {
     private static PrivateKey privateKey;
@@ -32,6 +32,7 @@ public class Login {
 
         //setting up the gridpane layout to be used
         GridPane gridPane = new GridPane();
+        gridPane.setStyle("-fx-background-color: #FFFFFF;");
         gridPane.setVgap(10);
         gridPane.setHgap(10);
         gridPane.setPadding(new Insets(10, 10, 10, 10));
@@ -122,7 +123,6 @@ public class Login {
         Scene scene = new Scene(gridPane, 500, 100);
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
         primaryStage.show();
     }
 
@@ -179,10 +179,12 @@ public class Login {
         int index = -1;
         //checks every block in the chain, if it contains the public key provided by the user, save the index
         for (Block block : chain) {
-            if (block.getIdentityPublicKey().equals(new String(Base64.getEncoder().encode(publicKey.getEncoded())))) {
+            if (block.getIdentityPublicKey().equals(getEncodedPublicKey(publicKey))
+                    && (block instanceof GenesisBlock || block instanceof ValidatorBlock)) {
                 index = (chain.indexOf(block));
             }
         }
+
 
         //if index is still -1, no block contains the public key, and therefore cannot log in. Resets keys and labels
         if (index == -1) {
@@ -190,12 +192,18 @@ public class Login {
             privateKey = null;
             labelPublicKey.setText("");
             labelPrivateKey.setText("");
-            return "Public key not in chain";
+            return "Public key not in chain or does not belong to validator";
+        }
             //else do a check, and see if the challenge is passed by the decrypted text, being the same as the cleartext
             //if so, the public and private key match. the block containing the given public key is sent as an parameter
-        } else if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
-            ValidatorScreen.validatorScreen(primaryStage, chain, chain.getBlock(index));
+        if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
+            labelPublicKey.setText("");
+            labelPrivateKey.setText("");
+            ValidatorScreen.validatorScreen(primaryStage, chain, chain.getBlock(index), privateKey);
+            publicKey = null;
+            privateKey = null;
         }
-        return "The challenge failed";
+        return "";
     }
 }
+

@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.security.KeyPair;
+import java.security.PrivateKey;
 
 
 public class ValidatorScreen {
@@ -32,7 +33,7 @@ public class ValidatorScreen {
     private static Label errorLabel = new Label("");
     private static Label userPromptLabel = new Label();
 
-    public static void validatorScreen(Stage primaryStage, Blockchain chain, Block block) {
+    public static void validatorScreen(Stage primaryStage, Blockchain chain, Block block, PrivateKey validatorPrivateKey) {
 
         //if somehow a citizen got logged in, return to mainscreen
         if (!((block instanceof GenesisBlock) || (block instanceof ValidatorBlock))) {
@@ -90,7 +91,8 @@ public class ValidatorScreen {
 
         //button to submit the block to the chain, is invisible until the user input data in the correct format
         GridPane.setHalignment(addBlockButton, HPos.CENTER);
-        addBlockButton.setOnAction(e -> submitBlock(chain, block));
+        addBlockButton.setVisible(false);
+        addBlockButton.setOnAction(e -> submitBlock(chain, block, validatorPrivateKey));
         GridPane.setConstraints(addBlockButton, 1, 9);
         gridCenter.getChildren().add(addBlockButton);
 
@@ -127,7 +129,7 @@ public class ValidatorScreen {
         } else errorLabel.setText("Wrong identity format, supports only alphabetical");
     }
 
-    private static void submitBlock(Blockchain chain, Block block) {
+    private static void submitBlock(Blockchain chain, Block block, PrivateKey validatorPrivateKey) {
         //generates keys
         KeyPair keyPair = RSA.keyPairInit();
 
@@ -143,18 +145,22 @@ public class ValidatorScreen {
         //if the user that logged in (block) is a genesis, the user can only add validator blocks
         //the new block is added to the chain, with the required information
         if (block instanceof GenesisBlock) {
-            chain.addValidatedBlock(new ValidatorBlock(identity, identityDOB, encodedPublicKey, prevHash, genesisSignature), block);
+            chain.addValidatedBlock(new ValidatorBlock(identity, identityDOB, encodedPublicKey, prevHash, validatorPrivateKey), block);
+            if (chain.validateChain()) {
+                addBlockButton.setVisible(false);
+                succesLabel.setText("Success! Keys written to data folder");
+            } else succesLabel.setText("Something went wrong");
             //else the user is a validator, and can add citizen blocks
         } else if (block instanceof ValidatorBlock) {
-            chain.addValidatedBlock(new CitizenBlock(identity, identityDOB, encodedPublicKey, prevHash, block.getIdentity(), block.getIdentityPublicKey(), validatorSignature), block);
+            chain.addValidatedBlock(new CitizenBlock(identity, identityDOB, encodedPublicKey, prevHash, block.getIdentity(), block.getIdentityPublicKey(), validatorPrivateKey), block);
+            if (chain.validateChain()) {
+                addBlockButton.setVisible(false);
+                succesLabel.setText("Success! Keys written to data folder");
+            } else succesLabel.setText("Something went wrong");
         }
 
-
-        if (chain.validateChain()) {
-            addBlockButton.setVisible(false);
-            succesLabel.setText("Success! Keys written to data folder");
-        } else succesLabel.setText("Something went wrong");
-
+        addBlockButton.setVisible(false);
+        succesLabel.setVisible(true);
 
         //clears the saved data
         identityText.clear();
