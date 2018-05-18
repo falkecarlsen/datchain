@@ -5,7 +5,8 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Arrays;
 
-import static dk.aau.cs.a311c.datchain.utility.RSA.*;
+import static dk.aau.cs.a311c.datchain.utility.RSA.decrypt;
+import static dk.aau.cs.a311c.datchain.utility.RSA.encrypt;
 
 public class CipherBlock {
 
@@ -85,6 +86,10 @@ public class CipherBlock {
 
     public boolean verifyBlock(PublicKey publicKey) {
         return RSA.verifySignature(this.cleartext, this.signature, publicKey);
+    }
+
+    public byte[] getSignature() {
+        return this.signature;
     }
 
     public String getCleartext() {

@@ -1,6 +1,7 @@
 package dk.aau.cs.a311c.datchain;
 
 //https://github.com/xdrop/fuzzywuzzy for fuzzy string matching
+
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 
@@ -9,9 +10,9 @@ import java.util.List;
 
 public class Search {
 
-    private ArrayList<String> arraySource = new ArrayList<>();
+    private final ArrayList<String> arraySource = new ArrayList<>();
     private List<ExtractedResult> searchResults = new ArrayList<>();
-    private ArrayList<Block> blockResults = new ArrayList<>();
+    private final ArrayList<Block> blockResults = new ArrayList<>();
 
     public ArrayList<Block> FuzzySearchIdentity(String term, Blockchain chain, int cutoff) {
 

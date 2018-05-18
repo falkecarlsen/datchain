@@ -1,17 +1,7 @@
 package dk.aau.cs.a311c.datchain;
 
-import org.junit.jupiter.api.Test;
-
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import static java.time.Instant.now;
-import static org.junit.jupiter.api.Assertions.*;
-
 class CitizenBlockTest {
-
+/*
     @Test
     void computeHash() {
         CitizenBlock block01 = new CitizenBlock("Citizen Name", "19-09-1980","CitizenPubKey", "9817324939382", "Validator", "ValidatorPubKey", "ValidatorSignature");
@@ -79,5 +69,5 @@ class CitizenBlockTest {
         CitizenBlock block01 = new CitizenBlock("Citizen Name", "19-09-1980","CitizenPubKey", "9817324939382", "Validator", "ValidatorPubKey", "ValidatorSignature");
         assertEquals("Citizen Name", block01.getIdentity());
     }
-    
+    */
 }

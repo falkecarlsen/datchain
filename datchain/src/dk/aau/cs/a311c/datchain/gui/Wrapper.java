@@ -4,9 +4,14 @@ import dk.aau.cs.a311c.datchain.Blockchain;
 import dk.aau.cs.a311c.datchain.CitizenBlock;
 import dk.aau.cs.a311c.datchain.GenesisBlock;
 import dk.aau.cs.a311c.datchain.ValidatorBlock;
+import dk.aau.cs.a311c.datchain.utility.RSA;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 public class Wrapper extends Application {
 
@@ -14,28 +19,60 @@ public class Wrapper extends Application {
         launch(args);
     }
 
-
     @Override
     public void start(Stage primaryStage) throws Exception {
+        //TODO ALL KEYS START THE SAME
+        //create keypairs for testing
+        KeyPair genesisKeypair = RSA.keyPairInit();
+        PrivateKey genesisPrivateKey = RSA.getPrivateKey(genesisKeypair);
+        PublicKey genesisPublicKey = RSA.getPublicKey(genesisKeypair);
+        RSA.keyPairWriter(genesisKeypair, "data/gui/genesis/");
 
-        //Blockchain for testing purposes
-        GenesisBlock genesis01 = new GenesisBlock("Kamilla", "19-09-1980", "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAh6mCcaGkk8dzT+qIF97/cnXGPPFmcMZetpDAP7Ih0Uxf1v+gGOQUAvmMk6ua3upXm72leRmYB7WyBQy5Pp+Tg1bzg90wwk+pspmwRvbW7E0idrgAE7GFJ9Wncdaps+jZHgBVBLWODcRT/jVqRb6Nvwo7TKS8PNOoejAm8m1kN3qwJH185fnuhF1wWRELuxe2OrY20a4QcPYlrTYW3O0AhWN01IyXeefWo3E289jdEHHEMR9082zKfFm2CMCwu45qD04MLq1p/aJzcoryULNs4EAYmWOXwP1foHNqlinV1psG/+Tl9a+2/iJg1IqcXMKE+5wOkAdX0U9VF4LZLaFZVPN5ptG0PB0WUTCxwTPvqt1AD0MDlaEiAj9qkDbJdCMobVSW3eos7fYGnwWn9T7I9AKp0jTq0yEaaPY4RccBoA/6mkl7AmCZQ1k03Q/fcpA69dZH/THNxjJnUHDFrcIQQk9FbtlUNu2FcFnB+w5Yu2wMzFllysENIM+NhGex/yTCXJXjFAR7enoU/U7+4+c+JMaNFYUN/+Cn6kKm7mEVpgHzFLTQx+Q9UmQudh9mzPMm5U4PeoNWD9DxKE/Mo8DAaNWqCfCJqU26RIgFgmcuEwJZQRSGhFqVRcT9w6K6oOIRGdRQxPMVlbeewD1AQNWKjPH4DF2noDaK/hy60yHkGF0CAwEAAQ==", "0000");
-        ValidatorBlock validator01 = new ValidatorBlock("Tobias", "19-09-1980", "ValidatorPublicKey", genesis01.getHash(), "GenesisSignature");
-        ValidatorBlock validator02 = new ValidatorBlock("Jarl", "19-09-1980", "ValidatorPublicKey", validator01.getHash(), "GenesisSignature");
-        ValidatorBlock validator03 = new ValidatorBlock("Hans", "19-09-1980", "ValidatorPublicKey", validator02.getHash(), "GenesisSignature");
-        CitizenBlock citizen01 = new CitizenBlock("Fie", "19-09-1980", "CitizenPublicKey", validator03.getHash(), validator01.getIdentity(), validator01.getIdentityPublicKey(), "ValidatorSignature");
-        CitizenBlock citizen02 = new CitizenBlock("Christian", "19-09-1980", "CitizenPublicKey", citizen01.getHash(), validator02.getIdentity(), validator02.getIdentityPublicKey(), "ValidatorSignature");
-        CitizenBlock citizen03 = new CitizenBlock("Karl", "19-09-1980", "CitizenPublicKey", citizen02.getHash(), validator03.getIdentity(), validator03.getIdentityPublicKey(), "ValidatorSignature");
+        KeyPair validatorKeypair01 = RSA.keyPairInit();
+        PrivateKey validatorPrivate01 = RSA.getPrivateKey(validatorKeypair01);
+        PublicKey validatorPublic01 = RSA.getPublicKey(validatorKeypair01);
 
-        Blockchain chain = new Blockchain();
-        chain.addValidatedBlock(genesis01, validator01);
-        chain.addValidatedBlock(validator01, validator01);
-        chain.addValidatedBlock(validator02, validator01);
-        chain.addValidatedBlock(validator03, validator01);
+        KeyPair validatorKeypair02 = RSA.keyPairInit();
+        PrivateKey validatorPrivate02 = RSA.getPrivateKey(validatorKeypair02);
+        PublicKey validatorPublic02 = RSA.getPublicKey(validatorKeypair02);
+
+        KeyPair validatorKeypair03 = RSA.keyPairInit();
+        PrivateKey validatorPrivate03 = RSA.getPrivateKey(validatorKeypair03);
+        PublicKey validatorPublic03 = RSA.getPublicKey(validatorKeypair03);
+
+        KeyPair citizenKeypair01 = RSA.keyPairInit();
+        PrivateKey citizenPrivateKey01 = RSA.getPrivateKey(citizenKeypair01);
+        PublicKey citizenPublicKey01 = RSA.getPublicKey(citizenKeypair01);
+
+        KeyPair citizenKeypair02 = RSA.keyPairInit();
+        PrivateKey citizenPrivateKey02 = RSA.getPrivateKey(citizenKeypair02);
+        PublicKey citizenPublicKey02 = RSA.getPublicKey(citizenKeypair02);
+
+        KeyPair citizenKeypair03 = RSA.keyPairInit();
+        PrivateKey citizenPrivateKey03 = RSA.getPrivateKey(citizenKeypair03);
+        PublicKey citizenPublicKey03 = RSA.getPublicKey(citizenKeypair03);
+
+
+        GenesisBlock genesis01 = new GenesisBlock("Erik Lauridsen", "19-09-1980", RSA.getEncodedPublicKey(genesisPublicKey), "0000");
+        Blockchain chain = new Blockchain(genesis01);
+
+        ValidatorBlock validator01 = new ValidatorBlock("Kim Larsen", "19-05-1977", RSA.getEncodedPublicKey(validatorKeypair01), chain.getHead().getHash(), genesisPrivateKey);
+        chain.addValidatedBlock(validator01, genesis01);
+
+        ValidatorBlock validator02 = new ValidatorBlock("Mette Nielsen", "21-09-1992", RSA.getEncodedPublicKey(validatorKeypair02), chain.getHead().getHash(), genesisPrivateKey);
+        chain.addValidatedBlock(validator02, genesis01);
+
+        ValidatorBlock validator03 = new ValidatorBlock("Hans Andersen", "27-09-1953", RSA.getEncodedPublicKey(validatorKeypair03), chain.getHead().getHash(), genesisPrivateKey);
+        chain.addValidatedBlock(validator03, genesis01);
+
+        CitizenBlock citizen01 = new CitizenBlock("Natasja Christiansen", "07-09-2000", RSA.getEncodedPublicKey(citizenKeypair01), chain.getHead().getHash(), validator01.getIdentity(), validator01.getIdentityPublicKey(), validatorPrivate01);
         chain.addValidatedBlock(citizen01, validator01);
-        chain.addValidatedBlock(citizen02, validator01);
-        chain.addValidatedBlock(citizen03, validator01);
 
+        CitizenBlock citizen02 = new CitizenBlock("Sara Petersen", "12-09-1999", RSA.getEncodedPublicKey(citizenKeypair02), citizen01.getHash(), chain.getHead().getHash(), validator02.getIdentityPublicKey(), validatorPrivate02);
+        chain.addValidatedBlock(citizen02, validator01);
+
+        CitizenBlock citizen03 = new CitizenBlock("Annie Skriver Købke", "05-09-1986", RSA.getEncodedPublicKey(citizenKeypair03), citizen02.getHash(), chain.getHead().getHash(), validator03.getIdentityPublicKey(), validatorPrivate03);
+        chain.addValidatedBlock(citizen03, validator01);
 
         primaryStage.setTitle("Datchain");
         //opens mainscreen

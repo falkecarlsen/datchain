@@ -2,36 +2,84 @@ package dk.aau.cs.a311c.datchain;
 
 import dk.aau.cs.a311c.datchain.utility.CipherBlock;
 import dk.aau.cs.a311c.datchain.utility.RSA;
+import dk.aau.cs.a311c.datchain.utility.StoreChain;
 
-import javax.crypto.Cipher;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Arrays;
 
-public class Datchain {
+class Datchain {
 
     public static void main(String[] args) {
 
-        GenesisBlock genesis01 = new GenesisBlock("Genesis", "19-09-1980","GenesisPublicKey", "0000");
-        ValidatorBlock validator01 = new ValidatorBlock("Validator", "19-09-1980", "ValidatorPublicKey", genesis01.getHash(), "GenesisSignature");
-        ValidatorBlock validator02 = new ValidatorBlock("Validator", "19-09-1980", "ValidatorPublicKey", validator01.getHash(), "GenesisSignature");
-        ValidatorBlock validator03 = new ValidatorBlock("Validator", "19-09-1980", "ValidatorPublicKey", validator02.getHash(), "GenesisSignature");
-        CitizenBlock citizen01 = new CitizenBlock("Citizen Name1", "19-09-1980", "CitizenPublicKey", validator03.getHash(), validator01.getIdentity(), validator01.getIdentityPublicKey(), "ValidatorSignature");
-        CitizenBlock citizen02 = new CitizenBlock("Citizen Name2", "19-09-1980", "CitizenPublicKey", citizen01.getHash(), validator02.getIdentity(), validator02.getIdentityPublicKey(), "ValidatorSignature");
-        CitizenBlock citizen03 = new CitizenBlock("Citizen Name3", "19-09-1980", "CitizenPublicKey", citizen02.getHash(), validator03.getIdentity(), validator03.getIdentityPublicKey(), "ValidatorSignature");
+        //create keypairs for testing
+        KeyPair genesisKeypair = RSA.keyPairInit();
+        PrivateKey genesisPrivateKey = RSA.getPrivateKey(genesisKeypair);
+        PublicKey genesisPublicKey = RSA.getPublicKey(genesisKeypair);
 
-        Blockchain chain02 = new Blockchain();
-        chain02.addValidatedBlock(genesis01, validator01);
-        chain02.addValidatedBlock(validator01, validator01);
-        chain02.addValidatedBlock(validator02, validator01);
-        chain02.addValidatedBlock(validator03, validator01);
-        chain02.addValidatedBlock(citizen01, validator01);
-        chain02.addValidatedBlock(citizen02, validator01);
-        chain02.addValidatedBlock(citizen03, validator01);
+        KeyPair validatorKeypair01 = RSA.keyPairInit();
+        PrivateKey validatorPrivate01 = RSA.getPrivateKey(validatorKeypair01);
+        PublicKey validatorPublic01 = RSA.getPublicKey(validatorKeypair01);
 
-        System.out.println("chain02 validated: " + chain02.validateChain());
+        KeyPair validatorKeypair02 = RSA.keyPairInit();
+        PrivateKey validatorPrivate02 = RSA.getPrivateKey(validatorKeypair02);
+        PublicKey validatorPublic02 = RSA.getPublicKey(validatorKeypair02);
 
+        KeyPair validatorKeypair03 = RSA.keyPairInit();
+        PrivateKey validatorPrivate03 = RSA.getPrivateKey(validatorKeypair03);
+        PublicKey validatorPublic03 = RSA.getPublicKey(validatorKeypair03);
+
+        KeyPair citizenKeypair01 = RSA.keyPairInit();
+        PrivateKey citizenPrivateKey01 = RSA.getPrivateKey(citizenKeypair01);
+        PublicKey citizenPublicKey01 = RSA.getPublicKey(citizenKeypair01);
+
+        KeyPair citizenKeypair02 = RSA.keyPairInit();
+        PrivateKey citizenPrivateKey02 = RSA.getPrivateKey(citizenKeypair02);
+        PublicKey citizenPublicKey02 = RSA.getPublicKey(citizenKeypair02);
+
+        KeyPair citizenKeypair03 = RSA.keyPairInit();
+        PrivateKey citizenPrivateKey03 = RSA.getPrivateKey(citizenKeypair03);
+        PublicKey citizenPublicKey03 = RSA.getPublicKey(citizenKeypair03);
+
+
+        GenesisBlock genesis01 = new GenesisBlock("Genesis", "19-09-1980", "GenesisPublicKey", "0000");
+        Blockchain chain = new Blockchain(genesis01);
+
+        ValidatorBlock validator01 = new ValidatorBlock("Validator1", "19-09-1980", RSA.getEncodedPublicKey(validatorKeypair01), chain.getHead().getHash(), genesisPrivateKey);
+        chain.addValidatedBlock(validator01, genesis01);
+
+        ValidatorBlock validator02 = new ValidatorBlock("Validator2", "19-09-1980", RSA.getEncodedPublicKey(validatorKeypair02), chain.getHead().getHash(), genesisPrivateKey);
+        chain.addValidatedBlock(validator02, genesis01);
+
+        ValidatorBlock validator03 = new ValidatorBlock("Validator3", "19-09-1980", RSA.getEncodedPublicKey(validatorKeypair03), chain.getHead().getHash(), genesisPrivateKey);
+        chain.addValidatedBlock(validator03, genesis01);
+
+        CitizenBlock citizen01 = new CitizenBlock("Citizen1", "19-09-1980", RSA.getEncodedPublicKey(citizenKeypair01), chain.getHead().getHash(), validator01.getIdentity(), validator01.getIdentityPublicKey(), validatorPrivate01);
+        chain.addValidatedBlock(citizen01, validator01);
+
+        CitizenBlock citizen02 = new CitizenBlock("Citizen2", "19-09-1980", RSA.getEncodedPublicKey(citizenKeypair02), citizen01.getHash(), chain.getHead().getHash(), validator02.getIdentityPublicKey(), validatorPrivate02);
+        chain.addValidatedBlock(citizen02, validator01);
+
+        CitizenBlock citizen03 = new CitizenBlock("Citizen3", "19-09-1980", RSA.getEncodedPublicKey(citizenKeypair03), citizen02.getHash(), chain.getHead().getHash(), validator03.getIdentityPublicKey(), validatorPrivate03);
+        chain.addValidatedBlock(citizen03, validator01);
+
+
+        System.out.println("chain02 validated: " + chain.validateChain());
+
+        //test serialisation
+
+        System.out.println("Coud chain be serialised and written to filesystem? " + StoreChain.writeChainToFilesystem("data/", chain));
+
+        Blockchain reconstitutedChain = StoreChain.readChainFromFilesystem("data/");
+
+        System.out.println("is reconstituted chain valid? " + reconstitutedChain.validateChain());
+
+        System.out.println("is reconstituted chain size: " + reconstitutedChain.size());
+        System.out.println("does reconstituted chain contain validator01? " + reconstitutedChain.validatorExistsOnChain(validator01));
+        System.out.println("does reconstituted chain contain validator02? " + reconstitutedChain.validatorExistsOnChain(validator02));
+        System.out.println("does reconstituted chain contain validator03? " + reconstitutedChain.validatorExistsOnChain(validator03));
+
+        //test keys
 
         System.out.println("RSA-keys present: " + RSA.keysPresent("data/"));
 
@@ -73,6 +121,14 @@ public class Datchain {
         CipherBlock cipherBlock1 = new CipherBlock(lorem1);
 
         cipherBlock1.signBlock(privateKey);
+
+        //System.out.println(Arrays.toString(cipherBlock1.getSignature()));
+
+        CipherBlock cipherBlock2 = new CipherBlock(lorem1);
+
+        cipherBlock2.signBlock(privateKey);
+
+        //System.out.println(Arrays.toString(cipherBlock2.getSignature()));
 
         System.out.println("did cipherblock pass signature? " + cipherBlock1.verifyBlock(publicKey));
     }
