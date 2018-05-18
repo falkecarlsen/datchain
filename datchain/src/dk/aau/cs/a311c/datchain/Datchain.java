@@ -7,9 +7,8 @@ import dk.aau.cs.a311c.datchain.utility.StoreChain;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Arrays;
 
-public class Datchain {
+class Datchain {
 
     public static void main(String[] args) {
 
