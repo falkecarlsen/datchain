@@ -211,7 +211,7 @@ class MainScreen {
         DirectoryChooser directory = new DirectoryChooser();
         File selectedDirectory = directory.showDialog(null);
 
-        RSA.publicKeyWriter(publicKey, selectedDirectory);
+        //TODO RSA.publicKeyWriter(publicKey, selectedDirectory);
     }
 
     private static void runPopUp(Stage primaryStage) {
