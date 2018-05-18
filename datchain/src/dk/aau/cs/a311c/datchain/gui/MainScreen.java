@@ -1,6 +1,8 @@
 package dk.aau.cs.a311c.datchain.gui;
 
 import dk.aau.cs.a311c.datchain.*;
+import dk.aau.cs.a311c.datchain.cryptography.RSA;
+import dk.aau.cs.a311c.datchain.utility.Search;
 import dk.aau.cs.a311c.datchain.utility.StoreChain;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,11 +16,13 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.util.ArrayList;
 
-import static dk.aau.cs.a311c.datchain.utility.RSA.publicKeyWriter;
+import static dk.aau.cs.a311c.datchain.cryptography.RSA.publicKeyWriter;
 import static javafx.geometry.Pos.CENTER;
 
 
@@ -210,6 +214,15 @@ class MainScreen {
         });
     }
 
+    //TODO might've fucked this up during merge
+    private static void savePublicKey() {
+        //opens a window for the user to select a directory
+        DirectoryChooser directory = new DirectoryChooser();
+        File selectedDirectory = directory.showDialog(null);
+
+        //RSA.publicKeyWriter(publicKey, selectedDirectory);
+    }
+
     private static void runPopUp(Stage primaryStage, Blockchain chain) {
         //calls the popUp to verify the user wants to close the program
         boolean answer = CloseProgram.display();
@@ -247,7 +260,8 @@ class MainScreen {
             identityText.setText(searchResults.get(index).getIdentity());
             birthdateText.setText(searchResults.get(index).getIdentityDOB());
             //the public key is made into a substring, because of the length of the public key
-            publicKeyText.setText(searchResults.get(index).getIdentityPublicKey().substring(0, 40) + "...");
+            //TODO should check for length before getting char 50 .. 90 as NPE might be thrown
+            publicKeyText.setText(searchResults.get(index).getIdentityPublicKey().substring(50, 90) + "...");
             publicKey = searchResults.get(index).getIdentityPublicKey();
             if (searchResults.get(index) instanceof GenesisBlock) {
                 blockTypeText.setText("Genesis");

@@ -1,10 +1,8 @@
 package dk.aau.cs.a311c.datchain.gui;
 
 import dk.aau.cs.a311c.datchain.Blockchain;
-import dk.aau.cs.a311c.datchain.CitizenBlock;
 import dk.aau.cs.a311c.datchain.GenesisBlock;
-import dk.aau.cs.a311c.datchain.ValidatorBlock;
-import dk.aau.cs.a311c.datchain.utility.RSA;
+import dk.aau.cs.a311c.datchain.cryptography.RSA;
 import dk.aau.cs.a311c.datchain.utility.StoreChain;
 import javafx.application.Application;
 import javafx.scene.image.Image;
@@ -27,7 +25,7 @@ public class Wrapper extends Application {
 
         //TODO MAKE DOB TO A DATE AND DO A CHECKEDY CHECK WHEN NEW BLOCK xD
         //TODO ALL KEYS START THE SAME
-        if ( new File("data/blockchain.obj").isFile()) {
+        if (new File("data/blockchain.obj").isFile()) {
             chain = StoreChain.readChainFromFilesystem("data/");
         } else {
             //TODO MAKE GENESIS CREATION SCREEN DANK AF
