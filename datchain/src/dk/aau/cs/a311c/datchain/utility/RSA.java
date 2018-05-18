@@ -219,7 +219,7 @@ public class RSA {
         }
         return null;
     }
-    
+
     public static boolean verifySignature(String cleartext, byte[] textSignature, PublicKey publicKey) {
         try {
             //get instance of Signature with given constant; signatureAlgorithm

@@ -5,7 +5,7 @@ import static java.time.Instant.now;
 
 public abstract class Block {
 
-    //common fields for all blocks
+    //union of fields for all blocks
     private final String identity;
     private final String identityPublicKey;
     private final String prevHash;
@@ -46,7 +46,7 @@ public abstract class Block {
         return identityDOB;
     }
 
-    public String getVolatileInformation() {
+    String getVolatileInformation() {
         return this.identity + this.identityDOB + this.identityPublicKey + this.prevHash;
     }
 }

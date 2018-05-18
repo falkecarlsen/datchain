@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import static javafx.geometry.Pos.CENTER;
 
 
-public class MainScreen {
+class MainScreen {
 
     private static ArrayList<Block> searchResults = new ArrayList<>();
     private static Text identityText = new Text();
@@ -252,7 +252,7 @@ public class MainScreen {
             identityText.setText(searchResults.get(index).getIdentity());
             birthdateText.setText(searchResults.get(index).getIdentityDOB());
             //the public key is made into a substring, because of the length of the public key
-            publicKeyText.setText(searchResults.get(index).getIdentityPublicKey().substring(0, 25) + "..........");
+            publicKeyText.setText(searchResults.get(index).getIdentityPublicKey().substring(0, 40) + "...");
             publicKey = searchResults.get(index).getIdentityPublicKey();
             if (searchResults.get(index) instanceof GenesisBlock) {
                 blockTypeText.setText("Genesis");
