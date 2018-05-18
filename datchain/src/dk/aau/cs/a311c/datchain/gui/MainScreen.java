@@ -1,25 +1,21 @@
 package dk.aau.cs.a311c.datchain.gui;
 
 import dk.aau.cs.a311c.datchain.*;
-import dk.aau.cs.a311c.datchain.utility.RSA;
+import dk.aau.cs.a311c.datchain.utility.StoreChain;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import static dk.aau.cs.a311c.datchain.utility.RSA.publicKeyWriter;
@@ -140,9 +136,9 @@ class MainScreen {
         GridPane.setConstraints(table, 0, 11, 1, 1);
         gridRight.getChildren().add(table);
         table.setOnMouseClicked(e -> {
-                if (e.getClickCount() == 2) {
-                    setChosenBlockDetails();
-                }
+            if (e.getClickCount() == 2) {
+                setChosenBlockDetails();
+            }
         });
 
         //textfield for searching in the chain, can search for name, birthdate or public key, by inputting either
@@ -210,14 +206,15 @@ class MainScreen {
         //if the user chooses to close the program, open the popup to prompt the user if he is sure he want to close it
         primaryStage.setOnCloseRequest(e -> {
             e.consume();
-            runPopUp(primaryStage);
+            runPopUp(primaryStage, chain);
         });
     }
 
-    private static void runPopUp(Stage primaryStage) {
+    private static void runPopUp(Stage primaryStage, Blockchain chain) {
         //calls the popUp to verify the user wants to close the program
         boolean answer = CloseProgram.display();
         if (answer) {
+            StoreChain.writeChainToFilesystem("data/", chain);
             primaryStage.close();
         }
     }
@@ -226,21 +223,18 @@ class MainScreen {
     private static ArrayList<Block> getSearchResults(String searchTerm, Blockchain chain) {
         //create class to search and array for search results
         Search search = new Search();
-        ArrayList<Block> results = new ArrayList<>();
+        ArrayList<Block> results;
 
         //if the user input just numbers and hyphen, search for date of birth in the chain
         if (searchTerm.matches("[0-9-]+")) {
-            System.out.println("searching birthdate");
             results = search.FuzzySearchIdentityDOB((searchTerm), chain, 5);
             return results;
             //if the user input just alphabetical characters, search for identity in the chain
-        } else if (searchTerm.matches("[a-zA-Z]+")) {
+        } else if (searchTerm.matches("[a-zA-ZæøåÆØÅ ]+")) {
             results = search.FuzzySearchIdentity((searchTerm), chain, 5);
-            System.out.println("searching identity");
             return results;
         } else {
             //if none of the above is true, search for pub key, which can have many different characters
-            System.out.println("earching pub key");
             return (results = search.FuzzySearchIdentityPublicKey((searchTerm), chain, 5));
         }
     }
