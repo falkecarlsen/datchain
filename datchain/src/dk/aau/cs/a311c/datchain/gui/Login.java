@@ -21,7 +21,7 @@ import java.security.PublicKey;
 
 import static dk.aau.cs.a311c.datchain.utility.RSA.*;
 
-public class Login {
+class Login {
     private static PrivateKey privateKey;
     private static PublicKey publicKey;
     private static Label labelLogin = new Label();
@@ -194,8 +194,8 @@ public class Login {
             labelPrivateKey.setText("");
             return "Public key not in chain or does not belong to validator";
         }
-            //else do a check, and see if the challenge is passed by the decrypted text, being the same as the cleartext
-            //if so, the public and private key match. the block containing the given public key is sent as an parameter
+        //else do a check, and see if the challenge is passed by the decrypted text, being the same as the cleartext
+        //if so, the public and private key match. the block containing the given public key is sent as an parameter
         if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
             labelPublicKey.setText("");
             labelPrivateKey.setText("");

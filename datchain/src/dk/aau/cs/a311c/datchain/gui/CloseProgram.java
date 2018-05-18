@@ -11,7 +11,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
-public class CloseProgram {
+class CloseProgram {
 
     private static boolean answer;
 

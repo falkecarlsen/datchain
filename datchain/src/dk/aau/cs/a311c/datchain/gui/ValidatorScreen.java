@@ -17,7 +17,7 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 
 
-public class ValidatorScreen {
+class ValidatorScreen {
 
     //input data
     private static String identity;
