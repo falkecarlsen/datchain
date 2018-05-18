@@ -38,9 +38,8 @@ class MainScreen {
 
     public static void screen(Stage primaryStage, Blockchain chain) {
 
-        //todo double click on table to get results
-        //this stage uses a borderpane, which contains a top, center and bottom panel
 
+        //this stage uses a borderpane, which contains a top, center and bottom panel
         //top panel, which just contains the login button
         HBox topPanel = new HBox();
         topPanel.setStyle("-fx-background-color: #FFFFFF;");
