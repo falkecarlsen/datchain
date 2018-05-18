@@ -1,107 +1,183 @@
 package dk.aau.cs.a311c.datchain.gui;
 
+import dk.aau.cs.a311c.datchain.*;
+import dk.aau.cs.a311c.datchain.cryptography.RSA;
+import dk.aau.cs.a311c.datchain.utility.Search;
+import dk.aau.cs.a311c.datchain.utility.StoreChain;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.util.ArrayList;
+
+import static dk.aau.cs.a311c.datchain.cryptography.RSA.publicKeyWriter;
 import static javafx.geometry.Pos.CENTER;
 
 
-public class MainScreen {
-    public static void screen(Stage primaryStage) {
-        GridPane gridLeft = new GridPane();
-        gridLeft.setVgap(10);
-        gridLeft.setHgap(8);
-        gridLeft.setPadding(new Insets(10, 20, 10, 20));
-        primaryStage.setResizable(false);
+class MainScreen {
+
+    private static ArrayList<Block> searchResults = new ArrayList<>();
+    private static Text identityText = new Text();
+    private static Text birthdateText = new Text();
+    private static Text publicKeyText = new Text();
+    private static Text blockTypeText = new Text();
+    private static TableView<Block> table = new TableView<>();
+    private static String publicKey;
+
+    public static void screen(Stage primaryStage, Blockchain chain) {
 
 
-        //top panel
+        //this stage uses a borderpane, which contains a top, center and bottom panel
+        //top panel, which just contains the login button
         HBox topPanel = new HBox();
+        topPanel.setStyle("-fx-background-color: #FFFFFF;");
         topPanel.setPadding(new Insets(5, 0, 10, 0));
 
         Button login_button = new Button("Login as validator");
-        login_button.setOnMouseClicked(event -> Login.login(primaryStage));
-        login_button.setMinWidth(125);
+        login_button.setOnMouseClicked(event -> Login.login(primaryStage, chain));
 
         topPanel.getChildren().add(login_button);
         topPanel.setAlignment(CENTER);
 
 
-        //Left panel
-        Text text1 = new Text("            Chosen person");
-        text1.setStyle("-fx-font-weight: bold");
-        gridLeft.setConstraints(text1, 2, 0);
-        gridLeft.getChildren().add(text1);
-
-        /*Label nullLabel = new Label("");
-        nullLabel.setMinWidth(75);
-        gridLeft.setConstraints(nullLabel,1,0);
-        gridLeft.getChildren().add(nullLabel);*/
-
-        Label firstname_label = new Label("First name:");
-        firstname_label.setMinWidth(75);
-        gridLeft.setConstraints(firstname_label, 1, 1);
-        gridLeft.getChildren().add(firstname_label);
-
-        Label lastname_label = new Label("Last name:");
-        lastname_label.setMinWidth(75);
-        gridLeft.setConstraints(lastname_label, 1, 2);
-        gridLeft.getChildren().add(lastname_label);
-
-        Label birthdateLabel = new Label("Birthdate:");
-        birthdateLabel.setMinWidth(75);
-        gridLeft.setConstraints(birthdateLabel, 1, 3);
-        gridLeft.getChildren().add(birthdateLabel);
-
-        Label pbkLabel = new Label("Public key:");
-        pbkLabel.setMinWidth(75);
-        gridLeft.setConstraints(pbkLabel, 1, 4);
-        gridLeft.getChildren().add(pbkLabel);
-
-        Label identityLabel = new Label("Identity:");
-        identityLabel.setMinWidth(75);
-        gridLeft.setConstraints(identityLabel, 1, 5);
-        gridLeft.getChildren().add(identityLabel);
-
-
-        //right panel
+        //Center panel contains the search functionality
         GridPane gridRight = new GridPane();
+        gridRight.setAlignment(CENTER);
         gridRight.setVgap(10);
         gridRight.setHgap(8);
-        gridRight.setPadding(new Insets(10, 20, 10, 100));
+        gridRight.setPadding(new Insets(10, 20, 10, 10));
+        gridRight.setStyle("-fx-background-color: #FFFFFF;");
 
-        /*search*/
-        /*Label term_label = new Label("Input:");
-        term_label.setMinWidth(150);
-        gridRight.setConstraints(term_label,0,0);
-        gridRight.getChildren().add(term_label);*/
-        TextField term_text = new TextField();
-        term_text.setPromptText("Search for name, date of birth, public key");
-        gridRight.setConstraints(term_text, 0, 0);
-        gridRight.getChildren().add(term_text);
+        //text for guidance, tells the user that the chosen information will be displayed under this text
+        Text chosenPersonText = new Text("Chosen person");
+        chosenPersonText.setStyle("-fx-font-weight: bold");
+        GridPane.setHalignment(chosenPersonText, HPos.CENTER);
+        GridPane.setConstraints(chosenPersonText, 0, 2);
+        gridRight.getChildren().add(chosenPersonText);
 
-        ListView listView = new ListView<>();
-        listView.setMinWidth(200);
-        listView.setMaxHeight(120);
+        //label for displaying the identity in chosen the block
+        Label firstname_label = new Label("Name:");
+        firstname_label.setMinWidth(75);
+        GridPane.setConstraints(firstname_label, 0, 3);
+        gridRight.getChildren().add(firstname_label);
 
-        listView.getItems().addAll("eks. 1", "eks. 2", "eks. 3");
-        gridRight.setConstraints(listView, 0, 1, 1, 1);
-        gridRight.getChildren().add(listView);
+        //label for displaying the birthdate in the chosen block
+        Label birthdateLabel = new Label("Birthdate:");
+        birthdateLabel.setMinWidth(75);
+        GridPane.setConstraints(birthdateLabel, 0, 4);
+        gridRight.getChildren().add(birthdateLabel);
+
+        //label for displaying the public key in the chosen block
+        Label publicKeyLabel = new Label("Public key:");
+        publicKeyLabel.setMinWidth(75);
+        GridPane.setConstraints(publicKeyLabel, 0, 5);
+        gridRight.getChildren().add(publicKeyLabel);
+
+        //label for displaying the public key in the chosen block
+        Label blockTypeLabel = new Label("Blocktype:");
+        blockTypeLabel.setMinWidth(75);
+        GridPane.setConstraints(blockTypeLabel, 0, 6);
+        gridRight.getChildren().add(blockTypeLabel);
+
+        //adding the texts for displaying the information in the chosen block
+        GridPane.setHalignment(identityText, HPos.CENTER);
+        GridPane.setConstraints(identityText, 0, 3);
+        gridRight.getChildren().add(identityText);
+
+        GridPane.setHalignment(birthdateText, HPos.CENTER);
+        GridPane.setConstraints(birthdateText, 0, 4);
+        gridRight.getChildren().add(birthdateText);
+
+        GridPane.setHalignment(publicKeyText, HPos.CENTER);
+        GridPane.setConstraints(publicKeyText, 0, 5);
+        gridRight.getChildren().add(publicKeyText);
+
+        GridPane.setHalignment(blockTypeText, HPos.CENTER);
+        GridPane.setConstraints(blockTypeText, 0, 6);
+        gridRight.getChildren().add(blockTypeText);
+
+        Button savePublicKeyButton = new Button("Save public key in datchain folder");
+        savePublicKeyButton.setOnMouseClicked(e -> publicKeyWriter(publicKey, "data/gui/selectedKey/"));
+        GridPane.setConstraints(savePublicKeyButton, 0, 0);
+        gridRight.getChildren().add(savePublicKeyButton);
 
 
-        //bottompanel
+        //name column for the tableview
+        TableColumn<Block, String> nameColumn = new TableColumn<>("Name");
+        nameColumn.setMinWidth(200);
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("identity"));
+
+        //DOB column for the tableview
+        TableColumn<Block, String> DOBColumn = new TableColumn<>("Date of Birth");
+        DOBColumn.setMinWidth(200);
+        DOBColumn.setCellValueFactory(new PropertyValueFactory<>("identityDOB"));
+
+        //Pubkey column for the tableview
+        TableColumn<Block, String> pubKeyColumn = new TableColumn<>("Public Key");
+        pubKeyColumn.setMinWidth(200);
+        pubKeyColumn.setCellValueFactory(new PropertyValueFactory<>("identityPublicKey"));
+
+
+        //sets up the tableview, with the columns
+        table = new TableView<>();
+        table.setPlaceholder(new Label(""));
+        table.getColumns().addAll(nameColumn, DOBColumn, pubKeyColumn);
+        table.setMaxHeight(150);
+
+        //adds the tableview to the grid
+        GridPane.setConstraints(table, 0, 11, 1, 1);
+        gridRight.getChildren().add(table);
+        table.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                setChosenBlockDetails();
+            }
+        });
+
+        //textfield for searching in the chain, can search for name, birthdate or public key, by inputting either
+        //alphabetical, digits, or both
+        TextField searchField = new TextField();
+        searchField.setPromptText("Search for name, date of birth or public key");
+        //calls function to search for the term for each keystroke
+        searchField.setOnKeyReleased(e -> {
+            searchResults = getSearchResults(searchField.getText(), chain);
+            //clear previous showed items
+            table.getItems().clear();
+
+            //creates an observable list and adds the search results to it
+            ObservableList<Block> blocks = FXCollections.observableArrayList();
+            blocks.addAll(searchResults);
+
+            //displays the search results
+            table.setItems(blocks);
+        });
+        GridPane.setConstraints(searchField, 0, 10);
+        gridRight.getChildren().add(searchField);
+
+        //select button for selecting which block to show properties of
+        Button selectBlockButton = new Button("Select");
+        selectBlockButton.setOnMouseClicked(e -> setChosenBlockDetails());
+        GridPane.setHalignment(selectBlockButton, HPos.CENTER);
+        gridRight.getChildren().add(selectBlockButton);
+        GridPane.setConstraints(selectBlockButton, 0, 12);
+
+
+        //TODO REMOVE NODES AND ONLINE STATUS?
+        //bottompanel with various information about the chain, online status, number of blocks and nodes
         HBox bottomPanel = new HBox();
         bottomPanel.setSpacing(150);
+        bottomPanel.setStyle("-fx-background-color: #D3D3D3;");
         bottomPanel.setAlignment(CENTER);
         bottomPanel.setPadding(new Insets(10, 0, 5, 0));
 
@@ -111,99 +187,89 @@ public class MainScreen {
             onlineLabel.setFill(Color.GREEN);
         } else onlineLabel.setFill(Color.RED);
 
-
         int numberOfNodes = 10;
         Text nodesLabel = new Text("Nodes:  " + numberOfNodes);
 
-        int numberOfBlocks = 497;
+        int numberOfBlocks = chain.size();
         Text blocksLabel = new Text("Blocks:  " + numberOfBlocks);
 
         bottomPanel.getChildren().addAll(nodesLabel, onlineLabel, blocksLabel);
 
 
-        //close action
-        primaryStage.setOnCloseRequest(e -> {
-            e.consume();
-            closeProgram(primaryStage);
-        });
-
-        //setting scene
+        //setting the scene with all the above
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(topPanel);
-        borderPane.setLeft(gridLeft);
-        borderPane.setRight(gridRight);
+        borderPane.setCenter(gridRight);
         borderPane.setBottom(bottomPanel);
 
-        Scene scene = new Scene(borderPane, 620, 250);
+        Scene scene = new Scene(borderPane, 800, 580);
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
+
+        //if the user chooses to close the program, open the popup to prompt the user if he is sure he want to close it
+        primaryStage.setOnCloseRequest(e -> {
+            e.consume();
+            runPopUp(primaryStage, chain);
+        });
     }
 
-    static void closeProgram(Stage primaryStage) {
-        boolean answer = CloseProgram.display("Sure you want to exit?");
+    //TODO might've fucked this up during merge
+    private static void savePublicKey() {
+        //opens a window for the user to select a directory
+        DirectoryChooser directory = new DirectoryChooser();
+        File selectedDirectory = directory.showDialog(null);
+
+        //RSA.publicKeyWriter(publicKey, selectedDirectory);
+    }
+
+    private static void runPopUp(Stage primaryStage, Blockchain chain) {
+        //calls the popUp to verify the user wants to close the program
+        boolean answer = CloseProgram.display();
         if (answer) {
+            StoreChain.writeChainToFilesystem("data/", chain);
             primaryStage.close();
         }
     }
+
+    //method to search in the chain, based on the input in GUI
+    private static ArrayList<Block> getSearchResults(String searchTerm, Blockchain chain) {
+        //create class to search and array for search results
+        Search search = new Search();
+        ArrayList<Block> results;
+
+        //if the user input just numbers and hyphen, search for date of birth in the chain
+        if (searchTerm.matches("[0-9-]+")) {
+            results = search.FuzzySearchIdentityDOB((searchTerm), chain, 5);
+            return results;
+            //if the user input just alphabetical characters, search for identity in the chain
+        } else if (searchTerm.matches("[a-zA-ZæøåÆØÅ ]+")) {
+            results = search.FuzzySearchIdentity((searchTerm), chain, 5);
+            return results;
+        } else {
+            //if none of the above is true, search for pub key, which can have many different characters
+            return (results = search.FuzzySearchIdentityPublicKey((searchTerm), chain, 5));
+        }
+    }
+
+    //Sets the properties of the selected block, when the select button is pushed
+    private static void setChosenBlockDetails() {
+        //gets the selected index of the table, and returns value of the same index from the search results
+        int index = table.getSelectionModel().getSelectedIndex();
+        if (0 <= index && index <= 4) {
+            identityText.setText(searchResults.get(index).getIdentity());
+            birthdateText.setText(searchResults.get(index).getIdentityDOB());
+            //the public key is made into a substring, because of the length of the public key
+            //TODO should check for length before getting char 50 .. 90 as NPE might be thrown
+            publicKeyText.setText(searchResults.get(index).getIdentityPublicKey().substring(50, 90) + "...");
+            publicKey = searchResults.get(index).getIdentityPublicKey();
+            if (searchResults.get(index) instanceof GenesisBlock) {
+                blockTypeText.setText("Genesis");
+            } else if (searchResults.get(index) instanceof ValidatorBlock) {
+                blockTypeText.setText("Validator");
+            } else if (searchResults.get(index) instanceof CitizenBlock) {
+                blockTypeText.setText("Citizen");
+            }
+        }
+    }
 }
-
-/*var firstname_label = new Label("Fornavn:");
-        firstname_label.setMinWidth(150);
-        root.setConstraints(firstname_label,0,0);
-        root.getChildren().add(firstname_label);
-        var firstname_text = new TextField();
-        root.setConstraints(firstname_text,0,1);
-        root.getChildren().add(firstname_text);
-
-        var lastname_label = new Label("Efternavn:");
-        root.setConstraints(lastname_label,0,2);
-        root.getChildren().add(lastname_label);
-        var lastname_text = new TextField();
-        root.setConstraints(lastname_text,0,3);
-        root.getChildren().add(lastname_text);
-
-        var ID_label = new Label("ID-nummer:");
-        root.setConstraints(ID_label,0,4);
-        root.getChildren().add(ID_label);
-        var ID_text = new TextField();
-        root.setConstraints(ID_text,0,5);
-        root.getChildren().add(ID_text);
-        */
-        /*Button Search_button = new Button("CloseProgramBox");
-        root.setConstraints(Search_button,0,7);
-        root.getChildren().add(Search_button);*/
-
-        /*Label public_key_label = new Label("Public Key:");
-        root.setConstraints(public_key_label,1,6);
-        root.getChildren().add(public_key_label);*/
-        /*
-        Label firstname = new Label("");
-        root.setConstraints(firstname,2,1);
-        root.getChildren().add(firstname);
-
-        Label lastname = new Label("");
-        root.setConstraints(lastname,2,2);
-        root.getChildren().add(lastname);
-
-        Label ID = new Label("");
-        root.setConstraints(ID,2,3);
-        root.getChildren().add(ID);
-
-        Label birthday = new Label("");
-        root.setConstraints(birthday,2,4);
-        root.getChildren().add(birthday);
-
-        Label public_key = new Label("");
-        root.setConstraints(public_key,2,5);
-        public_key.setMinWidth(75);
-        root.getChildren().add(public_key);
-*/
-
-        /*
-        Stage Search_stage = new Stage();
-        Search_stage.setTitle("CloseProgramBox");
-        GridPane root = new GridPane();
-        root.setVgap(7);
-        root.setHgap(5);
-        root.setPadding(new Insets(10, 10, 10, 10));
-        Scene scene = new Scene(root,600, 230);*/

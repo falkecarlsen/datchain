@@ -11,47 +11,53 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
-public class CloseProgram {
+class CloseProgram {
 
-    static boolean answer;
+    private static boolean answer;
 
-    public static boolean display(String message) {
+    public static boolean display() {
+
+        //setting up the popup window
         Stage popUp = new Stage();
         popUp.initModality(Modality.APPLICATION_MODAL);
         popUp.setResizable(false);
-        Label label = new Label();
-        label.setText(message);
+        Label exitLabel = new Label();
+        exitLabel.setText("Are you sure you want to exit?");
 
         //buttons
         Button yesButton = new Button("yes");
         Button noButton = new Button("no");
 
+        //if yes button is clicked, return true
         yesButton.setOnAction(e -> {
             answer = true;
             popUp.close();
         });
 
+        //if no button is clicked, return false
         noButton.setOnAction(e -> {
             answer = false;
             popUp.close();
         });
 
-        HBox root = new HBox();
-        root.setAlignment(Pos.CENTER);
-        root.getChildren().addAll(label);
-        root.setPadding(new Insets(10, 0, 0, 0));
 
-        HBox center = new HBox(25);
-        center.setAlignment(Pos.CENTER);
-        center.getChildren().addAll(yesButton, noButton);
-        center.setPadding(new Insets(0, 0, 10, 0));
+        //label on top
+        HBox topPane = new HBox();
+        topPane.setAlignment(Pos.CENTER);
+        topPane.getChildren().addAll(exitLabel);
+        topPane.setPadding(new Insets(10, 0, 0, 0));
 
+        //buttons below the label, next to each other
+        HBox centerPanel = new HBox(25);
+        centerPanel.setAlignment(Pos.CENTER);
+        centerPanel.getChildren().addAll(yesButton, noButton);
+        centerPanel.setPadding(new Insets(0, 0, 10, 0));
+
+        //setting the scene and stage
         BorderPane borderPane = new BorderPane();
-        borderPane.setTop(root);
-        borderPane.setCenter(center);
-
+        borderPane.setTop(topPane);
+        borderPane.setCenter(centerPanel);
         Scene scene = new Scene(borderPane, 200, 100);
-
         popUp.setScene(scene);
         popUp.showAndWait();
 
