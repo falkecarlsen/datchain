@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.util.ArrayList;
 
+import static dk.aau.cs.a311c.datchain.utility.RSA.publicKeyWriter;
 import static javafx.geometry.Pos.CENTER;
 
 
@@ -109,7 +110,7 @@ class MainScreen {
         gridRight.getChildren().add(blockTypeText);
 
         Button savePublicKeyButton = new Button("Save public key in datchain folder");
-        savePublicKeyButton.setOnMouseClicked(e -> savePublicKey());
+        savePublicKeyButton.setOnMouseClicked(e -> publicKeyWriter(publicKey, "data/gui/selectedKey/"));
         GridPane.setConstraints(savePublicKeyButton, 0, 0);
         gridRight.getChildren().add(savePublicKeyButton);
 
@@ -143,21 +144,11 @@ class MainScreen {
                 if (e.getClickCount() == 2) {
                     setChosenBlockDetails();
                 }
-            });
+        });
 
-        /*table.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent click) {
-
-                if (click.getClickCount() == 2) {
-                    setChosenBlockDetails();
-                }
-            }
-        });*/
-
-                //textfield for searching in the chain, can search for name, birthdate or public key, by inputting either
-                //alphabetical, digits, or both
-                TextField searchField = new TextField();
+        //textfield for searching in the chain, can search for name, birthdate or public key, by inputting either
+        //alphabetical, digits, or both
+        TextField searchField = new TextField();
         searchField.setPromptText("Search for name, date of birth or public key");
         //calls function to search for the term for each keystroke
         searchField.setOnKeyReleased(e -> {
@@ -222,14 +213,6 @@ class MainScreen {
             e.consume();
             runPopUp(primaryStage);
         });
-    }
-
-    private static void savePublicKey() {
-        //opens a window for the user to select a directory
-        DirectoryChooser directory = new DirectoryChooser();
-        File selectedDirectory = directory.showDialog(null);
-
-        RSA.publicKeyWriter(publicKey, selectedDirectory);
     }
 
     private static void runPopUp(Stage primaryStage) {
