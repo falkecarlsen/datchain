@@ -133,6 +133,7 @@ class ValidatorScreen {
         //generates keys
         KeyPair keyPair = RSA.keyPairInit();
 
+        //TODO SAVE IDENTITY WITH KEYS WRITTEN
         //saves the keys on a file
         RSA.keyPairWriter(keyPair, "data/gui/");
 

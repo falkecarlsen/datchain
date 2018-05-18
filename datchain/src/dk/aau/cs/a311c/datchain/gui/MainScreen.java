@@ -4,11 +4,13 @@ import dk.aau.cs.a311c.datchain.*;
 import dk.aau.cs.a311c.datchain.utility.RSA;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -35,6 +37,7 @@ class MainScreen {
 
     public static void screen(Stage primaryStage, Blockchain chain) {
 
+        //todo double click on table to get results
         //this stage uses a borderpane, which contains a top, center and bottom panel
 
         //top panel, which just contains the login button
@@ -126,6 +129,7 @@ class MainScreen {
         pubKeyColumn.setMinWidth(200);
         pubKeyColumn.setCellValueFactory(new PropertyValueFactory<>("identityPublicKey"));
 
+
         //sets up the tableview, with the columns
         table = new TableView<>();
         table.setPlaceholder(new Label(""));
@@ -135,10 +139,25 @@ class MainScreen {
         //adds the tableview to the grid
         GridPane.setConstraints(table, 0, 11, 1, 1);
         gridRight.getChildren().add(table);
+        table.setOnMouseClicked(e -> {
+                if (e.getClickCount() == 2) {
+                    setChosenBlockDetails();
+                }
+            });
 
-        //textfield for searching in the chain, can search for name, birthdate or public key, by inputting either
-        //alphabetical, digits, or both
-        TextField searchField = new TextField();
+        /*table.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent click) {
+
+                if (click.getClickCount() == 2) {
+                    setChosenBlockDetails();
+                }
+            }
+        });*/
+
+                //textfield for searching in the chain, can search for name, birthdate or public key, by inputting either
+                //alphabetical, digits, or both
+                TextField searchField = new TextField();
         searchField.setPromptText("Search for name, date of birth or public key");
         //calls function to search for the term for each keystroke
         searchField.setOnKeyReleased(e -> {

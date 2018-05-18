@@ -184,6 +184,7 @@ class Login {
                 index = (chain.indexOf(block));
             }
         }
+        //TODO HANDLE WRONG LOGIN
 
 
         //if index is still -1, no block contains the public key, and therefore cannot log in. Resets keys and labels
