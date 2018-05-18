@@ -5,7 +5,7 @@ import dk.aau.cs.a311c.datchain.Block;
 
 import java.lang.reflect.Type;
 
-public class BlockClassAdapter implements JsonSerializer<Block>, JsonDeserializer<Block> {
+class BlockClassAdapter implements JsonSerializer<Block>, JsonDeserializer<Block> {
 
     @Override
     public JsonElement serialize(Block src, Type typeOfSrc, JsonSerializationContext context) {

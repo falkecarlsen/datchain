@@ -46,7 +46,7 @@ public abstract class Block {
         return identityDOB;
     }
 
-    public String getVolatileInformation() {
+    String getVolatileInformation() {
         return this.identity + this.identityDOB + this.identityPublicKey + this.prevHash;
     }
 }
