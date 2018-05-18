@@ -16,7 +16,7 @@ public class RandomChallenge {
         //for challengeLength, do
         for (int i = 0; i < challengeLength; i++) {
             //get random char between 0 and challengeLength and add to challenge
-            challenge[i] = charset.charAt(randomIntInRange(0, challengeLength));
+            challenge[i] = charset.charAt(randomIntInRange(0, charset.length()));
         }
         //return challenge as String
         return new String(challenge);
