@@ -2,8 +2,11 @@ package dk.aau.cs.a311c.datchain;
 
 import dk.aau.cs.a311c.datchain.cryptography.CipherBlock;
 import dk.aau.cs.a311c.datchain.cryptography.RSA;
+import dk.aau.cs.a311c.datchain.network.Client;
+import dk.aau.cs.a311c.datchain.network.Server;
 import dk.aau.cs.a311c.datchain.utility.StoreChain;
 
+import java.io.IOException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -11,6 +14,8 @@ import java.security.PublicKey;
 class Datchain {
 
     public static void main(String[] args) {
+
+        /*
 
         //create keypairs for testing
         KeyPair genesisKeypair = RSA.keyPairInit();
@@ -62,7 +67,31 @@ class Datchain {
 
         CitizenBlock citizen03 = new CitizenBlock("Citizen3", "19-09-1980", RSA.getEncodedPublicKey(citizenKeypair03), citizen02.getHash(), chain.getHead().getHash(), validator03.getIdentityPublicKey(), validatorPrivate03);
         chain.addValidatedBlock(citizen03, validator01);
+        */
 
+        //load preset chain
+        Blockchain chain = null;
+        chain = StoreChain.readChainFromFilesystem("data/");
+
+        //test out networking
+        Client client = new Client(chain);
+        System.out.println("Starting client");
+        try {
+            client.run();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        Server server = new Server(chain);
+        System.out.println("Starting server");
+        try {
+            server.run();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        /*
 
         System.out.println("chain02 validated: " + chain.validateChain());
 
@@ -129,5 +158,7 @@ class Datchain {
         //System.out.println(Arrays.toString(cipherBlock2.getSignature()));
 
         System.out.println("did cipherblock pass signature? " + cipherBlock1.verifyBlock(publicKey));
+
+        */
     }
 }
