@@ -20,6 +20,29 @@ public class Blockchain extends ArrayList<Block> {
         //if local, current chain is not valid, abort adding block
         if (!this.validateChain()) return false;
 
+        //search for public key on chain equal to proposed block and count instances
+        int duplicateBlockInstances = 0;
+        String duplicateBlockDOB = "";
+        for (Block localBlock : this) {
+            if (localBlock.getIdentityPublicKey().equals(block.getIdentityPublicKey())) {
+                duplicateBlockDOB = localBlock.getIdentityDOB();
+                duplicateBlockInstances++;
+            }
+        }
+
+        //if public key occurs on chain exactly once, and name reads "Revoked", do
+        if (duplicateBlockInstances == 1 &&
+                block.getIdentity().equals("Revoked") &&
+                block.getIdentityDOB().equals(duplicateBlockDOB)) {
+            //add block and return true
+            add(block);
+            return true;
+            //if identity already has been revoked, by existing more than once on chain, adding revoking block is illegal
+        } else if (duplicateBlockInstances > 1) {
+            System.out.println("ERROR: Adding a block with equal public key to revoked block is illegal!");
+            return false;
+        }
+
         // if block to be added is of GenesisBlock-type, return false - as only constructor can add Genesis
         if (block instanceof GenesisBlock) return false;
             //check if block to be added is of ValidatorBlock-type and if chainsize is greater than 0
