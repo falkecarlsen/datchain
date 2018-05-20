@@ -8,6 +8,10 @@
 /datchain/data/private.key
 /datchain/data/public.key
 
+# Compile-specific stuff:
+/datchain/.idea/artifacts/*
+/datchain/src/META-INF/MANIFEST.MF
+
 # Test-specific stuff:
 /datchain/testData/*
 
