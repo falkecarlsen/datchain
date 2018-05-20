@@ -97,8 +97,20 @@ public class Blockchain extends ArrayList<Block> {
             //check time is equal or later through blocks
             if (currTime > nextTime) return false;
 
-            //TODO should also test chain of RSA-signature from genesis to all validators and possibly citizens
         }
+
+        for (Block block : this) {
+            //if block is of ValidatorBlock type, genesis signed block's signature
+            if (block instanceof ValidatorBlock) {
+                //verify signature of genesis in given ValidatorBlock, if returns false, chain is invalid
+                if (!((ValidatorBlock) block).verifySignature(this.getGenesisPublicKey())) return false;
+            }
+            if (block instanceof CitizenBlock) {
+                //verify signature of validator in given CitizenBlock, if returns false, chain is invalid
+                if (!((CitizenBlock) block).verifySignature()) return false;
+            }
+        }
+
         //if no congruency errors are found, chain is valid
         return true;
     }
@@ -112,7 +124,7 @@ public class Blockchain extends ArrayList<Block> {
         return false;
     }
 
-    public PublicKey getGenesisPublicKey() {
+    private PublicKey getGenesisPublicKey() {
         return RSA.getPublicKeyFromEncoded(this.get(0).getIdentityPublicKey());
     }
 
