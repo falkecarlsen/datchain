@@ -24,7 +24,7 @@ class ValidatorScreen {
     private static String identityDOB;
 
     //the label, buttons and textfields to be used on the stage
-    private static Button addBlockButton = new Button("Check if data is correct and submit block");
+    private static Button addBlockButton = new Button("Check data is correct and submit");
     private static TextField DOBText = new TextField();
     private static TextField identityText = new TextField();
     private static Label succesLabel = new Label();
@@ -46,10 +46,18 @@ class ValidatorScreen {
 
         //back button to return to mainscreen, returns the chain
         Button logoutButton = new Button("Logout");
+        logoutButton.setMinWidth(70);
         logoutButton.setOnAction(e -> MainScreen.screen(primaryStage, chain));
         GridPane.setHalignment(logoutButton, HPos.CENTER);
         GridPane.setConstraints(logoutButton, 0, 0);
         gridCenter.getChildren().add(logoutButton);
+
+        Button switchButton = new Button("Switch");
+        switchButton.setMinWidth(70);
+        switchButton.setOnAction(e -> VoidScreen.voidingBlock(primaryStage,chain, block, validatorPrivateKey));
+        GridPane.setHalignment(switchButton, HPos.CENTER);
+        GridPane.setConstraints(switchButton, 2, 0);
+        gridCenter.getChildren().add(switchButton);
 
         //direction label, which text changes depending on who logged in
         if (block instanceof GenesisBlock) {
@@ -59,21 +67,25 @@ class ValidatorScreen {
         }
 
         //adds the directionlabel to the gridpane
+        userPromptLabel.setMinWidth(300);
         GridPane.setHalignment(userPromptLabel, HPos.CENTER);
         GridPane.setConstraints(userPromptLabel, 1, 4);
         gridCenter.getChildren().add(userPromptLabel);
 
         //identity textfield
         identityText.setPromptText("Enter the identity");
+        identityText.setMinWidth(300);
         GridPane.setConstraints(identityText, 1, 5);
         gridCenter.getChildren().add(identityText);
 
         //birthdate textfield
+        DOBText.setMinWidth(300);
         DOBText.setPromptText("Enter the date of birth, DD-MM-YYYY");
         GridPane.setConstraints(DOBText, 1, 6);
         gridCenter.getChildren().add(DOBText);
 
         //error label for wrong DOB format, positioned under the date of birth textfield
+        errorLabel.setMinWidth(300);
         GridPane.setHalignment(errorLabel, HPos.CENTER);
         errorLabel.setTextFill(Color.RED);
         GridPane.setConstraints(errorLabel, 1, 7);
@@ -103,13 +115,12 @@ class ValidatorScreen {
         //setting up the scene in a borderpane
         BorderPane borderPane = new BorderPane();
         borderPane.setCenter(gridCenter);
-        Scene scene = new Scene(borderPane, 400, 300);
+        Scene addBlockScene = new Scene(borderPane, 500, 300);
 
-        primaryStage.setScene(scene);
+        primaryStage.setScene(addBlockScene);
         primaryStage.setResizable(false);
         primaryStage.show();
     }
-
 
     //saves the input from user to variables
     private static void saveInput(String identityInput, String DOBInput) {
@@ -176,6 +187,8 @@ class ValidatorScreen {
         //creates the genesis and adds it to a new chain
         GenesisBlock genesis01 = new GenesisBlock(identity, identityDOB, RSA.getEncodedPublicKey(genesisPublicKey), "0000");
         Blockchain chain = new Blockchain(genesis01);
+        identityText.clear();
+        DOBText.clear();
 
         //opens mainscreen
         MainScreen.screen(primaryStage, chain);

@@ -213,16 +213,7 @@ class MainScreen {
         });
     }
 
-    //TODO might've fucked this up during merge
-    private static void savePublicKey() {
-        //opens a window for the user to select a directory
-        DirectoryChooser directory = new DirectoryChooser();
-        File selectedDirectory = directory.showDialog(null);
-
-        //RSA.publicKeyWriter(publicKey, selectedDirectory);
-    }
-
-    static void runPopUp(Stage primaryStage, Blockchain chain) {
+    private static void runPopUp(Stage primaryStage, Blockchain chain) {
         //calls the popUp to verify the user wants to close the program
         boolean answer = CloseProgram.display();
         if (answer) {
@@ -232,7 +223,7 @@ class MainScreen {
     }
 
     //method to search in the chain, based on the input in GUI
-    private static ArrayList<Block> getSearchResults(String searchTerm, Blockchain chain) {
+    static ArrayList<Block> getSearchResults(String searchTerm, Blockchain chain) {
         //create class to search and array for search results
         Search search = new Search();
         ArrayList<Block> results;
