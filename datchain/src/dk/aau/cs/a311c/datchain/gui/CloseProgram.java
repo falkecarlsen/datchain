@@ -25,8 +25,8 @@ class CloseProgram {
         exitLabel.setText("Are you sure you want to exit?");
 
         //buttons
-        Button yesButton = new Button("yes");
-        Button noButton = new Button("no");
+        Button yesButton = new Button("Yes");
+        Button noButton = new Button("No");
 
         //if yes button is clicked, return true
         yesButton.setOnAction(e -> {
@@ -57,7 +57,7 @@ class CloseProgram {
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(topPane);
         borderPane.setCenter(centerPanel);
-        Scene scene = new Scene(borderPane, 200, 100);
+        Scene scene = new Scene(borderPane, 220, 100);
         popUp.setScene(scene);
         popUp.showAndWait();
 
