@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.security.PrivateKey;
@@ -18,6 +19,7 @@ public class VoidScreen {
 
     private static ArrayList<Block> searchResults = new ArrayList<>();
     private static TableView<Block> table = new TableView<>();
+    private static Label succesLabel = new Label();
 
     public static void voidingBlock(Stage primaryStage, Blockchain chain, Block block, PrivateKey validatorPrivateKey) {
 
@@ -94,12 +96,6 @@ public class VoidScreen {
         //adds the tableview to the grid
         GridPane.setConstraints(table, 1, 4, 1, 1);
         grid.getChildren().add(table);
-        table.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2) {
-                addVoidedBlock(chain, block, validatorPrivateKey);
-            }
-        });
-
 
         //select button for selecting which block to show properties of
         Button selectBlockButton = new Button("Void this block");
@@ -107,6 +103,12 @@ public class VoidScreen {
         GridPane.setHalignment(selectBlockButton, HPos.CENTER);
         grid.getChildren().add(selectBlockButton);
         GridPane.setConstraints(selectBlockButton, 1, 5);
+
+        //label to appear after block is submitted, is invisible until block is submitted
+        GridPane.setHalignment(succesLabel, HPos.CENTER);
+        GridPane.setConstraints(succesLabel, 1, 6);
+        grid.getChildren().add(succesLabel);
+        succesLabel.setVisible(false);
 
         Scene scene = new Scene(grid, 800, 300);
         primaryStage.setScene(scene);
@@ -116,8 +118,6 @@ public class VoidScreen {
 
     private static void addVoidedBlock(Blockchain chain, Block block, PrivateKey validatorPrivateKey) {
 
-        //TODO USE VALIDATE CHAIN, CHECK IF BLOCK IS ALREADY VOIDED
-        //TODO add error labels and such?
         //gets the selected index of the table, and returns value of the same index from the search results
         int index = table.getSelectionModel().getSelectedIndex();
         if ((0 <= index && index <= 4)) {
@@ -131,11 +131,25 @@ public class VoidScreen {
             //the new block is added to the chain, with the required information
             if ((block instanceof GenesisBlock) && (searchResults.get(index) instanceof ValidatorBlock)) {
                 chain.addValidatedBlock(new ValidatorBlock("Revoked", birthdate, publicKey, prevHash, validatorPrivateKey), block);
-                //setLabelsAfterSubmittedBlock(chain);
+                succesLabel.setVisible(true);
+                if (chain.validateChain()) {
+                    succesLabel.setTextFill(Color.GREEN);
+                    succesLabel.setText("Success! Validator block revoked");
+                } else {
+                    succesLabel.setTextFill(Color.RED);
+                    succesLabel.setText("Something went wrong");
+                }
                 //else the user is a validator, and can add citizen blocks
             } else if ((block instanceof ValidatorBlock) && (searchResults.get(index) instanceof CitizenBlock)) {
                 chain.addValidatedBlock(new CitizenBlock("Revoked", birthdate, publicKey, prevHash, block.getIdentity(), block.getIdentityPublicKey(), validatorPrivateKey), block);
-                //setLabelsAfterSubmittedBlock(chain);
+                succesLabel.setVisible(true);
+                if (chain.validateChain()) {
+                    succesLabel.setTextFill(Color.GREEN);
+                    succesLabel.setText("Success! Citizen block revoked");
+                } else {
+                    succesLabel.setTextFill(Color.RED);
+                    succesLabel.setText("Something went wrong");
+                }
             }
         }
     }

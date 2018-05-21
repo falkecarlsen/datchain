@@ -15,10 +15,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import static dk.aau.cs.a311c.datchain.cryptography.RSA.publicKeyWriter;
@@ -32,6 +30,7 @@ class MainScreen {
     private static Text birthdateText = new Text();
     private static Text publicKeyText = new Text();
     private static Text blockTypeText = new Text();
+    private static Text timeStampText = new Text();
     private static TableView<Block> table = new TableView<>();
     private static String publicKey;
 
@@ -40,14 +39,18 @@ class MainScreen {
 
         //this stage uses a borderpane, which contains a top, center and bottom panel
         //top panel, which just contains the login button
-        HBox topPanel = new HBox();
-        topPanel.setStyle("-fx-background-color: #FFFFFF;");
+        HBox topPanel = new HBox(10);
+        topPanel.setStyle("-fx-background-color: #D3D3D3;");
         topPanel.setPadding(new Insets(5, 0, 10, 0));
+
+        Button savePublicKeyButton = new Button("Save public key in folder");
+        savePublicKeyButton.setOnMouseClicked(e -> publicKeyWriter(publicKey, "data/gui/selectedKey/"));
+        topPanel.getChildren().add(savePublicKeyButton);
 
         Button login_button = new Button("Login as validator");
         login_button.setOnMouseClicked(event -> Login.login(primaryStage, chain));
-
         topPanel.getChildren().add(login_button);
+
         topPanel.setAlignment(CENTER);
 
 
@@ -90,6 +93,11 @@ class MainScreen {
         GridPane.setConstraints(blockTypeLabel, 0, 6);
         gridRight.getChildren().add(blockTypeLabel);
 
+        Label timeStampLabel = new Label("Timestamp:");
+        timeStampLabel.setMinWidth(75);
+        GridPane.setConstraints(timeStampLabel, 0, 7);
+        gridRight.getChildren().add(timeStampLabel);
+
         //adding the texts for displaying the information in the chosen block
         GridPane.setHalignment(identityText, HPos.CENTER);
         GridPane.setConstraints(identityText, 0, 3);
@@ -107,11 +115,9 @@ class MainScreen {
         GridPane.setConstraints(blockTypeText, 0, 6);
         gridRight.getChildren().add(blockTypeText);
 
-        Button savePublicKeyButton = new Button("Save public key in datchain folder");
-        savePublicKeyButton.setOnMouseClicked(e -> publicKeyWriter(publicKey, "data/gui/selectedKey/"));
-        GridPane.setConstraints(savePublicKeyButton, 0, 0);
-        gridRight.getChildren().add(savePublicKeyButton);
-
+        GridPane.setHalignment(timeStampText, HPos.CENTER);
+        GridPane.setConstraints(timeStampText, 0, 7);
+        gridRight.getChildren().add(timeStampText);
 
         //name column for the tableview
         TableColumn<Block, String> nameColumn = new TableColumn<>("Name");
@@ -136,7 +142,7 @@ class MainScreen {
         table.setMaxHeight(150);
 
         //adds the tableview to the grid
-        GridPane.setConstraints(table, 0, 11, 1, 1);
+        GridPane.setConstraints(table, 0, 12, 1, 1);
         gridRight.getChildren().add(table);
         table.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
@@ -144,24 +150,16 @@ class MainScreen {
             }
         });
 
+        //populate table when program starts up
+        populateTable("", chain);
+
         //textfield for searching in the chain, can search for name, birthdate or public key, by inputting either
         //alphabetical, digits, or both
         TextField searchField = new TextField();
         searchField.setPromptText("Search for name, date of birth or public key");
         //calls function to search for the term for each keystroke
-        searchField.setOnKeyReleased(e -> {
-            searchResults = getSearchResults(searchField.getText(), chain);
-            //clear previous showed items
-            table.getItems().clear();
-
-            //creates an observable list and adds the search results to it
-            ObservableList<Block> blocks = FXCollections.observableArrayList();
-            blocks.addAll(searchResults);
-
-            //displays the search results
-            table.setItems(blocks);
-        });
-        GridPane.setConstraints(searchField, 0, 10);
+        searchField.setOnKeyReleased(e -> populateTable(searchField.getText(), chain));
+        GridPane.setConstraints(searchField, 0, 11);
         gridRight.getChildren().add(searchField);
 
         //select button for selecting which block to show properties of
@@ -169,10 +167,9 @@ class MainScreen {
         selectBlockButton.setOnMouseClicked(e -> setChosenBlockDetails());
         GridPane.setHalignment(selectBlockButton, HPos.CENTER);
         gridRight.getChildren().add(selectBlockButton);
-        GridPane.setConstraints(selectBlockButton, 0, 12);
+        GridPane.setConstraints(selectBlockButton, 0, 13);
 
 
-        //TODO REMOVE NODES AND ONLINE STATUS?
         //bottompanel with various information about the chain, online status, number of blocks and nodes
         HBox bottomPanel = new HBox();
         bottomPanel.setSpacing(150);
@@ -180,17 +177,17 @@ class MainScreen {
         bottomPanel.setAlignment(CENTER);
         bottomPanel.setPadding(new Insets(10, 0, 5, 0));
 
-        String status = "Online";
+        String status = "Offline";
         Text onlineLabel = new Text(status);
         if (status.equals("Online")) {
             onlineLabel.setFill(Color.GREEN);
         } else onlineLabel.setFill(Color.RED);
 
-        int numberOfNodes = 10;
-        Text nodesLabel = new Text("Nodes:  " + numberOfNodes);
+
+        Text nodesLabel = new Text("Nodes: N/A");
 
         int numberOfBlocks = chain.size();
-        Text blocksLabel = new Text("Blocks:  " + numberOfBlocks);
+        Text blocksLabel = new Text("ChainLength:  " + numberOfBlocks);
 
         bottomPanel.getChildren().addAll(nodesLabel, onlineLabel, blocksLabel);
 
@@ -211,6 +208,19 @@ class MainScreen {
             e.consume();
             runPopUp(primaryStage, chain);
         });
+    }
+
+    private static void populateTable(String term, Blockchain chain) {
+        searchResults = getSearchResults(term, chain);
+        //clear previous showed items
+        table.getItems().clear();
+
+        //creates an observable list and adds the search results to it
+        ObservableList<Block> blocks = FXCollections.observableArrayList();
+        blocks.addAll(searchResults);
+
+        //displays the search results
+        table.setItems(blocks);
     }
 
     private static void runPopUp(Stage primaryStage, Blockchain chain) {
@@ -253,6 +263,8 @@ class MainScreen {
             //TODO should check for length before getting char 50 .. 90 as NPE might be thrown
             publicKeyText.setText(searchResults.get(index).getIdentityPublicKey().substring(50, 90) + "...");
             publicKey = searchResults.get(index).getIdentityPublicKey();
+            //TODO TIMESTAMP
+            //timeStampText = searchResults.get(index).getTimestamp());
             if (searchResults.get(index) instanceof GenesisBlock) {
                 blockTypeText.setText("Genesis");
             } else if (searchResults.get(index) instanceof ValidatorBlock) {
