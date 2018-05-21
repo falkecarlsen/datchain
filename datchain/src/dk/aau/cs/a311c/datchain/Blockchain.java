@@ -59,7 +59,8 @@ public class Blockchain extends ArrayList<Block> {
 
             //if none match, block is not recognized and a fatal error has occurred
         } else {
-            throw new RuntimeException("ERROR: Could not add block, some dependency is not satisfied!");
+            System.out.println("ERROR: Could not add block, some dependency is not satisfied!");
+            return false;
         }
         return true;
     }
