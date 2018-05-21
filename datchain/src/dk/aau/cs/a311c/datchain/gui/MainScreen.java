@@ -3,6 +3,7 @@ package dk.aau.cs.a311c.datchain.gui;
 import dk.aau.cs.a311c.datchain.*;
 import dk.aau.cs.a311c.datchain.utility.Search;
 import dk.aau.cs.a311c.datchain.utility.StoreChain;
+import dk.aau.cs.a311c.datchain.utility.TimeConverter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -263,8 +264,7 @@ class MainScreen {
             //TODO should check for length before getting char 50 .. 90 as NPE might be thrown
             publicKeyText.setText(searchResults.get(index).getIdentityPublicKey().substring(50, 90) + "...");
             publicKey = searchResults.get(index).getIdentityPublicKey();
-            //TODO TIMESTAMP
-            //timeStampText = searchResults.get(index).getTimestamp());
+            timeStampText.setText(TimeConverter.getDate(searchResults.get(index).getTimestamp()));
             if (searchResults.get(index) instanceof GenesisBlock) {
                 blockTypeText.setText("Genesis");
             } else if (searchResults.get(index) instanceof ValidatorBlock) {
