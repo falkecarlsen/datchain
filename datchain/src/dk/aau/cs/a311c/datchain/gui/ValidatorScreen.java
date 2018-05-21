@@ -107,7 +107,7 @@ class ValidatorScreen {
         //setting up the scene in a borderpane
         BorderPane borderPane = new BorderPane();
         borderPane.setCenter(gridCenter);
-        Scene addBlockScene = new Scene(borderPane, 550, 300);
+        Scene addBlockScene = new Scene(borderPane, 550, 280);
 
         primaryStage.setScene(addBlockScene);
         primaryStage.setResizable(false);
