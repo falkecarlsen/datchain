@@ -41,7 +41,7 @@ public class VoidScreen {
         GridPane.setConstraints(label, 1, 2);
         grid.getChildren().add(label);
 
-        Button switchButton = new Button("Switch");
+        Button switchButton = new Button("Add block");
         switchButton.setMinWidth(70);
         switchButton.setOnAction(e -> ValidatorScreen.validatorScreen(primaryStage, chain, block, validatorPrivateKey));
         GridPane.setHalignment(switchButton, HPos.CENTER);

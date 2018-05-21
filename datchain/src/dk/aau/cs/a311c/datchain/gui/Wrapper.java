@@ -22,7 +22,7 @@ public class Wrapper extends Application {
 
         //TODO MAKE DOB TO A DATE AND DO A CHECKEDY CHECK WHEN NEW BLOCK xD
         //TODO ALL KEYS START THE SAME
-        if (new File("data/blockchain.obj").isFile()) {
+        if (new File("data/blockchain.obj").exists()) {
             chain = StoreChain.readChainFromFilesystem("data/");
             MainScreen.screen(primaryStage, chain);
         } else {

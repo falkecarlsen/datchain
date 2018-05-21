@@ -46,14 +46,14 @@ class ValidatorScreen {
 
         //back button to return to mainscreen, returns the chain
         Button logoutButton = new Button("Logout");
-        logoutButton.setMinWidth(70);
+        logoutButton.setMinWidth(100);
         logoutButton.setOnAction(e -> MainScreen.screen(primaryStage, chain));
         GridPane.setHalignment(logoutButton, HPos.CENTER);
         GridPane.setConstraints(logoutButton, 0, 0);
         gridCenter.getChildren().add(logoutButton);
 
-        Button switchButton = new Button("Switch");
-        switchButton.setMinWidth(70);
+        Button switchButton = new Button("Revoke block");
+        switchButton.setMinWidth(100);
         switchButton.setOnAction(e -> VoidScreen.voidingBlock(primaryStage,chain, block, validatorPrivateKey));
         GridPane.setHalignment(switchButton, HPos.CENTER);
         GridPane.setConstraints(switchButton, 2, 0);
