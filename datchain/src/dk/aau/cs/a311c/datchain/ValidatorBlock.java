@@ -16,12 +16,12 @@ public class ValidatorBlock extends Block {
         this.genesisSignature = RSA.sign(getVolatileInformation(), validatorPrivateKey);
     }
 
-    private byte[] getGenesisSignature() {
-        return this.genesisSignature;
-    }
-
-
+    //verify signature of validator by passing expected input, signature and validator public key to RSA.verifySignature
     public boolean verifySignature(PublicKey validatorPublicKey) {
         return RSA.verifySignature(this.getVolatileInformation(), this.getGenesisSignature(), validatorPublicKey);
+    }
+
+    private byte[] getGenesisSignature() {
+        return this.genesisSignature;
     }
 }
