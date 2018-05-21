@@ -13,6 +13,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -24,6 +27,8 @@ class ValidatorScreen {
     private static TextField identityText = new TextField();
     private static Label succesLabel = new Label();
     private static Label errorLabel = new Label("");
+    //directory constants
+    private static String createdBlockDirectory = "data/gui/createdBlocks/";
 
     public static void validatorScreen(Stage primaryStage, Blockchain chain, Block block, PrivateKey validatorPrivateKey) {
         //if somehow a citizen got logged in, return to mainscreen
@@ -116,8 +121,18 @@ class ValidatorScreen {
             //generates keys
             KeyPair keyPair = RSA.keyPairInit();
 
-            //saves the keys on a file
-            String destination = "data/gui/createdBlock/" + identityText.getText() + "/";
+            //if createdBlockDirectory doesn't exist, create the directory
+            if (!Files.exists(Paths.get(createdBlockDirectory))) {
+                try {
+                    Files.createDirectory(Paths.get(createdBlockDirectory));
+                } catch (IOException e) {
+                    System.out.println("ERROR: When creating directory " + createdBlockDirectory +
+                            " following error occured: " + e.getMessage());
+                }
+            }
+
+            //saves the keys onto files, by directory of formatted identity-name
+            String destination = createdBlockDirectory + identityText.getText().replaceAll(" ", "_").toLowerCase() + "/";
             RSA.keyPairWriter(keyPair, destination);
 
             //RSA.keyPairWriter(genesisKeypair, "data/gui/genesis/");
