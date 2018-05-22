@@ -7,10 +7,10 @@ public abstract class Block {
 
     //union of fields for all blocks
     private final String identity;
+    private final String identityDOB;
     private final String identityPublicKey;
     private final String prevHash;
     private final String hash;
-    private final String identityDOB;
     private final long timestamp;
 
     protected Block(String identity, String identityDOB, String identityPublicKey, String prevHash, String hashInput) {
