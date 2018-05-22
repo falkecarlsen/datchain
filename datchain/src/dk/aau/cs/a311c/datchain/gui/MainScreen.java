@@ -67,57 +67,57 @@ class MainScreen {
         Text chosenPersonText = new Text("Chosen person");
         chosenPersonText.setStyle("-fx-font-weight: bold");
         GridPane.setHalignment(chosenPersonText, HPos.CENTER);
-        GridPane.setConstraints(chosenPersonText, 0, 2);
+        GridPane.setConstraints(chosenPersonText, 0, 0);
         gridRight.getChildren().add(chosenPersonText);
 
         //label for displaying the identity in chosen the block
         Label firstname_label = new Label("Name:");
         firstname_label.setMinWidth(75);
-        GridPane.setConstraints(firstname_label, 0, 3);
+        GridPane.setConstraints(firstname_label, 0, 1);
         gridRight.getChildren().add(firstname_label);
 
         //label for displaying the birthdate in the chosen block
         Label birthdateLabel = new Label("Birthdate:");
         birthdateLabel.setMinWidth(75);
-        GridPane.setConstraints(birthdateLabel, 0, 4);
+        GridPane.setConstraints(birthdateLabel, 0, 2);
         gridRight.getChildren().add(birthdateLabel);
 
         //label for displaying the public key in the chosen block
         Label publicKeyLabel = new Label("Public key:");
         publicKeyLabel.setMinWidth(75);
-        GridPane.setConstraints(publicKeyLabel, 0, 5);
+        GridPane.setConstraints(publicKeyLabel, 0, 3);
         gridRight.getChildren().add(publicKeyLabel);
 
         //label for displaying the public key in the chosen block
         Label blockTypeLabel = new Label("Blocktype:");
         blockTypeLabel.setMinWidth(75);
-        GridPane.setConstraints(blockTypeLabel, 0, 6);
+        GridPane.setConstraints(blockTypeLabel, 0, 4);
         gridRight.getChildren().add(blockTypeLabel);
 
         Label timeStampLabel = new Label("Timestamp:");
         timeStampLabel.setMinWidth(75);
-        GridPane.setConstraints(timeStampLabel, 0, 7);
+        GridPane.setConstraints(timeStampLabel, 0, 5);
         gridRight.getChildren().add(timeStampLabel);
 
         //adding the texts for displaying the information in the chosen block
         GridPane.setHalignment(identityText, HPos.CENTER);
-        GridPane.setConstraints(identityText, 0, 3);
+        GridPane.setConstraints(identityText, 0, 1);
         gridRight.getChildren().add(identityText);
 
         GridPane.setHalignment(birthdateText, HPos.CENTER);
-        GridPane.setConstraints(birthdateText, 0, 4);
+        GridPane.setConstraints(birthdateText, 0, 2);
         gridRight.getChildren().add(birthdateText);
 
         GridPane.setHalignment(publicKeyText, HPos.CENTER);
-        GridPane.setConstraints(publicKeyText, 0, 5);
+        GridPane.setConstraints(publicKeyText, 0, 3);
         gridRight.getChildren().add(publicKeyText);
 
         GridPane.setHalignment(blockTypeText, HPos.CENTER);
-        GridPane.setConstraints(blockTypeText, 0, 6);
+        GridPane.setConstraints(blockTypeText, 0, 4);
         gridRight.getChildren().add(blockTypeText);
 
         GridPane.setHalignment(timeStampText, HPos.CENTER);
-        GridPane.setConstraints(timeStampText, 0, 7);
+        GridPane.setConstraints(timeStampText, 0, 5);
         gridRight.getChildren().add(timeStampText);
 
         //name column for the tableview
@@ -143,7 +143,7 @@ class MainScreen {
         table.setMaxHeight(150);
 
         //adds the tableview to the grid
-        GridPane.setConstraints(table, 0, 12, 1, 1);
+        GridPane.setConstraints(table, 0, 10, 1, 1);
         gridRight.getChildren().add(table);
         table.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
@@ -160,7 +160,7 @@ class MainScreen {
         searchField.setPromptText("Search for name, date of birth or public key");
         //calls function to search for the term for each keystroke
         searchField.setOnKeyReleased(e -> populateTable(searchField.getText(), chain));
-        GridPane.setConstraints(searchField, 0, 11);
+        GridPane.setConstraints(searchField, 0, 9);
         gridRight.getChildren().add(searchField);
 
         //select button for selecting which block to show properties of
@@ -168,7 +168,7 @@ class MainScreen {
         selectBlockButton.setOnMouseClicked(e -> setChosenBlockDetails());
         GridPane.setHalignment(selectBlockButton, HPos.CENTER);
         gridRight.getChildren().add(selectBlockButton);
-        GridPane.setConstraints(selectBlockButton, 0, 13);
+        GridPane.setConstraints(selectBlockButton, 0, 11);
 
 
         //bottompanel with various information about the chain, online status, number of blocks and nodes
@@ -213,6 +213,7 @@ class MainScreen {
 
     private static void populateTable(String term, Blockchain chain) {
         searchResults = getSearchResults(term, chain);
+
         //clear previous showed items
         table.getItems().clear();
 
@@ -222,6 +223,7 @@ class MainScreen {
 
         //displays the search results
         table.setItems(blocks);
+
     }
 
     private static void runPopUp(Stage primaryStage, Blockchain chain) {
@@ -244,7 +246,7 @@ class MainScreen {
             results = search.FuzzySearchIdentityDOB((searchTerm), chain, 5);
             return results;
             //if the user input just alphabetical characters, search for identity in the chain
-        } else if (searchTerm.matches("[a-zA-ZæøåÆØÅ ]+")) {
+        } else if (searchTerm.matches("[a-zA-ZæøåÆØÅ\\- ]+")) {
             results = search.FuzzySearchIdentity((searchTerm), chain, 5);
             return results;
         } else {

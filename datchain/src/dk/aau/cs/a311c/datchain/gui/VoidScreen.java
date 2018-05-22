@@ -91,6 +91,7 @@ public class VoidScreen {
         table = new TableView<>();
         table.setPlaceholder(new Label(""));
         table.getColumns().addAll(nameColumn, DOBColumn, pubKeyColumn);
+        table.setMinHeight(150);
         table.setMaxHeight(150);
 
         //adds the tableview to the grid
@@ -108,18 +109,17 @@ public class VoidScreen {
         GridPane.setHalignment(succesLabel, HPos.CENTER);
         GridPane.setConstraints(succesLabel, 1, 6);
         grid.getChildren().add(succesLabel);
-        succesLabel.setVisible(false);
 
-        Scene scene = new Scene(grid, 800, 300);
+        Scene scene = new Scene(grid, 800, 325);
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
     }
 
     private static void addVoidedBlock(Blockchain chain, Block block, PrivateKey validatorPrivateKey) {
-
         //gets the selected index of the table, and returns value of the same index from the search results
         int index = table.getSelectionModel().getSelectedIndex();
+
         if ((0 <= index && index <= 4)) {
             String birthdate = searchResults.get(index).getIdentityDOB();
             String publicKey = searchResults.get(index).getIdentityPublicKey();
@@ -129,27 +129,41 @@ public class VoidScreen {
 
             //if the user that logged in (block) is a genesis, the user can only void validator blocks
             //the new block is added to the chain, with the required information
-            if ((block instanceof GenesisBlock) && (searchResults.get(index) instanceof ValidatorBlock)) {
-                chain.addValidatedBlock(new ValidatorBlock("Revoked", birthdate, publicKey, prevHash, validatorPrivateKey), block);
-                succesLabel.setVisible(true);
-                if (chain.validateChain()) {
-                    succesLabel.setTextFill(Color.GREEN);
-                    succesLabel.setText("Success! Validator block revoked");
+            if (block instanceof GenesisBlock) {
+                if (searchResults.get(index) instanceof ValidatorBlock) {
+                    chain.addValidatedBlock(new ValidatorBlock("Revoked", birthdate, publicKey, prevHash, validatorPrivateKey), block);
+                    succesLabel.setVisible(true);
+                    if (chain.validateChain()) {
+                        succesLabel.setTextFill(Color.GREEN);
+                        succesLabel.setText("Success! Validator block revoked");
+                    } else {
+                        succesLabel.setTextFill(Color.RED);
+                        succesLabel.setText("Something went wrong");
+                    }
                 } else {
                     succesLabel.setTextFill(Color.RED);
-                    succesLabel.setText("Something went wrong");
+                    succesLabel.setText("Genesis can only void Validator blocks");
                 }
                 //else the user is a validator, and can add citizen blocks
-            } else if ((block instanceof ValidatorBlock) && (searchResults.get(index) instanceof CitizenBlock)) {
-                chain.addValidatedBlock(new CitizenBlock("Revoked", birthdate, publicKey, prevHash, block.getIdentity(), block.getIdentityPublicKey(), validatorPrivateKey), block);
-                succesLabel.setVisible(true);
-                if (chain.validateChain()) {
-                    succesLabel.setTextFill(Color.GREEN);
-                    succesLabel.setText("Success! Citizen block revoked");
+            } else if (block instanceof ValidatorBlock) {
+                if (searchResults.get(index) instanceof CitizenBlock) {
+                    chain.addValidatedBlock(new CitizenBlock("Revoked", birthdate, publicKey, prevHash, block.getIdentity(), block.getIdentityPublicKey(), validatorPrivateKey), block);
+                    succesLabel.setVisible(true);
+                    if (chain.validateChain()) {
+                        succesLabel.setTextFill(Color.GREEN);
+                        succesLabel.setText("Success! Citizen block revoked");
+                    } else {
+                        succesLabel.setTextFill(Color.RED);
+                        succesLabel.setText("Something went wrong");
+                    }
                 } else {
                     succesLabel.setTextFill(Color.RED);
-                    succesLabel.setText("Something went wrong");
+                    succesLabel.setText("Validator can only void citizen blocks");
                 }
+            }
+            if (searchResults.get(index) instanceof GenesisBlock) {
+                succesLabel.setTextFill(Color.RED);
+                succesLabel.setText("It is not possible to void genesis");
             }
         }
     }
