@@ -16,6 +16,7 @@ class Datchain {
         KeyPair genesisKeypair = RSA.keyPairInit();
         PrivateKey genesisPrivateKey = RSA.getPrivateKey(genesisKeypair);
         PublicKey genesisPublicKey = RSA.getPublicKey(genesisKeypair);
+        RSA.keyPairWriter(genesisKeypair, "data/");
 
         KeyPair validatorKeypair01 = RSA.keyPairInit();
         PrivateKey validatorPrivate01 = RSA.getPrivateKey(validatorKeypair01);
