@@ -185,7 +185,7 @@ class Login {
             privateKey = null;
             labelPublicKey.setText("");
             labelPrivateKey.setText("");
-            return "Public key not in chain or does not belong to validator";
+            return "Keypair is not validator";
         }
 
         //get random challenge and declare Strings
