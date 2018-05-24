@@ -20,7 +20,6 @@ public class RSA {
 
     //declaring constants
     private static final String keyAlgorithm = "RSA";
-    //choose RSA-variant with padding for encryption and decryption to discourage zero-char attacks
     private static final String cryptAlgorithm = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
     private static final String signatureAlgorithm = "SHA512withRSA";
     private static final int bitlengthKey = 4096;
@@ -233,7 +232,7 @@ public class RSA {
             //return base64 encoded bytearray of signature
             return Base64.getEncoder().encode(signature.sign());
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            System.out.println("ERROR: The algorithm is not available! " + e.getMessage());;
         } catch (InvalidKeyException e) {
             System.out.println("ERROR: Invalid key supplied! " + e.getMessage());
         } catch (SignatureException e) {

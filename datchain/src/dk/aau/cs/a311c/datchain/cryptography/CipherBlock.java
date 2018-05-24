@@ -10,7 +10,7 @@ import static dk.aau.cs.a311c.datchain.cryptography.RSA.encrypt;
 
 public class CipherBlock {
 
-    //choosing 2^8, but below modulo of RSA keys, as blockSize for playing along with filesystem preferences
+    //choosing 2^8, below modulo of RSA keys and allowing for padding, as blockSize, catering to filesystem preferences as well
     private static final int blockSize = 256;
     final private String cleartext;
     private byte[][] cipherBlock;
