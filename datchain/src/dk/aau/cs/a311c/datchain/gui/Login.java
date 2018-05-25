@@ -168,19 +168,20 @@ class Login {
             return "No public key chosen";
         }
 
-        //index for the block in the chain, which contains the given public key,
-        // used to tell whether or not it is a validator or genesis logging in
+        //find the index of the block containing the pub key, count number of blocks with the pub key
         int index = -1;
+        int numberOfBlocksContainingPubKey = 0;
         //checks every block in the chain, if it contains the public key provided by the user, save the index
         for (Block block : chain) {
             if (block.getIdentityPublicKey().equals(getEncodedPublicKey(publicKey))
                     && (block instanceof GenesisBlock || block instanceof ValidatorBlock)) {
                 index = (chain.indexOf(block));
+                numberOfBlocksContainingPubKey ++;
             }
         }
 
         //if index is still -1, no block contains the public key, and therefore cannot log in. Resets keys and labels
-        if (index == -1) {
+        if ((index == -1) || (1 < numberOfBlocksContainingPubKey)) {
             publicKey = null;
             privateKey = null;
             labelPublicKey.setText("");
@@ -188,19 +189,14 @@ class Login {
             return "Keypair is not validator";
         }
 
-        //get random challenge and declare Strings
-        String encryptedText = RandomChallenge.generateRandomChallenge();
-
-        //create cipherblock and build
-        CipherBlock cipherBlock = new CipherBlock(encryptedText);
+        //create cipherblock and build, based on random string
+        CipherBlock cipherBlock = new CipherBlock(RandomChallenge.generateRandomChallenge());
 
         //do operations on block
         cipherBlock.encryptBlock(publicKey);
         cipherBlock.decryptBlock(privateKey);
 
-
         //do a check, and see if the challenge is passed by the decrypted text, being the same as the cleartext
-        //if so, the public and private key match. the block containing the given public key is sent as an parameter
         if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
             labelPublicKey.setText("");
             labelPrivateKey.setText("");

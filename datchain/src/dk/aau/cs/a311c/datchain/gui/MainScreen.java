@@ -45,7 +45,8 @@ class MainScreen {
         topPanel.setPadding(new Insets(5, 0, 10, 0));
 
         Button savePublicKeyButton = new Button("Save public key in folder");
-        savePublicKeyButton.setOnMouseClicked(e -> publicKeyWriter(publicKey, "data/gui/selectedKey/"));
+        savePublicKeyButton.setOnMouseClicked(e -> publicKeyWriter(publicKey, "data/gui/selectedKey/" +
+                identityText.getText().replaceAll(" ", "_").toLowerCase() + "/"));
         topPanel.getChildren().add(savePublicKeyButton);
 
         Button login_button = new Button("Login as validator");
@@ -53,7 +54,6 @@ class MainScreen {
         topPanel.getChildren().add(login_button);
 
         topPanel.setAlignment(CENTER);
-
 
         //Center panel contains the search functionality
         GridPane gridRight = new GridPane();

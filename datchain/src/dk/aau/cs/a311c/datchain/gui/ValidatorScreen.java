@@ -135,7 +135,6 @@ class ValidatorScreen {
             String destination = createdBlockDirectory + identityText.getText().replaceAll(" ", "_").toLowerCase() + "/";
             RSA.keyPairWriter(keyPair, destination);
 
-            //RSA.keyPairWriter(genesisKeypair, "data/gui/genesis/");
 
             //encodes public key to add to new block
             String encodedPublicKey = RSA.getEncodedPublicKey(keyPair);
@@ -179,9 +178,12 @@ class ValidatorScreen {
             PublicKey genesisPublicKey = RSA.getPublicKey(genesisKeypair);
             RSA.keyPairWriter(genesisKeypair, "data/gui/genesis/");
 
-            //creates the genesis and adds it to a new chain
-            GenesisBlock genesis01 = new GenesisBlock(identityInput, DOBInput, RSA.getEncodedPublicKey(genesisPublicKey), "0000");
-            Blockchain chain = new Blockchain(genesis01);
+            //creates the genesis
+            GenesisBlock genesis = new GenesisBlock(identityInput, DOBInput,
+                    RSA.getEncodedPublicKey(genesisPublicKey), "0000");
+
+            //adds the genesis to the new chain and clears the textfields
+            Blockchain chain = new Blockchain(genesis);
             identityText.clear();
             DOBText.clear();
 
