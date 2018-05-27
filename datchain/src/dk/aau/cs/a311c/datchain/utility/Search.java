@@ -1,7 +1,5 @@
 package dk.aau.cs.a311c.datchain.utility;
 
-//https://github.com/xdrop/fuzzywuzzy for fuzzy string matching
-
 import dk.aau.cs.a311c.datchain.Block;
 import dk.aau.cs.a311c.datchain.Blockchain;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
@@ -22,8 +20,8 @@ public class Search {
         if (cutoff > chain.size()) cutoff = chain.size();
 
         //deep copy block.getIdentity to arraySource
-        for (int i = 0; i < chain.size(); i++) {
-            this.arraySource.add(chain.get(i).getIdentity());
+        for (Block block : chain) {
+            this.arraySource.add(block.getIdentity());
         }
         //run fuzzywuzzy on string-copy of identities with a size of cutoff
         searchResults = FuzzySearch.extractTop(term, arraySource, cutoff);
@@ -41,8 +39,8 @@ public class Search {
         if (cutoff > chain.size()) cutoff = chain.size();
 
         //deep copy block to arraySource
-        for (int i = 0; i < chain.size(); i++) {
-            this.arraySource.add(chain.get(i).getIdentityPublicKey());
+        for (Block block : chain) {
+            this.arraySource.add(block.getIdentityPublicKey());
         }
         //run fuzzywuzzy on string-copy of public keys with a size of cutoff
         searchResults = FuzzySearch.extractTop(term, arraySource, cutoff);
@@ -60,8 +58,8 @@ public class Search {
         if (cutoff > chain.size()) cutoff = chain.size();
 
         //deep copy block to arraySource
-        for (int i = 0; i < chain.size(); i++) {
-            this.arraySource.add(chain.get(i).getIdentityDOB());
+        for (Block block : chain) {
+            this.arraySource.add(block.getIdentityDOB());
         }
         //run fuzzywuzzy on string-copy of public keys with a size of cutoff
         searchResults = FuzzySearch.extractTop(term, arraySource, cutoff);
