@@ -23,14 +23,14 @@ public class Search {
 
         //deep copy block.getIdentity to arraySource
         for (int i = 0; i < chain.size(); i++) {
-            this.arraySource.add(chain.getBlock(i).getIdentity());
+            this.arraySource.add(chain.get(i).getIdentity());
         }
         //run fuzzywuzzy on string-copy of identities with a size of cutoff
         searchResults = FuzzySearch.extractTop(term, arraySource, cutoff);
 
         //for cutoff, get blocks from chain, from searchResults and add to primitive arraylist
         for (ExtractedResult result : searchResults) {
-            blockResults.add(chain.getBlock(result.getIndex()));
+            blockResults.add(chain.get(result.getIndex()));
         }
         return blockResults;
     }
@@ -42,14 +42,14 @@ public class Search {
 
         //deep copy block to arraySource
         for (int i = 0; i < chain.size(); i++) {
-            this.arraySource.add(chain.getBlock(i).getIdentityPublicKey());
+            this.arraySource.add(chain.get(i).getIdentityPublicKey());
         }
         //run fuzzywuzzy on string-copy of public keys with a size of cutoff
         searchResults = FuzzySearch.extractTop(term, arraySource, cutoff);
 
         //for cutoff, get blocks from chain, from searchResults and add to primitive arraylist
         for (ExtractedResult searchResult : searchResults) {
-            blockResults.add(chain.getBlock(searchResult.getIndex()));
+            blockResults.add(chain.get(searchResult.getIndex()));
         }
         return blockResults;
     }
@@ -61,14 +61,14 @@ public class Search {
 
         //deep copy block to arraySource
         for (int i = 0; i < chain.size(); i++) {
-            this.arraySource.add(chain.getBlock(i).getIdentityDOB());
+            this.arraySource.add(chain.get(i).getIdentityDOB());
         }
         //run fuzzywuzzy on string-copy of public keys with a size of cutoff
         searchResults = FuzzySearch.extractTop(term, arraySource, cutoff);
 
         //for cutoff, get blocks from chain, from searchResults and add to primitive arraylist
         for (ExtractedResult searchResult : searchResults) {
-            blockResults.add(chain.getBlock(searchResult.getIndex()));
+            blockResults.add(chain.get(searchResult.getIndex()));
         }
         return blockResults;
     }

@@ -204,7 +204,7 @@ class Login {
         if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
             labelPublicKey.setText("");
             labelPrivateKey.setText("");
-            ValidatorScreen.validatorScreen(primaryStage, chain, chain.getBlock(index), privateKey);
+            ValidatorScreen.validatorScreen(primaryStage, chain, chain.get(index), privateKey);
             publicKey = null;
             privateKey = null;
         }

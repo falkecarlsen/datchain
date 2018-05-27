@@ -70,11 +70,11 @@ public class Blockchain extends ArrayList<Block> {
         for (int i = 0; i < this.size() - 1; i++) {
 
             //assign hashes to new strings for code legibility
-            currHash = getBlock(i).getHash();
-            currTime = getBlock(i).getTimestamp();
+            currHash = get(i).getHash();
+            currTime = get(i).getTimestamp();
 
-            nextPrevHash = getBlock(i + 1).getPrevHash();
-            nextTime = getBlock(i + 1).getTimestamp();
+            nextPrevHash = get(i + 1).getPrevHash();
+            nextTime = get(i + 1).getTimestamp();
 
             //check hash congruency through blocks
             if (!currHash.equals(nextPrevHash)) return false;
@@ -126,16 +126,6 @@ public class Blockchain extends ArrayList<Block> {
             throw new IndexOutOfBoundsException("ERROR: No blocks added, cannot get head" + e.getMessage());
         }
         return head;
-    }
-
-    public Block getBlock(int index) {
-        Block block;
-        try {
-            block = get(index);
-        } catch (IndexOutOfBoundsException e) {
-            throw new IndexOutOfBoundsException("Index out of bounds, can't get block");
-        }
-        return block;
     }
 
     public Blockchain getChain() {
