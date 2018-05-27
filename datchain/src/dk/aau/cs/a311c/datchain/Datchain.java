@@ -11,7 +11,6 @@ import java.security.PublicKey;
 class Datchain {
 
     public static void main(String[] args) {
-
         //create keypairs for testing
         KeyPair genesisKeypair = RSA.keyPairInit();
         PrivateKey genesisPrivateKey = RSA.getPrivateKey(genesisKeypair);
@@ -129,5 +128,7 @@ class Datchain {
         //System.out.println(Arrays.toString(cipherBlock2.getSignature()));
 
         System.out.println("did cipherblock pass signature? " + cipherBlock1.verifyBlock(publicKey));
+
+        cipherBlock.getCleartext().equals(cipherBlock.getDecryptedText());
     }
 }

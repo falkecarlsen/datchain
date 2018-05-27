@@ -81,7 +81,6 @@ public class Blockchain extends ArrayList<Block> {
 
             //check time is equal or later through blocks
             if (currTime > nextTime) return false;
-
         }
 
         for (Block block : this) {
