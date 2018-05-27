@@ -44,7 +44,7 @@ public class CipherBlock {
         }
     }
 
-    public void encryptBlock(Key key) {
+    public void encryptBlock(PublicKey key) {
         //declare counter to keep track of block currently iterating over
         int index = 0;
 
@@ -55,7 +55,7 @@ public class CipherBlock {
         }
     }
 
-    public void decryptBlock(Key key) {
+    public void decryptBlock(PrivateKey key) {
         //declare counter to keep track of block currently iterating over
         int index = 0;
 
