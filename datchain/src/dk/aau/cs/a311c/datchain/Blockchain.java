@@ -61,18 +61,6 @@ public class Blockchain extends ArrayList<Block> {
         }
     }
 
-    //might not be necessary, however signature doesn't match when addValidatedBlock is considered
-    @Override
-    public boolean add(Block block) {
-        try {
-            super.add(block);
-            return true;
-        } catch (IllegalArgumentException e) {
-            System.out.println("Caught IllegalArgumentException: " + e.getMessage());
-            return false;
-        }
-    }
-
     public boolean validateChain() {
 
         String currHash, nextPrevHash;
