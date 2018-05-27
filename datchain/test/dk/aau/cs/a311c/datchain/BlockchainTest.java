@@ -5,79 +5,63 @@ import org.junit.jupiter.api.Test;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BlockchainTest {
 
     @Test
     void addValidatedBlock() {
+        //setup elements for chain and assert true for add validator block
+        KeyPair genesisKeypair = RSA.keyPairInit();
+        PrivateKey genesisPrivateKey = RSA.getPrivateKey(genesisKeypair);
+        PublicKey genesisPublicKey = RSA.getPublicKey(genesisKeypair);
+        RSA.keyPairWriter(genesisKeypair, "data/");
+
+        KeyPair validatorKeypair01 = RSA.keyPairInit();
+        PublicKey validatorPublic01 = RSA.getPublicKey(validatorKeypair01);
+
+        GenesisBlock genesis01 = new GenesisBlock("Genesis", "19-09-1980", RSA.getEncodedPublicKey(genesisPublicKey), "0000");
+        Blockchain chain = new Blockchain(genesis01);
+
+        ValidatorBlock validator01 = new ValidatorBlock("Validator1", "19-09-1980", RSA.getEncodedPublicKey(validatorPublic01), chain.getHead().getHash(), genesisPrivateKey);
+        assertTrue(chain.addValidatedBlock(validator01, genesis01));
     }
 
     @Test
-    void add() {
-        KeyPair genesisKeypair01 = RSA.keyPairInit();
-
-        GenesisBlock genesisBlock = new GenesisBlock("Genesis", "19-09-1980", RSA.getEncodedPublicKey(genesisKeypair01), "45678909876545678");
-        Blockchain chain = new Blockchain(genesisBlock);
+    void testDuplicate() {
+        //assert true for expected and assert false for adding revoked block twice
+        KeyPair genesisKeypair = RSA.keyPairInit();
+        PrivateKey genesisPrivateKey = RSA.getPrivateKey(genesisKeypair);
+        PublicKey genesisPublicKey = RSA.getPublicKey(genesisKeypair);
+        RSA.keyPairWriter(genesisKeypair, "data/");
 
         KeyPair validatorKeypair01 = RSA.keyPairInit();
-        PrivateKey validatorPrivate01 = RSA.getPrivateKey(validatorKeypair01);
-        chain.add(new ValidatorBlock("validator", "19-09-1980", RSA.getEncodedPublicKey(validatorKeypair01), chain.getHead().getHash(), RSA.getPrivateKey(genesisKeypair01)));
+        PublicKey validatorPublic01 = RSA.getPublicKey(validatorKeypair01);
 
-        CitizenBlock block01 = new CitizenBlock("Validator","19-09-1980","ValidatorPubkey", "Citizen Name", "CitizenPubKey", "9817324939382", validatorPrivate01);
-        CitizenBlock block02 = new CitizenBlock("Validator","19-09-1980","ValidatorPubkey", "Citizen Name", "CitizenPubKey", "9817324939382", validatorPrivate01);
-        CitizenBlock block03 = new CitizenBlock("Validator","19-09-1980","ValidatorPubkey", "Citizen Name", "CitizenPubKey", "9817324939382", validatorPrivate01);
+        GenesisBlock genesis01 = new GenesisBlock("Genesis", "19-09-1980", RSA.getEncodedPublicKey(genesisPublicKey), "0000");
+        Blockchain chain = new Blockchain(genesis01);
 
-        assertTrue(chain.add(block01));
-        assertTrue(chain.add(block02));
-        assertTrue(chain.add(block03));
+        ValidatorBlock validator01 = new ValidatorBlock("Validator1", "19-09-1980", RSA.getEncodedPublicKey(validatorPublic01), chain.getHead().getHash(), genesisPrivateKey);
+        assertTrue(chain.addValidatedBlock(validator01, genesis01));
+
+        ValidatorBlock validator02 = new ValidatorBlock("Revoked", "19-09-1980", RSA.getEncodedPublicKey(validatorPublic01), chain.getHead().getHash(), genesisPrivateKey);
+        assertTrue(chain.addValidatedBlock(validator02, genesis01));
+
+        ValidatorBlock validator03 = new ValidatorBlock("Revoked", "19-09-1980", RSA.getEncodedPublicKey(validatorPublic01), chain.getHead().getHash(), genesisPrivateKey);
+        assertFalse(chain.addValidatedBlock(validator03, genesis01));
+
     }
 
     @Test
     void validateChain() {
-        KeyPair genesisKeypair01 = RSA.keyPairInit();
+        Blockchain chain = SetupChain.getDefaultChain();
 
-        GenesisBlock genesisBlock = new GenesisBlock("Genesis", "19-09-1980", RSA.getEncodedPublicKey(genesisKeypair01), "0000");
-        Blockchain chain = new Blockchain(genesisBlock);
-
-        KeyPair validatorKeypair01 = RSA.keyPairInit();
-        PrivateKey validatorPrivate01 = RSA.getPrivateKey(validatorKeypair01);
-        ValidatorBlock validator01 = new ValidatorBlock("validator", "19-09-1980", RSA.getEncodedPublicKey(validatorKeypair01), chain.getHead().getHash(), RSA.getPrivateKey(genesisKeypair01));
-        assertTrue(chain.add(validator01));
-
-        CitizenBlock citizen01 = new CitizenBlock("Citizen Name1","19-09-1980", "CitizenPublicKey", chain.getHead().getHash(), validator01.getIdentity(), validator01.getIdentityPublicKey(), validatorPrivate01);
-        assertTrue(chain.add(citizen01));
-
-        CitizenBlock citizen02 = new CitizenBlock("Citizen Name2","19-09-1980", "CitizenPublicKey", chain.getHead().getHash(), validator01.getIdentity(), validator01.getIdentityPublicKey(), validatorPrivate01);
-        assertTrue(chain.add(citizen02));
-
-        CitizenBlock citizen03 = new CitizenBlock("Citizen Name3","19-09-1980", "CitizenPublicKey", chain.getHead().getHash(), validator01.getIdentity(), validator01.getIdentityPublicKey(), validatorPrivate01);
-        assertTrue(chain.add(citizen03));
-
-
+        //assert that chain is valid
         assertTrue(chain.validateChain());
     }
 
-    @Test
-    void searchSingleIdentity() {
-    }
-
-    @Test
-    void searchSinglePublicKey() {
-    }
-
-    @Test
-    void getHead() {
-
-    }
-
-    @Test
-    void getBlock() {
-
-    }
-
-    @Test
-    void getChain() {
-    }
 }
