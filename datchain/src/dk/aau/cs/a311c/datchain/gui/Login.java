@@ -4,8 +4,6 @@ import dk.aau.cs.a311c.datchain.Block;
 import dk.aau.cs.a311c.datchain.Blockchain;
 import dk.aau.cs.a311c.datchain.GenesisBlock;
 import dk.aau.cs.a311c.datchain.ValidatorBlock;
-import dk.aau.cs.a311c.datchain.cryptography.CipherBlock;
-import dk.aau.cs.a311c.datchain.cryptography.RandomChallenge;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -19,9 +17,10 @@ import java.io.File;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import static dk.aau.cs.a311c.datchain.cryptography.CipherBlock.issueChallenge;
 import static dk.aau.cs.a311c.datchain.cryptography.RSA.*;
 
-class Login {
+public class Login {
     private static PrivateKey privateKey;
     private static PublicKey publicKey;
     private static Label labelLogin = new Label();
@@ -109,13 +108,21 @@ class Login {
         Button challengeButton = new Button("Login");
         challengeButton.setMinWidth(140);
         challengeButton.setOnMouseClicked(e -> {
-            int index = validatePublicKey(chain);
-            if (index != -1) {
-                if (issueChallenge()) {
-                    ValidatorScreen.validatorScreen(primaryStage, chain, chain.getBlock(index), privateKey);
-                    labelLogin.setText("");
+            //check if two keys are loaded
+            if (checkLoadedKeys(privateKey, publicKey)) {
+                //get the index of the public key in chain
+                int index = validatePublicKey(chain);
+                if (index != -1) {
+                    //if challenge is completed, go to validatorscreen
+                    if (issueChallenge(privateKey, publicKey)) {
+                        ValidatorScreen.validatorScreen(primaryStage, chain, chain.getBlock(index), privateKey);
+                        publicKey = null;
+                        privateKey = null;
+                        labelLogin.setText("");
+                    }
                 }
             }
+
         });
         GridPane.setConstraints(challengeButton, 2, 1);
         gridPane.getChildren().add(challengeButton);
@@ -166,55 +173,33 @@ class Login {
         } else return null;
     }
 
-    //issues an RSA challenge based on the two selected keys
-    private static boolean issueChallenge() {
-        //create cipherblock and build, based on random string
-        CipherBlock cipherBlock = new CipherBlock(RandomChallenge.generateRandomChallenge());
-
-        //do operations on block
-        cipherBlock.encryptBlock(publicKey);
-        cipherBlock.decryptBlock(privateKey);
-
-        //do a check, and see if the challenge is passed by the decrypted text, being the same as the cleartext
-        if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
-            labelPublicKey.setText("");
-            labelPrivateKey.setText("");
-            publicKey = null;
-            privateKey = null;
-            return true;
-        }
-        return false;
-    }
 
     private static int validatePublicKey(Blockchain chain) {
         int index = -1;
-
-        if (checkLoadedKeys()) {
-            //find the index of the block containing the pub key, count number of blocks with the pub key
-            int numberOfBlocksContainingPubKey = 0;
-            //checks every block in the chain, if it contains the public key provided by the user, save the index
-            for (Block block : chain) {
-                if (block.getIdentityPublicKey().equals(getEncodedPublicKey(publicKey))
-                        && (block instanceof GenesisBlock || block instanceof ValidatorBlock)) {
-                    index = (chain.indexOf(block));
-                    numberOfBlocksContainingPubKey++;
-                }
+        //find the index of the block containing the pub key, count number of blocks with the pub key
+        int numberOfBlocksContainingPubKey = 0;
+        //checks every block in the chain, if it contains the public key provided by the user, save the index
+        for (Block block : chain) {
+            if (block.getIdentityPublicKey().equals(getEncodedPublicKey(publicKey))
+                    && (block instanceof GenesisBlock || block instanceof ValidatorBlock)) {
+                index = (chain.indexOf(block));
+                numberOfBlocksContainingPubKey++;
             }
+        }
 
-            //if index is still -1, no block contains the public key, and therefore cannot log in. Resets keys and labels
-            if ((index == -1) || (1 < numberOfBlocksContainingPubKey)) {
-                publicKey = null;
-                privateKey = null;
-                labelPublicKey.setText("");
-                labelPrivateKey.setText("");
-                labelLogin.setText("Keypair is not validator");
-            }
-            return index;
-        } return index;
+        //if index is still -1, no block contains the public key, and therefore cannot log in. Resets keys and labels
+        if ((index == -1) || (1 < numberOfBlocksContainingPubKey)) {
+            publicKey = null;
+            privateKey = null;
+            labelPublicKey.setText("");
+            labelPrivateKey.setText("");
+            labelLogin.setText("Keypair is not validator");
+        }
+        return index;
     }
 
-    private static boolean checkLoadedKeys() {
-        //first do a check to see if there exists two keys
+    private static boolean checkLoadedKeys(PrivateKey privateKey, PublicKey publicKey) {
+        //do a check to see if there exists two keys
         if (privateKey == null) {
             labelLogin.setText("No private key chosen");
             return false;
@@ -224,7 +209,5 @@ class Login {
         }
         return true;
     }
-
-
 }
 

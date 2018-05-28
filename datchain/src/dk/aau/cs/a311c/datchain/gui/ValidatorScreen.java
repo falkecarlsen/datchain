@@ -27,8 +27,6 @@ class ValidatorScreen {
     private static TextField identityText = new TextField();
     private static Label succesLabel = new Label();
     private static Label errorLabel = new Label("");
-    //directory constants
-    private static String createdBlockDirectory = "data/gui/createdBlocks/";
 
     public static void validatorScreen(Stage primaryStage, Blockchain chain, Block block, PrivateKey validatorPrivateKey) {
         //if somehow a citizen got logged in, return to mainscreen
@@ -124,6 +122,7 @@ class ValidatorScreen {
             KeyPair keyPair = RSA.keyPairInit();
 
             //if createdBlockDirectory doesn't exist, create the directory
+            String createdBlockDirectory = "data/gui/createdBlocks/";
             if (!Files.exists(Paths.get(createdBlockDirectory))) {
                 try {
                     Files.createDirectory(Paths.get(createdBlockDirectory));
@@ -159,7 +158,7 @@ class ValidatorScreen {
         }
     }
 
-    static void setLabelsAfterSubmittedBlock(Blockchain chain) {
+    private static void setLabelsAfterSubmittedBlock(Blockchain chain) {
         succesLabel.setVisible(true);
         if (chain.validateChain()) {
             succesLabel.setTextFill(Color.GREEN);
