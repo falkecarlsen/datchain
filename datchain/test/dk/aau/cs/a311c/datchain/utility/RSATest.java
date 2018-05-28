@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RSATest {
 
-    private String testDirectiory = "data/";
+    private final String testDirectiory = "data/";
 
     @Test
     void keyPairInit() {

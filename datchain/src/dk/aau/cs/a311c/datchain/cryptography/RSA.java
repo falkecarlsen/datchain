@@ -232,7 +232,7 @@ public class RSA {
             //return base64 encoded bytearray of signature
             return Base64.getEncoder().encode(signature.sign());
         } catch (NoSuchAlgorithmException e) {
-            System.out.println("ERROR: The algorithm is not available! " + e.getMessage());;
+            System.out.println("ERROR: The algorithm is not available! " + e.getMessage());
         } catch (InvalidKeyException e) {
             System.out.println("ERROR: Invalid key supplied! " + e.getMessage());
         } catch (SignatureException e) {

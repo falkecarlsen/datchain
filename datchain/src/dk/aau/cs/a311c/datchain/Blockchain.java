@@ -101,7 +101,7 @@ public class Blockchain extends ArrayList<Block> {
     }
 
     //check all blocks in chain whether validators public key exists on chain
-    public boolean validatorExistsOnChain(ValidatorBlock validatorBlock) {
+    private boolean validatorExistsOnChain(ValidatorBlock validatorBlock) {
         for (Block block : this) {
             if (block instanceof ValidatorBlock && block.getIdentityPublicKey().equals(validatorBlock.getIdentityPublicKey()))
                 return true;
