@@ -135,12 +135,12 @@ public class VoidScreen {
                     chain.addValidatedBlock(new ValidatorBlock("Revoked", birthdate, publicKey, prevHash, validatorPrivateKey), block);
                     succesLabel.setVisible(true);
                     if (chain.validateChain()) {
-                        setSuccesLabel(Color.GREEN,"Success! Validator block revoked");
+                        setSuccesLabel(Color.GREEN, "Success! Validator block revoked");
                     } else {
-                        setSuccesLabel(Color.RED,"Something went wrong");
+                        setSuccesLabel(Color.RED, "Something went wrong");
                     }
                 } else {
-                    setSuccesLabel(Color.RED,"Genesis can only void Validator blocks");
+                    setSuccesLabel(Color.RED, "Genesis can only void Validator blocks");
                 }
                 //else the user is a validator, and can add citizen blocks
             } else if (block instanceof ValidatorBlock) {
@@ -148,16 +148,16 @@ public class VoidScreen {
                     chain.addValidatedBlock(new CitizenBlock("Revoked", birthdate, publicKey, prevHash, block.getIdentity(), block.getIdentityPublicKey(), validatorPrivateKey), block);
                     succesLabel.setVisible(true);
                     if (chain.validateChain()) {
-                        setSuccesLabel(Color.GREEN,"Success! Citizen block revoked");
+                        setSuccesLabel(Color.GREEN, "Success! Citizen block revoked");
                     } else {
-                        setSuccesLabel(Color.RED,"Something went wrong");
+                        setSuccesLabel(Color.RED, "Something went wrong");
                     }
                 } else {
-                    setSuccesLabel(Color.RED,"Validator can only void citizen blocks");
+                    setSuccesLabel(Color.RED, "Validator can only void citizen blocks");
                 }
             }
             if (searchResults.get(index) instanceof GenesisBlock) {
-                setSuccesLabel(Color.RED,"It is not possible to void genesis");
+                setSuccesLabel(Color.RED, "It is not possible to void genesis");
             }
         }
     }

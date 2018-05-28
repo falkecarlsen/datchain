@@ -68,6 +68,19 @@ public class CipherBlock {
         this.buildDecryptedText();
     }
 
+    //issues an RSA challenge based on the two selected keys
+    public static boolean issueChallenge(PrivateKey privateKey, PublicKey publicKey) {
+        //create cipherblock and build, based on random string
+        CipherBlock cipherBlock = new CipherBlock(RandomChallenge.generateRandomChallenge());
+
+        //do operations on block
+        cipherBlock.encryptBlock(publicKey);
+        cipherBlock.decryptBlock(privateKey);
+
+        //do a check, and see if the challenge is passed by the decrypted text, being the same as the cleartext
+        return cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext());
+    }
+
     private void buildDecryptedText() {
         //initialise StringBuilder for appending each block of decrypted string
         StringBuilder stringBuilder = new StringBuilder();
