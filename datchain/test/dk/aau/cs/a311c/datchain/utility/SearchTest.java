@@ -1,17 +1,16 @@
 package dk.aau.cs.a311c.datchain.utility;
 
-import dk.aau.cs.a311c.datchain.Blockchain;
-import dk.aau.cs.a311c.datchain.GenesisBlock;
-import dk.aau.cs.a311c.datchain.SetupChain;
-import dk.aau.cs.a311c.datchain.ValidatorBlock;
+import dk.aau.cs.a311c.datchain.*;
 import dk.aau.cs.a311c.datchain.cryptography.RSA;
 import org.junit.jupiter.api.Test;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SearchTest {
 
@@ -19,6 +18,7 @@ class SearchTest {
     void fuzzySearchIdentityTest() {
         Blockchain chain = SetupChain.getDefaultChain();
         Search search = new Search();
+        assertNotNull(search);
 
         //assert that first hit is "Mike Johnson"
         assertEquals("Mike Johnson", search.FuzzySearchIdentity("Mike", chain, 1).get(0).getIdentity());

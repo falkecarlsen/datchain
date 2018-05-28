@@ -13,26 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RSATest {
 
-    static private final String testDirectiory = "testData/";
-    static private KeyPair keyPair;
+    private String testDirectiory = "data/";
 
-    /*
-    static void keyPairInitBefore() {
-        //create keypair for testing
-        KeyPair keyPair = RSA.keyPairInit();
-
-        //create testDirectory if it doesn't exist
-        if (!Files.exists(Paths.get(testDirectiory))) {
-            try {
-                Files.createDirectory(Paths.get(testDirectiory));
-            } catch (IOException e) {
-                System.out.println("ERROR: when testing, could create test directory: " + testDirectiory + ". " + e.getMessage());
-            }
-        }
-        //write keys to files in testDirectory
-        RSA.keyPairWriter(keyPair, testDirectiory);
+    @Test
+    void keyPairInit() {
+        //assert not null, as some keypair must've been generated
+        assertNotNull(RSA.keyPairInit());
     }
-
 
     @Test
     void keyPairWriter() {
@@ -52,12 +39,6 @@ class RSATest {
         //assert that object returned is not null
         PrivateKey privateKey = RSA.getPrivateKey(RSA.keyPairInit());
         assertNotNull(privateKey);
-    }
-
-    @Test
-    void keyPairInit() {
-        //assert not null, as some keypair must've been generated
-        assertNotNull(RSA.keyPairInit());
     }
 
     @Test
@@ -138,5 +119,4 @@ class RSATest {
 
         assertNotNull(RSA.getPublicKeyFromEncoded(encodedPublicKey));
     }
-    */
 }
