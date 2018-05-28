@@ -71,5 +71,3 @@ public abstract class Block {
         return Objects.hash(getIdentity(), getIdentityDOB(), getIdentityPublicKey(), getPrevHash(), getHash(), getTimestamp());
     }
 }
-
-
