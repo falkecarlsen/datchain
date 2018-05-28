@@ -1,5 +1,7 @@
 package dk.aau.cs.a311c.datchain;
 
+import java.util.Objects;
+
 import static dk.aau.cs.a311c.datchain.cryptography.SHA.computeHash;
 import static java.time.Instant.now;
 
@@ -48,6 +50,25 @@ public abstract class Block {
 
     String getVolatileInformation() {
         return this.identity + this.identityDOB + this.identityPublicKey + this.prevHash;
+    }
+
+    //overriding default equals- and hashCode-methods for proper equals behaviour
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Block block = (Block) o;
+        return getTimestamp() == block.getTimestamp() &&
+                Objects.equals(getIdentity(), block.getIdentity()) &&
+                Objects.equals(getIdentityDOB(), block.getIdentityDOB()) &&
+                Objects.equals(getIdentityPublicKey(), block.getIdentityPublicKey()) &&
+                Objects.equals(getPrevHash(), block.getPrevHash()) &&
+                Objects.equals(getHash(), block.getHash());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getIdentity(), getIdentityDOB(), getIdentityPublicKey(), getPrevHash(), getHash(), getTimestamp());
     }
 }
 
