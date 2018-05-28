@@ -108,7 +108,15 @@ class Login {
         //if the challenge is passed, the user gets logged in
         Button challengeButton = new Button("Login");
         challengeButton.setMinWidth(140);
-        challengeButton.setOnMouseClicked(e -> labelLogin.setText(issueChallenge(primaryStage, chain)));
+        challengeButton.setOnMouseClicked(e -> {
+            int index = validatePublicKey(chain);
+            if (index != -1) {
+                if (issueChallenge()) {
+                    ValidatorScreen.validatorScreen(primaryStage, chain, chain.getBlock(index), privateKey);
+                    labelLogin.setText("");
+                }
+            }
+        });
         GridPane.setConstraints(challengeButton, 2, 1);
         gridPane.getChildren().add(challengeButton);
 
@@ -159,36 +167,7 @@ class Login {
     }
 
     //issues an RSA challenge based on the two selected keys
-    private static String issueChallenge(Stage primaryStage, Blockchain chain) {
-
-        //first do a check to see if there exists two keys
-        if (privateKey == null) {
-            return "No private key chosen";
-        } else if (publicKey == null) {
-            return "No public key chosen";
-        }
-
-        //find the index of the block containing the pub key, count number of blocks with the pub key
-        int index = -1;
-        int numberOfBlocksContainingPubKey = 0;
-        //checks every block in the chain, if it contains the public key provided by the user, save the index
-        for (Block block : chain) {
-            if (block.getIdentityPublicKey().equals(getEncodedPublicKey(publicKey))
-                    && (block instanceof GenesisBlock || block instanceof ValidatorBlock)) {
-                index = (chain.indexOf(block));
-                numberOfBlocksContainingPubKey++;
-            }
-        }
-
-        //if index is still -1, no block contains the public key, and therefore cannot log in. Resets keys and labels
-        if ((index == -1) || (1 < numberOfBlocksContainingPubKey)) {
-            publicKey = null;
-            privateKey = null;
-            labelPublicKey.setText("");
-            labelPrivateKey.setText("");
-            return "Keypair is not validator";
-        }
-
+    private static boolean issueChallenge() {
         //create cipherblock and build, based on random string
         CipherBlock cipherBlock = new CipherBlock(RandomChallenge.generateRandomChallenge());
 
@@ -200,11 +179,52 @@ class Login {
         if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
             labelPublicKey.setText("");
             labelPrivateKey.setText("");
-            ValidatorScreen.validatorScreen(primaryStage, chain, chain.getBlock(index), privateKey);
             publicKey = null;
             privateKey = null;
+            return true;
         }
-        return "";
+        return false;
     }
+
+    private static int validatePublicKey(Blockchain chain) {
+        int index = -1;
+
+        if (checkLoadedKeys()) {
+            //find the index of the block containing the pub key, count number of blocks with the pub key
+            int numberOfBlocksContainingPubKey = 0;
+            //checks every block in the chain, if it contains the public key provided by the user, save the index
+            for (Block block : chain) {
+                if (block.getIdentityPublicKey().equals(getEncodedPublicKey(publicKey))
+                        && (block instanceof GenesisBlock || block instanceof ValidatorBlock)) {
+                    index = (chain.indexOf(block));
+                    numberOfBlocksContainingPubKey++;
+                }
+            }
+
+            //if index is still -1, no block contains the public key, and therefore cannot log in. Resets keys and labels
+            if ((index == -1) || (1 < numberOfBlocksContainingPubKey)) {
+                publicKey = null;
+                privateKey = null;
+                labelPublicKey.setText("");
+                labelPrivateKey.setText("");
+                labelLogin.setText("Keypair is not validator");
+            }
+            return index;
+        } return index;
+    }
+
+    private static boolean checkLoadedKeys() {
+        //first do a check to see if there exists two keys
+        if (privateKey == null) {
+            labelLogin.setText("No private key chosen");
+            return false;
+        } else if (publicKey == null) {
+            labelLogin.setText("No public key chosen");
+            return false;
+        }
+        return true;
+    }
+
+
 }
 
