@@ -1,6 +1,5 @@
 package dk.aau.cs.a311c.datchain.cryptography;
 
-import java.security.Key;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Arrays;
@@ -10,7 +9,7 @@ import static dk.aau.cs.a311c.datchain.cryptography.RSA.encrypt;
 
 public class CipherBlock {
 
-    //choosing 2^8, but below modulo of RSA keys, as blockSize for playing along with filesystem preferences
+    //choosing 2^8, below modulo of RSA keys and allowing for padding, as blockSize, catering to filesystem preferences as well
     private static final int blockSize = 256;
     final private String cleartext;
     private byte[][] cipherBlock;
@@ -44,7 +43,7 @@ public class CipherBlock {
         }
     }
 
-    public void encryptBlock(Key key) {
+    public void encryptBlock(PublicKey key) {
         //declare counter to keep track of block currently iterating over
         int index = 0;
 
@@ -55,7 +54,7 @@ public class CipherBlock {
         }
     }
 
-    public void decryptBlock(Key key) {
+    public void decryptBlock(PrivateKey key) {
         //declare counter to keep track of block currently iterating over
         int index = 0;
 
@@ -66,6 +65,19 @@ public class CipherBlock {
         }
         //finally build decrypted cipher to string
         this.buildDecryptedText();
+    }
+
+    //issues an RSA challenge based on the two selected keys
+    public static boolean issueChallenge(PrivateKey privateKey, PublicKey publicKey) {
+        //create cipherblock and build, based on random string
+        CipherBlock cipherBlock = new CipherBlock(RandomChallenge.generateRandomChallenge());
+
+        //do operations on block
+        cipherBlock.encryptBlock(publicKey);
+        cipherBlock.decryptBlock(privateKey);
+
+        //do a check, and see if the challenge is passed by the decrypted text, being the same as the cleartext
+        return cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext());
     }
 
     private void buildDecryptedText() {
@@ -99,9 +111,4 @@ public class CipherBlock {
     public String getDecryptedText() {
         return this.decryptedText;
     }
-
-    public CipherBlock getBlock() {
-        return this;
-    }
-
 }

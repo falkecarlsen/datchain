@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
 import java.security.PrivateKey;
@@ -134,15 +135,12 @@ public class VoidScreen {
                     chain.addValidatedBlock(new ValidatorBlock("Revoked", birthdate, publicKey, prevHash, validatorPrivateKey), block);
                     succesLabel.setVisible(true);
                     if (chain.validateChain()) {
-                        succesLabel.setTextFill(Color.GREEN);
-                        succesLabel.setText("Success! Validator block revoked");
+                        setSuccesLabel(Color.GREEN, "Success! Validator block revoked");
                     } else {
-                        succesLabel.setTextFill(Color.RED);
-                        succesLabel.setText("Something went wrong");
+                        setSuccesLabel(Color.RED, "Something went wrong");
                     }
                 } else {
-                    succesLabel.setTextFill(Color.RED);
-                    succesLabel.setText("Genesis can only void Validator blocks");
+                    setSuccesLabel(Color.RED, "Genesis can only void Validator blocks");
                 }
                 //else the user is a validator, and can add citizen blocks
             } else if (block instanceof ValidatorBlock) {
@@ -150,22 +148,23 @@ public class VoidScreen {
                     chain.addValidatedBlock(new CitizenBlock("Revoked", birthdate, publicKey, prevHash, block.getIdentity(), block.getIdentityPublicKey(), validatorPrivateKey), block);
                     succesLabel.setVisible(true);
                     if (chain.validateChain()) {
-                        succesLabel.setTextFill(Color.GREEN);
-                        succesLabel.setText("Success! Citizen block revoked");
+                        setSuccesLabel(Color.GREEN, "Success! Citizen block revoked");
                     } else {
-                        succesLabel.setTextFill(Color.RED);
-                        succesLabel.setText("Something went wrong");
+                        setSuccesLabel(Color.RED, "Something went wrong");
                     }
                 } else {
-                    succesLabel.setTextFill(Color.RED);
-                    succesLabel.setText("Validator can only void citizen blocks");
+                    setSuccesLabel(Color.RED, "Validator can only void citizen blocks");
                 }
             }
             if (searchResults.get(index) instanceof GenesisBlock) {
-                succesLabel.setTextFill(Color.RED);
-                succesLabel.setText("It is not possible to void genesis");
+                setSuccesLabel(Color.RED, "It is not possible to void genesis");
             }
         }
+    }
+
+    private static void setSuccesLabel(Paint color, String text) {
+        succesLabel.setTextFill(color);
+        succesLabel.setText(text);
     }
 }
 

@@ -45,7 +45,8 @@ class MainScreen {
         topPanel.setPadding(new Insets(5, 0, 10, 0));
 
         Button savePublicKeyButton = new Button("Save public key in folder");
-        savePublicKeyButton.setOnMouseClicked(e -> publicKeyWriter(publicKey, "data/gui/selectedKey/"));
+        savePublicKeyButton.setOnMouseClicked(e -> publicKeyWriter(publicKey, "data/gui/selectedKey/" +
+                identityText.getText().replaceAll(" ", "_").toLowerCase() + "/"));
         topPanel.getChildren().add(savePublicKeyButton);
 
         Button login_button = new Button("Login as validator");
@@ -53,7 +54,6 @@ class MainScreen {
         topPanel.getChildren().add(login_button);
 
         topPanel.setAlignment(CENTER);
-
 
         //Center panel contains the search functionality
         GridPane gridRight = new GridPane();
@@ -223,7 +223,6 @@ class MainScreen {
 
         //displays the search results
         table.setItems(blocks);
-
     }
 
     private static void runPopUp(Stage primaryStage, Blockchain chain) {
@@ -239,19 +238,16 @@ class MainScreen {
     static ArrayList<Block> getSearchResults(String searchTerm, Blockchain chain) {
         //create class to search and array for search results
         Search search = new Search();
-        ArrayList<Block> results;
 
         //if the user input just numbers and hyphen, search for date of birth in the chain
         if (searchTerm.matches("[0-9-]+")) {
-            results = search.FuzzySearchIdentityDOB((searchTerm), chain, 5);
-            return results;
+            return search.FuzzySearchIdentityDOB((searchTerm), chain, 5);
             //if the user input just alphabetical characters, search for identity in the chain
         } else if (searchTerm.matches("[a-zA-ZæøåÆØÅ\\- ]+")) {
-            results = search.FuzzySearchIdentity((searchTerm), chain, 5);
-            return results;
+            return search.FuzzySearchIdentity((searchTerm), chain, 5);
         } else {
             //if none of the above is true, search for pub key, which can have many different characters
-            return (results = search.FuzzySearchIdentityPublicKey((searchTerm), chain, 5));
+            return search.FuzzySearchIdentityPublicKey((searchTerm), chain, 5);
         }
     }
 
@@ -263,7 +259,6 @@ class MainScreen {
             identityText.setText(searchResults.get(index).getIdentity());
             birthdateText.setText(searchResults.get(index).getIdentityDOB());
             //the public key is made into a substring, because of the length of the public key
-            //TODO should check for length before getting char 50 .. 90 as NPE might be thrown
             publicKeyText.setText(searchResults.get(index).getIdentityPublicKey().substring(50, 90) + "...");
             publicKey = searchResults.get(index).getIdentityPublicKey();
             timeStampText.setText(TimeConverter.getDate(searchResults.get(index).getTimestamp()));

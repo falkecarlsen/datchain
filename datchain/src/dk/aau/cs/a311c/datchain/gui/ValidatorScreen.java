@@ -27,8 +27,6 @@ class ValidatorScreen {
     private static TextField identityText = new TextField();
     private static Label succesLabel = new Label();
     private static Label errorLabel = new Label("");
-    //directory constants
-    private static String createdBlockDirectory = "data/gui/createdBlocks/";
 
     public static void validatorScreen(Stage primaryStage, Blockchain chain, Block block, PrivateKey validatorPrivateKey) {
         //if somehow a citizen got logged in, return to mainscreen
@@ -94,7 +92,8 @@ class ValidatorScreen {
         //button to submit the block to the chain, is invisible until the user input data in the correct format
         Button addBlockButton = new Button("Check data is correct and submit");
         GridPane.setHalignment(addBlockButton, HPos.CENTER);
-        addBlockButton.setOnAction(e -> submitBlock(chain, block, validatorPrivateKey, identityText.getText(), DOBText.getText()));
+        addBlockButton.setOnAction(e -> submitBlock(chain, block, validatorPrivateKey,
+                identityText.getText(), DOBText.getText()));
         GridPane.setConstraints(addBlockButton, 1, 8);
         gridCenter.getChildren().add(addBlockButton);
 
@@ -114,7 +113,8 @@ class ValidatorScreen {
         primaryStage.show();
     }
 
-    private static void submitBlock(Blockchain chain, Block block, PrivateKey validatorPrivateKey, String identityInput, String DOBInput) {
+    private static void submitBlock(Blockchain chain, Block block, PrivateKey validatorPrivateKey,
+                                    String identityInput, String DOBInput) {
         Boolean correctInput = checkInput(identityInput, DOBInput);
 
         if (correctInput) {
@@ -122,6 +122,7 @@ class ValidatorScreen {
             KeyPair keyPair = RSA.keyPairInit();
 
             //if createdBlockDirectory doesn't exist, create the directory
+            String createdBlockDirectory = "data/gui/createdBlocks/";
             if (!Files.exists(Paths.get(createdBlockDirectory))) {
                 try {
                     Files.createDirectory(Paths.get(createdBlockDirectory));
@@ -135,7 +136,6 @@ class ValidatorScreen {
             String destination = createdBlockDirectory + identityText.getText().replaceAll(" ", "_").toLowerCase() + "/";
             RSA.keyPairWriter(keyPair, destination);
 
-            //RSA.keyPairWriter(genesisKeypair, "data/gui/genesis/");
 
             //encodes public key to add to new block
             String encodedPublicKey = RSA.getEncodedPublicKey(keyPair);
@@ -146,17 +146,19 @@ class ValidatorScreen {
             //if the user that logged in (block) is a genesis, the user can only add validator blocks
             //the new block is added to the chain, with the required information
             if (block instanceof GenesisBlock) {
-                chain.addValidatedBlock(new ValidatorBlock(identityInput, DOBInput, encodedPublicKey, prevHash, validatorPrivateKey), block);
+                chain.addValidatedBlock(new ValidatorBlock(identityInput, DOBInput, encodedPublicKey,
+                        prevHash, validatorPrivateKey), block);
                 setLabelsAfterSubmittedBlock(chain);
                 //else the user is a validator, and can add citizen blocks
             } else if (block instanceof ValidatorBlock) {
-                chain.addValidatedBlock(new CitizenBlock(identityInput, DOBInput, encodedPublicKey, prevHash, block.getIdentity(), block.getIdentityPublicKey(), validatorPrivateKey), block);
+                chain.addValidatedBlock(new CitizenBlock(identityInput, DOBInput, encodedPublicKey,
+                        prevHash, block.getIdentity(), block.getIdentityPublicKey(), validatorPrivateKey), block);
                 setLabelsAfterSubmittedBlock(chain);
             }
         }
     }
 
-    static void setLabelsAfterSubmittedBlock(Blockchain chain) {
+    private static void setLabelsAfterSubmittedBlock(Blockchain chain) {
         succesLabel.setVisible(true);
         if (chain.validateChain()) {
             succesLabel.setTextFill(Color.GREEN);
@@ -179,14 +181,16 @@ class ValidatorScreen {
             PublicKey genesisPublicKey = RSA.getPublicKey(genesisKeypair);
             RSA.keyPairWriter(genesisKeypair, "data/gui/genesis/");
 
-            //creates the genesis and adds it to a new chain
-            GenesisBlock genesis01 = new GenesisBlock(identityInput, DOBInput, RSA.getEncodedPublicKey(genesisPublicKey), "0000");
-            Blockchain chain = new Blockchain(genesis01);
+            //creates the genesis
+            GenesisBlock genesis = new GenesisBlock(identityInput, DOBInput,
+                    RSA.getEncodedPublicKey(genesisPublicKey), "0000");
+
+            //adds the genesis to the new chain and clears the textfields
             identityText.clear();
             DOBText.clear();
 
             //opens mainscreen
-            MainScreen.screen(primaryStage, chain);
+            MainScreen.screen(primaryStage, new Blockchain(genesis));
         }
     }
 
