@@ -41,11 +41,8 @@ public class StoreChain {
     private static Blockchain deserialiseChain(String jsonChain) {
         //build deserialised Blockchain with GSON, passing custom TypeAdapter, BlockClassAdapter, to GsonBuilder
         Gson gson = new GsonBuilder().registerTypeAdapter(Block.class, new BlockClassAdapter()).create();
-        //create new Blockchain object, utilising no-args constructor for this specific purpose
-        Blockchain blockchain = new Blockchain();
-        //assign reconstituted Blockchain from serialised json to newly created Blockchain
-        blockchain = gson.fromJson(jsonChain, Blockchain.class);
-        return blockchain;
+        //return reconstituted Blockchain from serialised json to newly created Blockchain
+        return gson.fromJson(jsonChain, Blockchain.class);
     }
 
     public static Blockchain readChainFromFilesystem(String directory) {
