@@ -94,7 +94,8 @@ class ValidatorScreen {
         //button to submit the block to the chain, is invisible until the user input data in the correct format
         Button addBlockButton = new Button("Check data is correct and submit");
         GridPane.setHalignment(addBlockButton, HPos.CENTER);
-        addBlockButton.setOnAction(e -> submitBlock(chain, block, validatorPrivateKey, identityText.getText(), DOBText.getText()));
+        addBlockButton.setOnAction(e -> submitBlock(chain, block, validatorPrivateKey,
+                identityText.getText(), DOBText.getText()));
         GridPane.setConstraints(addBlockButton, 1, 8);
         gridCenter.getChildren().add(addBlockButton);
 
@@ -114,7 +115,8 @@ class ValidatorScreen {
         primaryStage.show();
     }
 
-    private static void submitBlock(Blockchain chain, Block block, PrivateKey validatorPrivateKey, String identityInput, String DOBInput) {
+    private static void submitBlock(Blockchain chain, Block block, PrivateKey validatorPrivateKey,
+                                    String identityInput, String DOBInput) {
         Boolean correctInput = checkInput(identityInput, DOBInput);
 
         if (correctInput) {
@@ -145,11 +147,13 @@ class ValidatorScreen {
             //if the user that logged in (block) is a genesis, the user can only add validator blocks
             //the new block is added to the chain, with the required information
             if (block instanceof GenesisBlock) {
-                chain.addValidatedBlock(new ValidatorBlock(identityInput, DOBInput, encodedPublicKey, prevHash, validatorPrivateKey), block);
+                chain.addValidatedBlock(new ValidatorBlock(identityInput, DOBInput, encodedPublicKey,
+                        prevHash, validatorPrivateKey), block);
                 setLabelsAfterSubmittedBlock(chain);
                 //else the user is a validator, and can add citizen blocks
             } else if (block instanceof ValidatorBlock) {
-                chain.addValidatedBlock(new CitizenBlock(identityInput, DOBInput, encodedPublicKey, prevHash, block.getIdentity(), block.getIdentityPublicKey(), validatorPrivateKey), block);
+                chain.addValidatedBlock(new CitizenBlock(identityInput, DOBInput, encodedPublicKey,
+                        prevHash, block.getIdentity(), block.getIdentityPublicKey(), validatorPrivateKey), block);
                 setLabelsAfterSubmittedBlock(chain);
             }
         }
@@ -183,12 +187,11 @@ class ValidatorScreen {
                     RSA.getEncodedPublicKey(genesisPublicKey), "0000");
 
             //adds the genesis to the new chain and clears the textfields
-            Blockchain chain = new Blockchain(genesis);
             identityText.clear();
             DOBText.clear();
 
             //opens mainscreen
-            MainScreen.screen(primaryStage, chain);
+            MainScreen.screen(primaryStage, new Blockchain(genesis));
         }
     }
 

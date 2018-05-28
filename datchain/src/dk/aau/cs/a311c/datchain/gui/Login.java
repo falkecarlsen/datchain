@@ -176,7 +176,7 @@ class Login {
             if (block.getIdentityPublicKey().equals(getEncodedPublicKey(publicKey))
                     && (block instanceof GenesisBlock || block instanceof ValidatorBlock)) {
                 index = (chain.indexOf(block));
-                numberOfBlocksContainingPubKey ++;
+                numberOfBlocksContainingPubKey++;
             }
         }
 
