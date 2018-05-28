@@ -203,7 +203,7 @@ public class RSA {
         return generatePublicKey(Base64.getDecoder().decode(encodedKey));
     }
 
-    static byte[] encrypt(byte[] cleartext, Key key) {
+    public static byte[] encrypt(byte[] cleartext, Key key) {
         try {
             final Cipher cipher = Cipher.getInstance(cryptAlgorithm);
             cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -263,7 +263,7 @@ public class RSA {
         return false;
     }
 
-    static byte[] decrypt(byte[] ciphertext, Key key) {
+    public static byte[] decrypt(byte[] ciphertext, Key key) {
         try {
             final Cipher cipher = Cipher.getInstance(cryptAlgorithm);
             cipher.init(Cipher.DECRYPT_MODE, key);

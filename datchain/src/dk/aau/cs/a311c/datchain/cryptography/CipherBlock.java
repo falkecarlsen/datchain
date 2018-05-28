@@ -99,9 +99,4 @@ public class CipherBlock {
     public String getDecryptedText() {
         return this.decryptedText;
     }
-
-    public CipherBlock getBlock() {
-        return this;
-    }
-
 }

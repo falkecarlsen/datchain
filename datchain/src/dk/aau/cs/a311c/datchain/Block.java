@@ -68,7 +68,6 @@ public abstract class Block {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(getIdentity(), getIdentityDOB(), getIdentityPublicKey(), getPrevHash(), getHash(), getTimestamp());
     }
 }
