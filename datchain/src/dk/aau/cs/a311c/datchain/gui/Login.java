@@ -20,12 +20,12 @@ import java.security.PublicKey;
 import static dk.aau.cs.a311c.datchain.cryptography.CipherBlock.issueChallenge;
 import static dk.aau.cs.a311c.datchain.cryptography.RSA.*;
 
-public class Login {
+class Login {
     private static PrivateKey privateKey;
     private static PublicKey publicKey;
-    private static Label labelLogin = new Label();
-    private static Label labelPrivateKey = new Label();
-    private static Label labelPublicKey = new Label();
+    private static final Label labelLogin = new Label();
+    private static final Label labelPrivateKey = new Label();
+    private static final Label labelPublicKey = new Label();
 
     public static void login(Stage primaryStage, Blockchain chain) {
 

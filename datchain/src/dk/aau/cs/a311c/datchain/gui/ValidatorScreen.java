@@ -23,10 +23,10 @@ import java.security.PublicKey;
 
 class ValidatorScreen {
     //the label, buttons and textfields to be used on the stage
-    private static TextField DOBText = new TextField();
-    private static TextField identityText = new TextField();
-    private static Label succesLabel = new Label();
-    private static Label errorLabel = new Label("");
+    private static final TextField DOBText = new TextField();
+    private static final TextField identityText = new TextField();
+    private static final Label succesLabel = new Label();
+    private static final Label errorLabel = new Label("");
 
     public static void validatorScreen(Stage primaryStage, Blockchain chain, Block block, PrivateKey validatorPrivateKey) {
         //if somehow a citizen got logged in, return to mainscreen
