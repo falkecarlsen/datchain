@@ -12,7 +12,7 @@ class BlockClassAdapter implements JsonSerializer<Block>, JsonDeserializer<Block
         JsonObject result = new JsonObject();
         //denote type of Block when serialising
         result.add("type", new JsonPrimitive(src.getClass().getSimpleName()));
-        //recursively append context of block to json
+        //append serialised context of block to json-object
         result.add("properties", context.serialize(src, src.getClass()));
         return result;
     }

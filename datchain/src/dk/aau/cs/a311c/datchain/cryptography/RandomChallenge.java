@@ -4,7 +4,7 @@ import java.util.Random;
 
 import static java.time.Instant.now;
 
-public class RandomChallenge {
+class RandomChallenge {
 
     private static final int challengeLength = 2048;
     private static final String charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

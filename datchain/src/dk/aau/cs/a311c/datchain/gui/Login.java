@@ -4,8 +4,6 @@ import dk.aau.cs.a311c.datchain.Block;
 import dk.aau.cs.a311c.datchain.Blockchain;
 import dk.aau.cs.a311c.datchain.GenesisBlock;
 import dk.aau.cs.a311c.datchain.ValidatorBlock;
-import dk.aau.cs.a311c.datchain.cryptography.CipherBlock;
-import dk.aau.cs.a311c.datchain.cryptography.RandomChallenge;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -19,14 +17,15 @@ import java.io.File;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import static dk.aau.cs.a311c.datchain.cryptography.CipherBlock.issueChallenge;
 import static dk.aau.cs.a311c.datchain.cryptography.RSA.*;
 
 class Login {
     private static PrivateKey privateKey;
     private static PublicKey publicKey;
-    private static Label labelLogin = new Label();
-    private static Label labelPrivateKey = new Label();
-    private static Label labelPublicKey = new Label();
+    private static final Label labelLogin = new Label();
+    private static final Label labelPrivateKey = new Label();
+    private static final Label labelPublicKey = new Label();
 
     public static void login(Stage primaryStage, Blockchain chain) {
 
@@ -108,7 +107,23 @@ class Login {
         //if the challenge is passed, the user gets logged in
         Button challengeButton = new Button("Login");
         challengeButton.setMinWidth(140);
-        challengeButton.setOnMouseClicked(e -> labelLogin.setText(issueChallenge(primaryStage, chain)));
+        challengeButton.setOnMouseClicked(e -> {
+            //check if two keys are loaded
+            if (checkLoadedKeys(privateKey, publicKey)) {
+                //get the index of the public key in chain
+                int index = validatePublicKey(chain);
+                if (index != -1) {
+                    //if challenge is completed, go to validatorscreen
+                    if (issueChallenge(privateKey, publicKey)) {
+                        ValidatorScreen.validatorScreen(primaryStage, chain, chain.get(index), privateKey);
+                        publicKey = null;
+                        privateKey = null;
+                        labelLogin.setText("");
+                    }
+                }
+            }
+
+        });
         GridPane.setConstraints(challengeButton, 2, 1);
         gridPane.getChildren().add(challengeButton);
 
@@ -158,57 +173,41 @@ class Login {
         } else return null;
     }
 
-    //issues an RSA challenge based on the two selected keys
-    private static String issueChallenge(Stage primaryStage, Blockchain chain) {
 
-        //first do a check to see if there exists two keys
-        if (privateKey == null) {
-            return "No private key chosen";
-        } else if (publicKey == null) {
-            return "No public key chosen";
-        }
-
-        //index for the block in the chain, which contains the given public key,
-        // used to tell whether or not it is a validator or genesis logging in
+    private static int validatePublicKey(Blockchain chain) {
         int index = -1;
+        //find the index of the block containing the pub key, count number of blocks with the pub key
+        int numberOfBlocksContainingPubKey = 0;
         //checks every block in the chain, if it contains the public key provided by the user, save the index
         for (Block block : chain) {
             if (block.getIdentityPublicKey().equals(getEncodedPublicKey(publicKey))
                     && (block instanceof GenesisBlock || block instanceof ValidatorBlock)) {
                 index = (chain.indexOf(block));
+                numberOfBlocksContainingPubKey++;
             }
         }
 
         //if index is still -1, no block contains the public key, and therefore cannot log in. Resets keys and labels
-        if (index == -1) {
+        if ((index == -1) || (1 < numberOfBlocksContainingPubKey)) {
             publicKey = null;
             privateKey = null;
             labelPublicKey.setText("");
             labelPrivateKey.setText("");
-            return "Keypair is not validator";
+            labelLogin.setText("Keypair is not validator");
         }
+        return index;
+    }
 
-        //get random challenge and declare Strings
-        String encryptedText = RandomChallenge.generateRandomChallenge();
-
-        //create cipherblock and build
-        CipherBlock cipherBlock = new CipherBlock(encryptedText);
-
-        //do operations on block
-        cipherBlock.encryptBlock(publicKey);
-        cipherBlock.decryptBlock(privateKey);
-
-
-        //do a check, and see if the challenge is passed by the decrypted text, being the same as the cleartext
-        //if so, the public and private key match. the block containing the given public key is sent as an parameter
-        if (cipherBlock.getDecryptedText().equals(cipherBlock.getCleartext())) {
-            labelPublicKey.setText("");
-            labelPrivateKey.setText("");
-            ValidatorScreen.validatorScreen(primaryStage, chain, chain.getBlock(index), privateKey);
-            publicKey = null;
-            privateKey = null;
+    private static boolean checkLoadedKeys(PrivateKey privateKey, PublicKey publicKey) {
+        //do a check to see if there exists two keys
+        if (privateKey == null) {
+            labelLogin.setText("No private key chosen");
+            return false;
+        } else if (publicKey == null) {
+            labelLogin.setText("No public key chosen");
+            return false;
         }
-        return "";
+        return true;
     }
 }
 

@@ -15,7 +15,6 @@ public class SHA {
         } catch (NoSuchAlgorithmException e) {
             System.out.println("ERROR: System does not support cryptographic hash algorithm: " + e.getMessage());
         }
-        //TODO might be redundant or not proper error-handling
         assert messageDigest != null;
 
         //get hashInput as bytes and update messageDigest

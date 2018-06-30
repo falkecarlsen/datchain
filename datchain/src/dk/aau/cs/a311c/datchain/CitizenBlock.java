@@ -25,8 +25,4 @@ public class CitizenBlock extends Block {
         //returns true if signature is verified by stored public key, signature and expected volatile information
         return RSA.verifySignature(this.getVolatileInformation(), this.validatorSignature, RSA.getPublicKeyFromEncoded(this.validatorPublicKey));
     }
-
-    public byte[] getGenesisSignature() {
-        return this.validatorSignature;
-    }
 }
