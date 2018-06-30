@@ -27,11 +27,11 @@ import static javafx.geometry.Pos.CENTER;
 class MainScreen {
 
     private static ArrayList<Block> searchResults = new ArrayList<>();
-    private static Text identityText = new Text();
-    private static Text birthdateText = new Text();
-    private static Text publicKeyText = new Text();
-    private static Text blockTypeText = new Text();
-    private static Text timeStampText = new Text();
+    private static final Text identityText = new Text();
+    private static final Text birthdateText = new Text();
+    private static final Text publicKeyText = new Text();
+    private static final Text blockTypeText = new Text();
+    private static final Text timeStampText = new Text();
     private static TableView<Block> table = new TableView<>();
     private static String publicKey;
 

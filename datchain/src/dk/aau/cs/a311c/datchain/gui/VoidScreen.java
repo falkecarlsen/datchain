@@ -16,11 +16,11 @@ import javafx.stage.Stage;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 
-public class VoidScreen {
+class VoidScreen {
 
     private static ArrayList<Block> searchResults = new ArrayList<>();
     private static TableView<Block> table = new TableView<>();
-    private static Label succesLabel = new Label();
+    private static final Label succesLabel = new Label();
 
     public static void voidingBlock(Stage primaryStage, Blockchain chain, Block block, PrivateKey validatorPrivateKey) {
 

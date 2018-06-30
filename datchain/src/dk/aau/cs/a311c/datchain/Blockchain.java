@@ -34,9 +34,8 @@ public class Blockchain extends ArrayList<Block> {
         if (duplicateBlockInstances == 1 &&
                 block.getIdentity().equals("Revoked") &&
                 block.getIdentityDOB().equals(duplicateBlockDOB)) {
-            //add block and return true
-            add(block);
-            return true;
+            //return return value of add block method call
+            return add(block);
             //if identity already has been revoked, by existing more than once on chain, adding revoking block is illegal
         } else if (duplicateBlockInstances > 1) {
             System.out.println("ERROR: Adding a block with equal public key to revoked block is illegal!");
@@ -45,34 +44,19 @@ public class Blockchain extends ArrayList<Block> {
 
         // if block to be added is of GenesisBlock-type, return false - as only constructor can add Genesis
         if (block instanceof GenesisBlock) return false;
-            //check if block to be added is of ValidatorBlock-type and if chainsize is greater than 0
-            // and if block at 0 contains public key of genesis-block passed
+            //check if block to be added is of ValidatorBlock-type and if chainsize is greater than 0 and if block at 0 contains public key of genesis-block passed
         else if (block instanceof ValidatorBlock && this.size() > 0 && this.get(0).getIdentityPublicKey().equals(validator.getIdentityPublicKey())) {
-            System.out.println("Block is of ValidatorBlock-type and chain has at least one block");
-            this.add(block);
+            //return return value of add block method call
+            return this.add(block);
 
-            //check if block to be added is of CitizenBlock-type and if chainsize is greater than 0
-            // and whether validator exists on chain using typecasting
+            //check if block to be added is of CitizenBlock-type and if chainsize is greater than 0 and whether validator exists on chain using typecasting
         } else if (block instanceof CitizenBlock && this.size() > 1 && validatorExistsOnChain((ValidatorBlock) validator)) {
-            System.out.println("Block is of citizen type and validator exists on chain");
-            this.add(block);
+            //return return value of add block method call
+            return this.add(block);
 
             //if none match, block is not recognized and a fatal error has occurred
         } else {
             System.out.println("ERROR: Could not add block, some dependency is not satisfied!");
-            return false;
-        }
-        return true;
-    }
-
-    //might not be necessary, however signature doesn't match when addValidatedBlock is considered
-    @Override
-    public boolean add(Block block) {
-        try {
-            super.add(block);
-            return true;
-        } catch (IllegalArgumentException e) {
-            System.out.println("Caught IllegalArgumentException: " + e.getMessage());
             return false;
         }
     }
@@ -86,18 +70,17 @@ public class Blockchain extends ArrayList<Block> {
         for (int i = 0; i < this.size() - 1; i++) {
 
             //assign hashes to new strings for code legibility
-            currHash = getBlock(i).getHash();
-            currTime = getBlock(i).getTimestamp();
+            currHash = get(i).getHash();
+            currTime = get(i).getTimestamp();
 
-            nextPrevHash = getBlock(i + 1).getPrevHash();
-            nextTime = getBlock(i + 1).getTimestamp();
+            nextPrevHash = get(i + 1).getPrevHash();
+            nextTime = get(i + 1).getTimestamp();
 
             //check hash congruency through blocks
             if (!currHash.equals(nextPrevHash)) return false;
 
             //check time is equal or later through blocks
             if (currTime > nextTime) return false;
-
         }
 
         for (Block block : this) {
@@ -105,19 +88,20 @@ public class Blockchain extends ArrayList<Block> {
             if (block instanceof ValidatorBlock) {
                 //verify signature of genesis in given ValidatorBlock, if returns false, chain is invalid
                 if (!((ValidatorBlock) block).verifySignature(this.getGenesisPublicKey())) return false;
-            }
-            if (block instanceof CitizenBlock) {
+            } else if (block instanceof CitizenBlock) {
                 //verify signature of validator in given CitizenBlock, if returns false, chain is invalid
                 if (!((CitizenBlock) block).verifySignature()) return false;
+            } else {
+                //for all other blocks, if not genesis, return false, as chain is invalid
+                if (!(block instanceof GenesisBlock)) return false;
             }
         }
-
         //if no congruency errors are found, chain is valid
         return true;
     }
 
     //check all blocks in chain whether validators public key exists on chain
-    public boolean validatorExistsOnChain(ValidatorBlock validatorBlock) {
+    private boolean validatorExistsOnChain(ValidatorBlock validatorBlock) {
         for (Block block : this) {
             if (block instanceof ValidatorBlock && block.getIdentityPublicKey().equals(validatorBlock.getIdentityPublicKey()))
                 return true;
@@ -141,16 +125,6 @@ public class Blockchain extends ArrayList<Block> {
             throw new IndexOutOfBoundsException("ERROR: No blocks added, cannot get head" + e.getMessage());
         }
         return head;
-    }
-
-    public Block getBlock(int index) {
-        Block block;
-        try {
-            block = get(index);
-        } catch (IndexOutOfBoundsException e) {
-            throw new IndexOutOfBoundsException("Index out of bounds, can't get block");
-        }
-        return block;
     }
 
     public Blockchain getChain() {

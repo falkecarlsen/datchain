@@ -1,6 +1,5 @@
 package dk.aau.cs.a311c.datchain.cryptography;
 
-import java.security.Key;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Arrays;
@@ -10,7 +9,7 @@ import static dk.aau.cs.a311c.datchain.cryptography.RSA.encrypt;
 
 public class CipherBlock {
 
-    //choosing 2^8, but below modulo of RSA keys, as blockSize for playing along with filesystem preferences
+    //choosing 2^8, below modulo of RSA keys and allowing for padding, as blockSize, catering to filesystem preferences as well
     private static final int blockSize = 256;
     final private String cleartext;
     private byte[][] cipherBlock;
@@ -44,7 +43,7 @@ public class CipherBlock {
         }
     }
 
-    public void encryptBlock(Key key) {
+    public void encryptBlock(PublicKey key) {
         //declare counter to keep track of block currently iterating over
         int index = 0;
 
@@ -55,7 +54,7 @@ public class CipherBlock {
         }
     }
 
-    public void decryptBlock(Key key) {
+    public void decryptBlock(PrivateKey key) {
         //declare counter to keep track of block currently iterating over
         int index = 0;
 
@@ -112,9 +111,4 @@ public class CipherBlock {
     public String getDecryptedText() {
         return this.decryptedText;
     }
-
-    public CipherBlock getBlock() {
-        return this;
-    }
-
 }
