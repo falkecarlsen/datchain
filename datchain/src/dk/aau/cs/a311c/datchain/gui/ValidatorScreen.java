@@ -50,7 +50,7 @@ class ValidatorScreen {
         gridCenter.getChildren().add(logoutButton);
 
         Button switchButton = new Button("Revoke block");
-        switchButton.setMinWidth(100);
+        switchButton.setMinWidth(120);
         switchButton.setOnAction(e -> VoidScreen.voidingBlock(primaryStage, chain, block, validatorPrivateKey));
         GridPane.setHalignment(switchButton, HPos.CENTER);
         GridPane.setConstraints(switchButton, 2, 0);
@@ -58,7 +58,7 @@ class ValidatorScreen {
 
         //adds the directionlabel to the gridpane
         Label userPromptLabel = new Label();
-        userPromptLabel.setMinWidth(300);
+        userPromptLabel.setMinWidth(400);
         GridPane.setHalignment(userPromptLabel, HPos.CENTER);
         GridPane.setConstraints(userPromptLabel, 1, 4);
         gridCenter.getChildren().add(userPromptLabel);
@@ -106,7 +106,7 @@ class ValidatorScreen {
         //setting up the scene in a borderpane
         BorderPane borderPane = new BorderPane();
         borderPane.setCenter(gridCenter);
-        Scene addBlockScene = new Scene(borderPane, 550, 280);
+        Scene addBlockScene = new Scene(borderPane, 650, 280);
 
         primaryStage.setScene(addBlockScene);
         primaryStage.setResizable(false);
