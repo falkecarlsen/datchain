@@ -46,19 +46,19 @@ class Login {
         gridPane.getChildren().add(label);
 
         //label under the private key load button
-        labelPrivateKey.setMaxWidth(140);
+        labelPrivateKey.setMaxWidth(160);
         labelPrivateKey.setAlignment(Pos.CENTER);
         GridPane.setConstraints(labelPrivateKey, 0, 2);
         gridPane.getChildren().add(labelPrivateKey);
 
         //label under the public key load button
-        labelPublicKey.setMaxWidth(140);
+        labelPublicKey.setMaxWidth(160);
         labelPublicKey.setAlignment(Pos.CENTER);
         GridPane.setConstraints(labelPublicKey, 1, 2);
         gridPane.getChildren().add(labelPublicKey);
 
         //label under the challenge button
-        labelLogin.setMaxWidth(140);
+        labelLogin.setMaxWidth(160);
         labelLogin.setAlignment(Pos.CENTER);
         GridPane.setConstraints(labelLogin, 2, 2);
         gridPane.getChildren().add(labelLogin);

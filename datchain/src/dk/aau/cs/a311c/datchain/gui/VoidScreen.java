@@ -111,7 +111,7 @@ class VoidScreen {
         GridPane.setConstraints(succesLabel, 1, 6);
         grid.getChildren().add(succesLabel);
 
-        Scene scene = new Scene(grid, 800, 325);
+        Scene scene = new Scene(grid, 800, 350);
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
