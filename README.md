@@ -26,6 +26,6 @@ To run `JUnit5` tests on the project, the following setup must be carried out:
 6. Now tests and coverage can be run within IntelliJ through choosing newly created run-configuration and using toolbar-icons.
 
 ## Documentation
-Documentation on means of Proof-of-Authority distributed concensus: [Concensus.md](notes/Concensus.md)
+Documentation on means of Proof-of-Authority distributed concensus: [Consensus.md](notes/Consensus.md)
 
 
